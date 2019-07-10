@@ -124,7 +124,73 @@ public:
         // Return the status
         return success;
     }
-
+    
+    /*_____________________________________________________*/
+    /*____________INTRUSION IN ORIGNAL CODE________________*/
+    /*_____________________________________________________*/
+    /* Federico Airoldi intrusion in the author code */
+    /* I apologize for this intrusion, I need the bounding box slightly 
+     * bigger so that infinite all infinite edges are at least long 0.5, but then
+     * I also need to know which edges are the infinite ones
+     */
+    /* I'm so sorry :( */
+     /**
+     * \brief Bound the Voronoi diagram
+     *
+     * The method FortuneAlgorithm::construct must be called before this one to construct the diagram.
+     *
+     * The algorithm does not guarantee that the box passed as parameter will
+     * be used for bounding. It only guarantees that the used box contains the
+     * one passed as parameter.
+     *
+     * \param box Smallest box to use for bounding (modified with the actual dimension used), a enlargment parameter enlarge to further extend the box
+     * 
+     * \return True if no error occurs during intersection, false otherwise
+     */
+    bool bound(Box<T>* box)
+    {
+        auto success = true;
+        // 1. Make sure the bounding box contains all the vertices
+        for (const auto& vertex : mDiagram.getVertices()) // Much faster when using vector<unique_ptr<Vertex*>, maybe we can only test vertices in border cells to speed up
+        {
+            box->left = std::min(vertex.point.x, box->left);
+            box->bottom = std::min(vertex.point.y, box->bottom);
+            box->right = std::max(vertex.point.x, box->right);
+            box->top = std::max(vertex.point.y, box->top);
+        }
+        // further enlarge the box
+        box->left-=0.5;   
+        box->right+=0.5;
+        box->bottom-=0.5; 
+        box->top+=0.5;
+        // this may be more safe...
+        /*box->left   = ceil(box->left) - 1;   
+        box->right  = ceil(box->right) + 1;
+        box->bottom = ceil(box->bottom) - 1; 
+        box->top    = ceil(box->top) + 1;*/
+        
+        // 2. Retrieve all non bounded half edges from the beach line
+        auto linkedVertices = std::list<LinkedVertex>();
+        auto vertices = VerticeOnFrontierContainer(mDiagram.getNbSites());
+        if (!mBeachline.isEmpty())
+        {
+            auto arc = mBeachline.getLeftmostArc();
+            while (!mBeachline.isNil(arc->next))
+            {
+                success = boundEdge(*box, arc, arc->next, linkedVertices, vertices) && success;
+                arc = arc->next;
+            }
+        }
+        // 3. Add corners if necessary
+        for (auto& kv : vertices)
+            success = addCorners(*box, linkedVertices, kv.second) && success;
+        // 4. Join the half-edges
+        for (auto& kv : vertices)
+            joinHalfEdges(kv.first, kv.second);
+        // Return the status
+        return success;
+    }
+    
     /**
      * \brief Return the constructed diagram
      *
