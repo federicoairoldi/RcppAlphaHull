@@ -14,20 +14,29 @@ for(i in 1:dim(vorcpp$mesh)[1])
 length(which(vorcpp$mesh[, "bp2"] == 1 | vorcpp$mesh[, "bp1"] == 1))
 length(which(vorR$mesh[, "bp2"] == 1 | vorR$mesh[, "bp1"] == 1))
 
-search = function(ind1, ind2, mesh){
-  for(i in 1:dim(mesh)[1]){
-      if(mesh[i,"ind1"] == ind1 & mesh[i,"ind2"] == ind2)
-        return(TRUE)
-      if(mesh[i,"ind1"] == ind2 & mesh[i,"ind2"] == ind1)
-        return(TRUE)
-    }
-  return(FALSE)
-}
+system.time(computeVoronoiRcpp(x, y))
+system.time(delvor(x, y))
 
-k = 0
-tmp = vorR$mesh[which(vorR$mesh[,"bp2"] == 1 | vorR$mesh[, "bp1"] == 1), 1:2]
-tmp2 = vorcpp$mesh[which(vorcpp$mesh[,"bp2"] == 1 | vorcpp$mesh[, "bp1"] == 1), 1:2]
-for(i in 1:dim(tmp)[1])
-  k = k + !(search(tmp[i,"ind1"], tmp[i,"ind2"], tmp2))
+set.seed(7658)
+n.nodes = c( seq(10,90,by=10), seq(100,900,by=100), seq(1000,10000,by=1000) )
+RTime = c()
+CppTime = c()
+for(n in n.nodes){
+  print(paste("Simulation:",n))
+  x = runif(n)
+  y = runif(n)
+  res = benchmark("Cpp" = computeVoronoiRcpp(x, y), "R" = delvor(x, y), replications = 1)
+  CppTime = rbind(CppTime, res[which(res[,"test"] == "Cpp"), c("elapsed", "user.self", "sys.self")])
+  RTime = rbind(RTime, res[which(res[,"test"] == "R"), c("elapsed", "user.self", "sys.self")])
+}
+tmp = cbind(CppTime, RTime)
+x11()
+matplot(n.nodes, tmp[,c(2,5)], type = "l", col = c("blue", "red"), lty = 1, 
+        xlab = "Number of nodes", ylab = "CPU time")
+lines(n.nodes, (0.000001)*n.nodes*log(n.nodes, 2), col = "green", lty = 2)
+lines(n.nodes, (0.000000001)*n.nodes^2, col = "pink", lty = 2)
+legend("topleft", legend = c("C++", "R", "nlogn"), fill = c("blue", "red", "green"), )
+
+
 
 
