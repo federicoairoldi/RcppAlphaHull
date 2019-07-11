@@ -16,10 +16,11 @@ bool isboundary(const Vector2<T>& point, const Box<T>& box){
         & point.x <= box.right & point.x >= box.left )
     return true;
   return false;
-}
-
+}*/
+ 
+/*
 template <typename T>
-bool isboundary2(const Vector2<T>& point, const Box<T>& box){
+bool isboundary(const Vector2<T>& point, const Box<T>& box){
   T eps(10e-5);
   if( ( ( point.x >= (box.left - eps) & point.x <= (box.left + eps) )
           | ( point.x >= (box.right - eps) & point.x <= (box.right + eps) )  ) 
@@ -45,14 +46,13 @@ bool isboundary(const Vector2<T>& point, const Box<T>& box){
 }
 
 // [[Rcpp::export]]
-Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector& x, const Rcpp::NumericVector& y) {
+Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVector y) {
   if( x.size() != y.size() )
     Rcpp::stop("Error! x and y vectors don't have same length!");
   
   typedef long double ftype;  
   
   std::vector<Vector2<ftype>> points;
-  
   for(int i=0; i<x.size(); i++)
     points.push_back(Vector2<ftype>(x[i], y[i]));
   
@@ -64,8 +64,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector& x, const Rcpp::NumericV
   algorithm.bound(&localbox); // Bound the diagram
   auto diagram = algorithm.getDiagram(); // Get the constructed diagram
   //diagram.intersect(Box<ftype>{0, 0, 2, 2}); // Compute the intersection between the diagram and a box
-  
-  auto triangulation = diagram.computeTriangulation();
+  //auto triangulation = diagram.computeTriangulation();
   
   // extracting information and generating the R object
   // matrix of coordinates
@@ -74,32 +73,42 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector& x, const Rcpp::NumericV
   coord(_, 1) = y;
   
   // matrix mesh (contains delanuay/voronoi information)
-  Rcpp::IntegerVector ind1, ind2, bp1, bp2;
-  Rcpp::NumericVector x1, y1, x2, y2, mx1, my1, mx2, my2;
-  
+  mygal::Diagram<ftype>::Site *site1, *site2;
   auto halfedges = diagram.getHalfEdges();
-  for(auto it = halfedges.begin(); it != halfedges.end(); it++)
-    if(it->twin != nullptr){
-      ind1.push_back( it->incidentFace->site->index + 1 );
-      ind2.push_back( it->twin->incidentFace->site->index + 1 );
+  
+  // since push_back is really slow I'd like to know the number of edges in advance
+  int N = 0;
+  for(auto it = halfedges.begin(); it->twin != nullptr; it++){
+    it++;
+    N++;
+  }
+  
+  // allocated the vector with the exact size
+  Rcpp::IntegerVector ind1(N), ind2(N), bp1(N), bp2(N);
+  Rcpp::NumericVector x1(N), y1(N), x2(N), y2(N), mx1(N), my1(N), mx2(N), my2(N);
+  
+  auto it = halfedges.begin();
+  for(int i = 0; i < N; i++){
+      ind1[i] =  it->incidentFace->site->index + 1;
+      ind2[i] =  it->twin->incidentFace->site->index + 1;
       
-      x1.push_back( it->incidentFace->site->point.x );
-      y1.push_back( it->incidentFace->site->point.y );
-      x2.push_back( it->twin->incidentFace->site->point.x );
-      y2.push_back( it->twin->incidentFace->site->point.y );
+      x1[i] =  it->incidentFace->site->point.x;
+      y1[i] =  it->incidentFace->site->point.y;
+      x2[i] =  it->twin->incidentFace->site->point.x;
+      y2[i] =  it->twin->incidentFace->site->point.y;
       
-      mx1.push_back( it->destination->point.x );
-      my1.push_back( it->destination->point.y );
-      mx2.push_back( it->origin->point.x );
-      my2.push_back( it->origin->point.y );
+      mx1[i] =  it->destination->point.x;
+      my1[i] =  it->destination->point.y;
+      mx2[i] =  it->origin->point.x;
+      my2[i] =  it->origin->point.y;
       
       // checking if the half edge is an infinite one
-      bp1.push_back(isboundary(Vector2<ftype>(it->destination->point.x, it->destination->point.y), localbox));
-      bp2.push_back(isboundary(Vector2<ftype>(it->origin->point.x, it->origin->point.y), localbox));
+      bp1[i] =  isboundary(Vector2<ftype>(it->destination->point.x, it->destination->point.y), localbox);
+      bp2[i] =  isboundary(Vector2<ftype>(it->origin->point.x, it->origin->point.y), localbox);
       
       // luckily, twin halfedges are stored one after the other so I just need 
       // to skip the subsequent halfedge to not include the same information twice
-      it++;
+      it++; it++;
     }
   
   Rcpp::CharacterVector names{"ind1", "ind2", "x1", "y1", "x2", "y2", "mx1", "my1", "mx2", "my2", "bp1", "bp2"};
@@ -138,8 +147,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector& x, const Rcpp::NumericV
   
   Rcpp::List res = Rcpp::List::create(Rcpp::Named("mesh") = mesh,
                                       Rcpp::Named("x") = coord,
-                                      Rcpp::Named("tri.obj") = tri,
-                                      Rcpp::Named("temp") = Rcpp::NumericVector::create(localbox.left, localbox.right, localbox.bottom, localbox.top));
+                                      Rcpp::Named("tri.obj") = tri);
   res.attr("class") = "delvor";
   
   return res;
@@ -151,15 +159,17 @@ require(alphahull)
 require(rbenchmark)
 
 # sampling some random points
-n = 50
+n = 5
 errtest = 0; # dummy for testing exiting error (maybe this would be handled by R)
 
 set.seed(309)
 x = runif(n)
 y = runif(n+errtest)
-  
-vorcpp = computeVoronoiRcpp(x, y)
-vorR = delvor(x,  y)
 
+system.time(computeVoronoiRcpp(x, y))
+system.time(delvor(x, y))
+
+vorcpp = computeVoronoiRcpp(x,y)
+vorR = delvor(x, y)
 # benchmark(computeVoronoiRcpp(x, y), delvor(x, y))
 */
