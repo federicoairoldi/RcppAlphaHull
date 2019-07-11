@@ -159,15 +159,15 @@ public:
             box->top = std::max(vertex.point.y, box->top);
         }
         // further enlarge the box
-        box->left-=0.5;   
-        box->right+=0.5;
-        box->bottom-=0.5; 
-        box->top+=0.5;
+        /*box->left   = box->left + 0.5;   
+        box->right  = box->right + 0.5;
+        box->bottom = box->bottom - 0.5; 
+        box->top    = box->top + 0.5;*/
         // this may be more safe...
-        /*box->left   = ceil(box->left) - 1;   
-        box->right  = ceil(box->right) + 1;
-        box->bottom = ceil(box->bottom) - 1; 
-        box->top    = ceil(box->top) + 1;*/
+        box->left   = (int)(floor(box->left) - 1.0);   
+        box->bottom = (int)(floor(box->bottom) - 1.0); 
+        box->right  = (int)(ceil(box->right) + 1.0);
+        box->top    = (int)(ceil(box->top) + 1.0);
         
         // 2. Retrieve all non bounded half edges from the beach line
         auto linkedVertices = std::list<LinkedVertex>();
