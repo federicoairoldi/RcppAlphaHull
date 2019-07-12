@@ -45,8 +45,16 @@ bool isboundary(const Vector2<T>& point, const Box<T>& box){
   return false;
 }
 
+std::vector<std::size_t> plusone(const std::vector<std::size_t>& v){ 
+  std::vector<std::size_t> newvett = v;
+  for(int i=0; i<newvett.size(); i++)
+    newvett[i]+=1;
+  return newvett; 
+}
+
 // [[Rcpp::export]]
 Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVector y) {
+  // useless if performed by xy.coord in R
   if( x.size() != y.size() )
     Rcpp::stop("Error! x and y vectors don't have same length!");
   
@@ -64,7 +72,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   algorithm.bound(&localbox); // Bound the diagram
   auto diagram = algorithm.getDiagram(); // Get the constructed diagram
   //diagram.intersect(Box<ftype>{0, 0, 2, 2}); // Compute the intersection between the diagram and a box
-  //auto triangulation = diagram.computeTriangulation();
+  auto triangulation = diagram.computeTriangulation();
   
   // extracting information and generating the R object
   // matrix of coordinates
@@ -132,18 +140,17 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   // stuff for tri object (maybe this has better to be done in R)
   // as retrieved from function "tri.mesh" of package tripack here's the structure
   // of the object tri
+  Rcpp::List neighbors(x.size());
+  for(int i=0; i<x.size(); i++)
+    neighbors[i] = plusone(triangulation.getNeighbors(i));
   
   Rcpp::List tri = Rcpp::List::create(Rcpp::Named("n") = x.size(),
-                                      Rcpp::Named("x") = x,
-                                      Rcpp::Named("y") = y,
-                                      Rcpp::Named("tlist") = 1,
-                                      Rcpp::Named("tlptr") = 1,
-                                      Rcpp::Named("tlend") = 1,
-                                      Rcpp::Named("tlnew") = 1,
-                                      Rcpp::Named("nc") = 0,
+                                      Rcpp::Named("x") = Rcpp::NumericVector(x),
+                                      Rcpp::Named("y") = Rcpp::NumericVector(y),
+                                      Rcpp::Named("neighbours") = neighbors,
                                       Rcpp::Named("lc") = 0,
                                       Rcpp::Named("call") = 1); 
-  tri.attr("class") = "tri";
+  tri.attr("class") = "tri.fake";
   
   Rcpp::List res = Rcpp::List::create(Rcpp::Named("mesh") = mesh,
                                       Rcpp::Named("x") = coord,
@@ -159,10 +166,10 @@ require(alphahull)
 require(rbenchmark)
 
 # sampling some random points
-n = 5
+n = 8
 errtest = 0; # dummy for testing exiting error (maybe this would be handled by R)
 
-set.seed(309)
+set.seed(123)
 x = runif(n)
 y = runif(n+errtest)
 
