@@ -1,0 +1,16 @@
+Package: RcppAlphahull
+Type: Package
+Title: A package to compute Voronoi diagrams and Delanuay tesselations with the use of a C++ package
+Version: 0.1.0
+Author: Federico Airoldi
+Maintainer: Federico Airoldi <federico2.airoldi@mail.polimi.it>
+Description: RcppAlphahull is package aimed to compute Voronoi diagrams and Delanuay tesselations for huge sets of points with the aim of the C++ package MyGAL (link...).
+    The package is based on the R/Fortran package alphahull which does the same job, however, due to its slowliness (??) its use on sets with huge number of points was ...
+    Use four spaces when indenting paragraphs within the Description.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: Rcpp (>= 1.0.1),
+	 alphahull
+LinkingTo: Rcpp
+RoxygenNote: 6.1.1
