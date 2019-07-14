@@ -12,14 +12,19 @@ my.delvor(x, y = NULL)
 \item{y}{coordinates of the sites}
 }
 \value{
-An invisible object of class "del.vor", a list, with the following components
+An invisible object of class "del.vor", a list, with the following components:
+\describe{
+   \item{mesh}{a mesh describing the diagram}
+   \item{x}{nx2 matrix containing the coordinates of the sites}
+   \item{tri.obj}{a "fake" tri object describing the triangulation}
+}
 }
 \description{
-Computing Voronoi diagram and Delanuay tesselation for the specified set of points
+sdftgyuiokijhgfdsadfghjiopokuytrewaASDFTYUIUYTREDSA Computing Voronoi diagram and Delanuay tesselation for the specified set of points
 }
 \examples{
 x = runif(10)
 y = runif(10)
-vordel = my.delvor(x, y)
+vor.del = my.delvor(x, y)
 
 }

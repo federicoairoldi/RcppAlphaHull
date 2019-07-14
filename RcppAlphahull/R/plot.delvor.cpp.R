@@ -69,4 +69,5 @@ plot.delvor.cpp = function (x, add = FALSE, wlines = c("both", "del", "vor"),
           lines( c(x$x[i,1], x$x[j,1]),
                  c(x$x[i,2], x$x[j,2]) , col = col[2], lty = 1 )
     }
-  }
+}
+

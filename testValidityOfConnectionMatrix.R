@@ -1,83 +1,84 @@
+# Federico Airoldi    matricola: 892377   codice persona: 10484065
+#
 # this script tests that my connection matrix retrieved from the MyGAL library has the
 # same structure of the one returned by the "delvor" function of the package alphahull
-
+#
+# parameters that can be modified:
+# - n:                 number of sites
+# - n.test:            number of tests to be excecuted
+# - set.seed(rule(i)): seed for the i-th test, one can assign any rule for the seed
+#                      used to sample the points. rule(i) is a function that returns
+#                      a number (even a floating point one)
+#
 # NB: this script is quite slow due to R inefficient allocation/problems with for
 # cicles
 
 require(alphahull)
-require(Rcpp)
-setwd("~/Documenti/ProgettoPACS")
-sourceCpp("include/try.cpp") # compiling and loading the c++ function
-
-# auxiliary function to search
-search = function(ind1, ind2, mesh){
-  for(i in 1:dim(mesh)[1]){
-    if(mesh[i,"ind1"] == ind1 & mesh[i,"ind2"] == ind2)
-      return(TRUE)
-    if(mesh[i,"ind1"] == ind2 & mesh[i,"ind2"] == ind1)
-      return(TRUE)
-  }
-  return(FALSE)
-}
+require(RcppAlphahull)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+source("search.R")
 
 print("executing test")
 # contains those test cases in which infinite edge of delvor result are not contained
 # in the MyGAL result
-infedges = c()  
+infedges = c()
 # contains those test cases in which the number of the infinite edges of the two
 # results are different
-ninfedges = c() 
+ninfedges = c()
 # contains those test cases in which finite edge of delvor result are not contained
 # in the MyGAL result
-finedges = c()  
+finedges = c()
 # contains those test cases in which the number of the finite edges of the two
 # results are different
-nfinedges = c() 
+nfinedges = c()
 
-n = 50 # number of point to sample for the voronoi diagram tests
+n = 50 # number of point to sample for the voronoi diagram tests (feel free to change)
+n.test = 1000
 
-for(i in 1:1000){
-  print(i)
-  set.seed(i) # setting the seed for the test
+for(i in 1:n.test){
+  if(i%%50==0) print(i) # print the number of the test on the command line (can be commented to save some time)
+  set.seed(i)  # setting the seed for the test (feel free to modify and set your own seed)
   x = runif(n) # sampling points
   y = runif(n)
-  
-  # calling the c++ and R function to compute voronoi diagram
-  vorcpp = computeVoronoiRcpp(x, y)
-  vorR = delvor(x,  y)
-  
+
+  # calling the RcppAlphahull and alphahull function to compute Voronoi diagram
+  vorcpp = my.delvor(x,y)
+  vorR = delvor(x,y)
+
   # checking infinite edges
   # same number of infinite edges? if not adding the test to the queue ninfedges
   if(length(which(vorcpp$mesh[, "bp2"] == 1 | vorcpp$mesh[, "bp1"] == 1))
      != length(which(vorR$mesh[, "bp2"] == 1 | vorR$mesh[, "bp1"] == 1)))
     ninfedges = c(ninfedges, i)
-  
+
   # same infinite edges? if not adding the test to the queue infedges
   k = 0
   tmp = vorR$mesh[which(vorR$mesh[,"bp2"] == 1 | vorR$mesh[, "bp1"] == 1), 1:2]
   tmp2 = vorcpp$mesh[which(vorcpp$mesh[,"bp2"] == 1 | vorcpp$mesh[, "bp1"] == 1), 1:2]
   for(i in 1:dim(tmp)[1])
     k = k + !(search(tmp[i,"ind1"], tmp[i,"ind2"], tmp2))
-  
+
   if(k > 0)
     infedges = c(infedges, i)
-  
+
   # checking finite edges
   # same number of finite edges? if not adding the test to the queue nfinedges
   if(length(which(vorcpp$mesh[, "bp2"] == 0 & vorcpp$mesh[, "bp1"] == 0))
      != length(which(vorR$mesh[, "bp2"] == 0 & vorR$mesh[, "bp1"] == 0)))
     nfinedges = c(nfinedges, 1)
-  
+
   # same finite edges? if not adding the test to the queue finedges
   k = 0
   tmp = vorR$mesh[which(vorR$mesh[,"bp2"] == 0 & vorR$mesh[, "bp1"] == 0), 1:2]
   tmp2 = vorcpp$mesh[which(vorcpp$mesh[,"bp2"] == 0 & vorcpp$mesh[, "bp1"] == 0), 1:2]
   for(i in 1:dim(tmp)[1])
     k = k + !(search(tmp[i,"ind1"], tmp[i,"ind2"], tmp2))
-  
+
   if(k > 0)
     finedges = c(finedges, i)
 }
+
+rm(list = c("k", "tmp", "tmp2", "i", "vorcpp", "vorR", "x", "y"))
 
 infedges
 ninfedges

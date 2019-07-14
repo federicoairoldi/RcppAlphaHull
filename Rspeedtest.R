@@ -1,12 +1,19 @@
-library(Rcpp)
-setwd("~/Documenti/ProgettoPACS")
-sourceCpp("include/try.cpp")
+# Federico Airoldi    matricola: 892377   codice persona: 10484065
+#
+# this script tests the performances of the package alphahull with respect to the
+# performances of the R/C++ hybrid package RcppAlphahull
+#
+# by setting a different number of sites the scripr compute the Voronoi diagram and
+# Delanuay tesselation of n randomized point of R2 in [0;1]x[0;1] (if one likes, he
+# can change the seed)
+
+require(alphahull)
+require(RcppAlphahull)
 
 set.seed(7658)
-n.nodes = c( seq(10,90,by=10), 
-             seq(100,900,by=100), 
-             seq(1000,9000,by=1000)
-             )
+n.nodes = c( seq(100,900,by=100),
+             seq(1000,9000,by=1000),
+             seq(10000,50000,by=10000))
 relative = c()
 RTime = c()
 CppTime = c()
@@ -32,7 +39,7 @@ fit.R = lm(R.User ~ 0 + transfR)
 summary(fit.R)
 
 x11()
-matplot(n.nodes, cbind(Cpp.User, R.User), type = "l", col = c("blue", "red"), lty = 1, 
+matplot(n.nodes, cbind(Cpp.User, R.User), type = "l", col = c("blue", "red"), lty = 1,
         xlab = "Number of nodes", ylab = "CPU time")
 lines(n.nodes, fit.cpp$fitted.values, col = "green", lty = 2)
 lines(n.nodes, fit.R$fitted.values, col = "orange", lty = 2)

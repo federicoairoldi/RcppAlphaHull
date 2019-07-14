@@ -24,6 +24,8 @@ Plot of an object "del.vor" with a "fake.tri" tri object
 \examples{
 x = runif(10)
 y = runif(10)
-my.delvor(x, y)
+vor.del = my.delvor(x, y)
+
+plot(vor.del, col = c("black", "blue", "red", "black"))
 
 }

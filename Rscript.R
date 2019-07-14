@@ -1,27 +1,22 @@
-library(Rcpp)
-setwd("~/Documenti/ProgettoPACS")
-sourceCpp("include/try.cpp")
+# Federico Airoldi    matricola: 892377   codice persona: 10484065
+#
+# auxiliary script used to check features and correctness of the package RcppAlphahull
+
+require(alphahull)
+require(RcppAlphahull)
 
 View(vorR$mesh)
 View(vorcpp$mesh)
 
-x11()
-plot(vorR, col = c("blue", "red", "black", "blue"), pch = 19,
-     xlim = c(0,1), ylim = c(0,1), wlines = 'both', number = T)
-x11()
-plot.delvor.cpp(vorcpp, col = c("blue", "red", "black", "blue"), pch = 19,
-     xlim = c(0,1), ylim = c(0,1), wlines = 'both', number = T)
+system.time(plot(vorR, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = F,
+                 xlim = c(0,1), ylim = c(0,1), wlines = 'both', number = F))
+system.time(plot.delvor.cpp(vorcpp, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = F,
+                            xlim = c(0,1), ylim = c(0,1), wlines = 'both', number = F))
 
 for(i in 1:dim(vorcpp$mesh)[1])
-  lines(c(vorcpp$mesh[i, "mx1"], vorcpp$mesh[i, "mx2"]), 
-        c(vorcpp$mesh[i, "my1"], vorcpp$mesh[i, "my2"]), 
+  lines(c(vorcpp$mesh[i, "mx1"], vorcpp$mesh[i, "mx2"]),
+        c(vorcpp$mesh[i, "my1"], vorcpp$mesh[i, "my2"]),
         col = ifelse(vorcpp$mesh[i, "bp2"] == 1 | vorcpp$mesh[i, "bp1"] == 1, "blue", "red"))
-
-length(which(vorcpp$mesh[, "bp2"] == 1 | vorcpp$mesh[, "bp1"] == 1))
-length(which(vorR$mesh[, "bp2"] == 1 | vorR$mesh[, "bp1"] == 1))
-
-system.time(computeVoronoiRcpp(x, y))
-system.time(delvor(x, y))
 
 n = 100
 set.seed(309)

@@ -44,6 +44,7 @@ bool isboundary(const Vector2<T>& point, const Box<T>& box){
  }
  */
 
+// returns if the point "point" is at the boundary of the box "box"
 template <typename T>
 bool isboundary(const Vector2<T>& point, const Box<T>& box){
   T eps(10e-5);
@@ -56,7 +57,7 @@ bool isboundary(const Vector2<T>& point, const Box<T>& box){
   return false;
 }
 
-// function to switch indices
+// function to translate indices
 std::vector<std::size_t> plusone(const std::vector<std::size_t>& v){
   std::vector<std::size_t> newvett = v;
   for(int i=0; i<newvett.size(); i++)
@@ -70,15 +71,18 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   if( x.size() != y.size() )
     Rcpp::stop("Error! x and y vectors don't have same length!");
 
+  // Set the precision for the algorithm
   typedef double ftype;
 
+  // Build the set of sites
   std::vector<Vector2<ftype>> points;
   for(int i=0; i<x.size(); i++)
     points.push_back(Vector2<ftype>(x[i], y[i]));
 
+  // Call of the Fortune's algorithm to build the diagram and the tesselation:
   // procedure suggested by the author of the library MyGAL
-  auto algorithm = FortuneAlgorithm<ftype>(points); // Initialize an instance of Fortune's algorithm
-  algorithm.construct(); // Construct the diagram
+  auto algorithm = FortuneAlgorithm<ftype>(points); // initialize an instance of Fortune's algorithm
+  algorithm.construct(); // construct the diagram
 
   Box<ftype> localbox{0, 0, 1, 1};
   algorithm.bound(&localbox); // Bound the diagram
@@ -86,13 +90,13 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   //diagram.intersect(Box<ftype>{0, 0, 2, 2}); // Compute the intersection between the diagram and a box
   auto triangulation = diagram.computeTriangulation();
 
-  // extracting information and generating the R object
-  // matrix of coordinates
+  // Extract information and generate the R object
+  // Construct of the matrix of coordinates
   Rcpp::NumericMatrix coord(x.size(), 2);
   coord(_, 0) = x;
   coord(_, 1) = y;
 
-  // matrix mesh (contains delanuay/voronoi information)
+  // Construct the matrix mesh (contains delanuay/voronoi information)
   mygal::Diagram<ftype>::Site *site1, *site2;
   auto halfedges = diagram.getHalfEdges();
 
@@ -103,7 +107,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
     N++;
   }
 
-  // allocated the vector with the exact size
+  // allocate the vectors with the exact size
   Rcpp::IntegerVector ind1(N), ind2(N), bp1(N), bp2(N);
   Rcpp::NumericVector x1(N), y1(N), x2(N), y2(N), mx1(N), my1(N), mx2(N), my2(N);
 
@@ -122,7 +126,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
       mx2[i] =  it->origin->point.x;
       my2[i] =  it->origin->point.y;
 
-      // checking if the half edge is an infinite one
+      // check if the current half edge is an infinite one
       bp1[i] =  isboundary(Vector2<ftype>(it->destination->point.x, it->destination->point.y), localbox);
       bp2[i] =  isboundary(Vector2<ftype>(it->origin->point.x, it->origin->point.y), localbox);
 
@@ -149,7 +153,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   mesh(_,10) = bp1;
   mesh(_,11) = bp2;
 
-  // stuff for tri object (maybe this has better to be done in R)
+  // Construct the tri object
   // as retrieved from function "tri.mesh" of package tripack here's the structure
   // of the object tri
   Rcpp::List neighbors(x.size());
@@ -164,6 +168,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
                                       Rcpp::Named("call") = 1);
   tri.attr("class") = "tri.fake";
 
+  // Construct the final del.vor object
   Rcpp::List res = Rcpp::List::create(Rcpp::Named("mesh") = mesh,
                                       Rcpp::Named("x") = coord,
                                       Rcpp::Named("tri.obj") = tri);
