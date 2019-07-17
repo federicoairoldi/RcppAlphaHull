@@ -97,7 +97,6 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   coord(_, 1) = y;
 
   // Construct the matrix mesh (contains delanuay/voronoi information)
-  mygal::Diagram<ftype>::Site *site1, *site2;
   auto halfedges = diagram.getHalfEdges();
 
   // since push_back is really slow I'd like to know the number of edges in advance

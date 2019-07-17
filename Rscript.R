@@ -18,13 +18,15 @@ for(i in 1:dim(vorcpp$mesh)[1])
         c(vorcpp$mesh[i, "my1"], vorcpp$mesh[i, "my2"]),
         col = ifelse(vorcpp$mesh[i, "bp2"] == 1 | vorcpp$mesh[i, "bp1"] == 1, "blue", "red"))
 
-n = 100
+n = 100000
 set.seed(309)
 x = runif(n)
 y = runif(n)
 
 vorcpp = my.delvor(x,y)
 vorR = delvor(x, y)
+system.time(my.delvor(x,y))
+system.time(delvor(x,y))
 
 alpha = 0.05
 asR = ashape(vorR, alpha = alpha)

@@ -20,7 +20,7 @@ An invisible object of class "del.vor", a list, with the following components:
 }
 }
 \description{
-sdftgyuiokijhgfdsadfghjiopokuytrewaASDFTYUIUYTREDSA Computing Voronoi diagram and Delanuay tesselation for the specified set of points
+Computing Voronoi diagram and Delanuay tesselation for the specified set of points
 }
 \examples{
 x = runif(10)
