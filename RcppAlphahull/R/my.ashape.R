@@ -4,6 +4,7 @@
 #'
 #' @param x coordinates of the sites
 #' @param y coordinates of the sites
+#' @param alpha
 #'
 #' @return A list with the following components
 #'
@@ -24,5 +25,6 @@ my.ashape = function(x, y = NULL, alpha){
   else {
     dd.obj <- x
   }
-  invisible(ashape(dd.obj, alpha = alpha))
+
+  invisible(computeAshapeRcpp(dd.obj, alpha))
 }

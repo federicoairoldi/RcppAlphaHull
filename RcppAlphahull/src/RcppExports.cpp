@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// computeAshapeRcpp
+Rcpp::List computeAshapeRcpp(const Rcpp::List& delvor_obj, const long double& alpha);
+RcppExport SEXP _RcppAlphahull_computeAshapeRcpp(SEXP delvor_objSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type delvor_obj(delvor_objSEXP);
+    Rcpp::traits::input_parameter< const long double& >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(computeAshapeRcpp(delvor_obj, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
 // computeVoronoiRcpp
 Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVector y);
 RcppExport SEXP _RcppAlphahull_computeVoronoiRcpp(SEXP xSEXP, SEXP ySEXP) {
@@ -19,6 +31,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_RcppAlphahull_computeAshapeRcpp", (DL_FUNC) &_RcppAlphahull_computeAshapeRcpp, 2},
     {"_RcppAlphahull_computeVoronoiRcpp", (DL_FUNC) &_RcppAlphahull_computeVoronoiRcpp, 2},
     {NULL, NULL, 0}
 };
