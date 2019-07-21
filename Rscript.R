@@ -18,23 +18,27 @@ for(i in 1:dim(vorcpp$mesh)[1])
         c(vorcpp$mesh[i, "my1"], vorcpp$mesh[i, "my2"]),
         col = ifelse(vorcpp$mesh[i, "bp2"] == 1 | vorcpp$mesh[i, "bp1"] == 1, "blue", "red"))
 
-n = 10
-set.seed(309)
+n = 8
+set.seed(n)
 x = runif(n)
 y = runif(n)
 
 vorcpp = my.delvor(x,y)
 vorR = delvor(x, y)
-alpha = 3
+alpha = 0.2
 asR = ashape(vorR, alpha = alpha)
 ascpp = my.ashape(vorcpp, alpha = alpha)
 asR$alpha.extremes
 ascpp$alpha.extremes
+View(asR$edges)
+View(ascpp$edges)
+plot(asR)
+plot(ascpp)
 
 ahR = ahull(vorR, alpha = alpha)
-plot(asR)
+plot(ahR)
 ahcpp = my.ahull(ascpp, alpha = alpha)
-plot(ahcpp)
+plot(ascpp)
 
 system.time(ashape(vorR, alpha = alpha))
 system.time(my.ashape(vorcpp, alpha = alpha))

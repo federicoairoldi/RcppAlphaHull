@@ -6,12 +6,10 @@
 # parameters that can be modified:
 # - n:                 number of sites
 # - n.test:            number of tests to be excecuted
-# - set.seed(rule(i)): seed for the i-th test, one can assign any rule for the seed
-#                      used to sample the points. rule(i) is a function that returns
-#                      a number (even a floating point one)
+# - set.seed(rule(i)): seed for the i-th test, one can assign any rule for the seed used to sample the
+#                      points. rule(i) is a function that returns a number (even a floating point one)
 #
-# NB: this script is quite slow due to R inefficient allocation/problems with for
-# cicles
+# NB: this script is quite slow due to R inefficient allocation/problems with for cicles
 
 require(alphahull)
 require(RcppAlphahull)
@@ -65,7 +63,7 @@ for(i in 1:n.test){
   # same number of finite edges? if not adding the test to the queue nfinedges
   if(length(which(vorcpp$mesh[, "bp2"] == 0 & vorcpp$mesh[, "bp1"] == 0))
      != length(which(vorR$mesh[, "bp2"] == 0 & vorR$mesh[, "bp1"] == 0)))
-    nfinedges = c(nfinedges, 1)
+    nfinedges = c(nfinedges, i)
 
   # same finite edges? if not adding the test to the queue finedges
   k = 0
@@ -84,4 +82,3 @@ infedges
 ninfedges
 finedges
 nfinedges
-
