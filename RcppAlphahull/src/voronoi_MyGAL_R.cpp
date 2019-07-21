@@ -5,46 +5,7 @@
 using namespace mygal;
 using namespace Rcpp;
 
-/*
-// returns if the point "point" is at the boundary of the box "box"
-template <typename T>
-bool isboundary(const Vector2<T>& point, const Box<T>& box){
-  if( ( (point.x == box.left) | (point.x == box.right)  )
-        & point.y <= box.top & point.y >= box.bottom )
-    return true;
-  if( ( point.y == box.bottom | point.y == box.top  )
-        & point.x <= box.right & point.x >= box.left )
-    return true;
-  return false;
-}*/
-
-/*
-template <typename T>
-bool isboundary(const Vector2<T>& point, const Box<T>& box){
-  T eps(10e-5);
-  if( ( ( point.x >= (box.left - eps) & point.x <= (box.left + eps) )
-          | ( point.x >= (box.right - eps) & point.x <= (box.right + eps) )  )
-        & point.y <= box.top & point.y >= box.bottom )
-        return true;
-  if( ( ( point.y >= (box.top - eps) & point.y <= (box.top + eps) )
-          | ( point.y >= (box.bottom - eps) & point.y <= (box.bottom + eps) )  )
-        & point.x <= box.right & point.x >= box.left )
-        return true;
-  return false;
-}*/
-
-
-/*
- Rcpp::LogicalMatrix connectionMatrix(const Triangulation& triangulation){
- Rcpp::LogicalMatrix adjMatrix(triangulation.getNbVertices());
- for(int i=0; i<triangulation.getNbVertices(); i++)
- for(int j=0; j<triangulation.getNeighbors(i).size(); j++)
- adjMatrix(i, triangulation.getNeighbors(i)[j]) = true;
- return adjMatrix;
- }
- */
-
-// returns if the point "point" is at the boundary of the box "box"
+// Returns if the point "point" is at the boundary of the box "box"
 template <typename T>
 bool isboundary(const Vector2<T>& point, const Box<T>& box){
   T eps(10e-5);
@@ -57,7 +18,10 @@ bool isboundary(const Vector2<T>& point, const Box<T>& box){
   return false;
 }
 
-// function to translate indices
+/* Function to translate indices: since in c++ vectors starts from 0 and in R from 1,
+ * then indeces of the sites are shifted by a -1 in c++ with respect the
+ * correspondent in R
+ */
 std::vector<std::size_t> plusone(const std::vector<std::size_t>& v){
   std::vector<std::size_t> newvett = v;
   for(int i=0; i<newvett.size(); i++)
@@ -65,6 +29,10 @@ std::vector<std::size_t> plusone(const std::vector<std::size_t>& v){
   return newvett;
 }
 
+/*
+ * Function to retrieve a delvor object (almost) like the one returned by the
+ * alphahull function delvor, but using the c++ library MyGAL
+ */
 // [[Rcpp::export]]
 Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVector y) {
   // useless if performed by xy.coord in R
@@ -79,29 +47,31 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   for(int i=0; i<x.size(); i++)
     points.push_back(Vector2<ftype>(x[i], y[i]));
 
-  // Call of the Fortune's algorithm to build the diagram and the tesselation:
+  // Call of the Fortune's algorithm to build the tesselation and the triangulation:
   // procedure suggested by the author of the library MyGAL
   auto algorithm = FortuneAlgorithm<ftype>(points); // initialize an instance of Fortune's algorithm
-  algorithm.construct(); // construct the diagram
+  algorithm.construct();                            // construct the diagram
 
   Box<ftype> localbox{0, 0, 1, 1};
-  algorithm.bound(&localbox); // Bound the diagram
+  algorithm.bound(&localbox);            // Bound the diagram
   auto diagram = algorithm.getDiagram(); // Get the constructed diagram
   //diagram.intersect(Box<ftype>{0, 0, 2, 2}); // Compute the intersection between the diagram and a box
   auto triangulation = diagram.computeTriangulation();
 
   // Extract information and generate the R object
-  // Construct of the matrix of coordinates
+  // 1. Construct the matrix of coordinates
   Rcpp::NumericMatrix coord(x.size(), 2);
   coord(_, 0) = x;
   coord(_, 1) = y;
 
-  // Construct the matrix mesh (contains delanuay/voronoi information)
+  // 2. Construct the matrix mesh (contains delanuay/voronoi information)
   auto halfedges = diagram.getHalfEdges();
 
   // since push_back is really slow I'd like to know the number of edges in advance
   int N = 0;
   for(auto it = halfedges.begin(); it->twin != nullptr; it++){
+    // luckily, twin halfedges are stored one after the other so I just need
+    // to skip the subsequent halfedge to not include the same information twice
     it++;
     N++;
   }
@@ -152,12 +122,18 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   mesh(_,10) = bp1;
   mesh(_,11) = bp2;
 
-  // Construct the tri object
+  // 3. Construct the tri object
   // as retrieved from function "tri.mesh" of package tripack here's the structure
   // of the object tri
+  // original tri object stores infromation about triangulation in a strange way
+  // with pointers. i decided to go for a more intuitive way by creating a list
+
+  /* the list neighbors is composed by n (number of sites) vector that contain for
+   * each site the indeces of its neighbours in the Delanuay triangulation
+   */
   Rcpp::List neighbors(x.size());
   for(int i=0; i<x.size(); i++)
-    neighbors[i] = plusone(triangulation.getNeighbors(i));
+    neighbors[i] = plusone(triangulation.getNeighbors(i)); // retrieve information about neighbors
 
   Rcpp::List tri = Rcpp::List::create(Rcpp::Named("n") = x.size(),
                                       Rcpp::Named("x") = Rcpp::NumericVector(x),
