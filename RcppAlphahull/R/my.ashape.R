@@ -13,6 +13,7 @@
 #' x = runif(10)
 #' y = runif(10)
 #' a.shape = my.ashape(x, y, alpha = 0.8)
+#' plot(a.shape)
 #'
 #' @export
 my.ashape = function(x, y = NULL, alpha){

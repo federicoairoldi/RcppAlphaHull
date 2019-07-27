@@ -2,6 +2,13 @@
 #include <limits>
 using namespace mygal;
 
+template<typename T> class Segment;
+
+/* Returns the sign of the given value:
+ * - 1 if positive
+ * - -1 if negative
+ * - 0 if null
+ */
 template<typename T>
 int sign(const T& value){
   if(value > T(0))
@@ -11,7 +18,8 @@ int sign(const T& value){
   return 0;
 }
 
-// Check if the point lies on the segment
+// Given a point and a segment which both lie on the same rect, check whether or not the
+// point falls inside the segment.
 template<typename T>
 bool inRange(const Segment<T>& seg, const Vector2<T>& point){
   T inf=std::min(seg.p.x, seg.q.x), sup=std::max(seg.p.x, seg.q.x);
@@ -35,14 +43,19 @@ class Segment{
     Segment(const T& xp, const T& yp, const T& xq, const T& yq): p(xp,yp), q(xq,yq) {}
     Segment() = delete;
 
+    // Returns the slope of the corresponding rect for the segment: I use as convention
+    // a +inf slope for rect of the form x = const
     T slope() const {
       return (isVertical()? std::numeric_limits<T>::infinity(): (q.y-p.y)/(q.x-p.x));
     }
 
+    // Returns the intercept of the corresponding rect for the segment: I use as convention
+    // a -inf intercept for rect of the form x = const
     T intercept() const {
       return (isVertical()? -std::numeric_limits<T>::infinity(): q.y-q.x*(q.y-p.y)/(q.x-p.x));
     }
 
+    // Returns true if the rect corresponding to the segment has form x = const
     bool isVertical() const {return p.x == q.x;}
 
     // Returns wheter or not two segment intersect (in R2)
@@ -81,15 +94,3 @@ bool intersect(const Segment<T>& s1, const Segment<T>& s2){
   return s1.intersect(s2);
 }
 
-/* Returns the orientation of an ordered set of three points (p1, p2, p3) in R2:
- * 0 = colinear
- * 1 = clockwise
- * 2 = counter-clockwise
- */
-template<typename T>
-int orientation(Vector2<T>& p1, Vector2<T>& p2, Vector2<T>& p3){
-  int value = (p2.y-p1.y)*(p3.x-p2.x) - (p3.y-p2.y)*(p2.x-p1.x);
-  if(value == 0)
-    return 0;
-  return (value > 0)? 1: 2;
-}

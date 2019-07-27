@@ -21,6 +21,11 @@ print("executing test")
 # contains those test cases in which the ashape matrice don't coincide
 not.matching = c()
 not.matching.size = c()
+not.matching.length = c()
+
+perc.length.diff = c()
+eps = 1e-15 # tollerance for confrontation of alpha shape lengths
+# up to 1e-15 lengths are the "same"
 
 n = 50 # number of point to sample for the voronoi diagram tests (feel free to change)
 n.test = 1000
@@ -37,8 +42,15 @@ for(i in 1:n.test){
   ascpp = my.ashape(x,y,alpha)
   asR = ashape(x,y,alpha)
 
-  # checking finite edges
-  # same number of finite edges? if not adding the test to the queue nfinedges
+  # check lengths
+  # do the alpha shapes have the same length? if not adding the test to the queue not.matching.length
+  if( dim(asR$edges)[1]!=0 )
+    perc.length.diff = c(perc.length.diff, abs( (asR$length - ascpp$length)/ascpp$length ))
+  else
+    perc.length.diff = c(perc.length.diff, 0)
+
+  # checking edges
+  # same number of edges? if not adding the test to the queue not.matching.size
   if(dim(asR$edges)[1]!=dim(ascpp$edges)[1])
     not.matching.size = c(not.matching.size, i)
 
@@ -52,8 +64,11 @@ for(i in 1:n.test){
     not.matching = c(not.matching, i)
 }
 
+not.matching.length = which(perc.length.diff >= eps)
+
 rm(list = c("k", "i", "ascpp", "asR", "x", "y"))
 
 not.matching.size
+not.matching.length
 not.matching
 
