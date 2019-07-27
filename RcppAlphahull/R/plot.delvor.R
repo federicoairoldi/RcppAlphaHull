@@ -14,15 +14,16 @@
 #' y = runif(10)
 #' vor.del = my.delvor(x, y)
 #'
-#' plot(vor.del, col = c("black", "blue", "red", "black"))
+#' plot.delvor(vor.del, wlines = "both", wpoints = FALSE, number = TRUE,
+#'                 col = c("black", "blue", "red", "black"))
 #'
 #' @export
-plot.delvor.cpp = function (x, add = FALSE, wlines = c("both", "del", "vor"),
-                            wpoints = TRUE, number = FALSE, col = NULL, xlim = NULL,
-                            ylim = NULL, ...){
+plot.delvor = function (x, add = FALSE, wlines = c("both", "del", "vor"), wpoints = TRUE,
+                        number = FALSE, col = NULL, xlim = NULL, ylim = NULL, ...){
+    print("Printing with RcppAlphahull plot.delvor");
     wlines <- match.arg(wlines)
     if (is.null(class(x)) || class(x) != "delvor") {
-      cat("Argument is not of class delvor.\n")
+      cat("Argument is not of class delvor!!\n")
       return(invisible())
     }
     if (is.null(col))
@@ -38,7 +39,7 @@ plot.delvor.cpp = function (x, add = FALSE, wlines = c("both", "del", "vor"),
         xlim <- range(x$x[, 1])
       if (is.null(ylim))
         ylim <- range(x$x[, 2])
-      plot(0, 0, type = "n", xlim = xlim, ylim = ylim, axes = FALSE, ...)
+      plot.default(0, 0, type = "n", xlim = xlim, ylim = ylim, axes = FALSE, ...)
       axis(side = 1)
       axis(side = 2)
     }

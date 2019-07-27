@@ -12,6 +12,7 @@
 #' x = runif(10)
 #' y = runif(10)
 #' a.hull = my.ahull(x, y)
+#' plot(a.hull)
 #'
 #' @export
 my.ahull = function (x, y = NULL, alpha){
