@@ -5,7 +5,10 @@
 #
 # by setting a different number of sites the script computes the Voronoi diagram and Delanuay tesselation
 # of n randomized point of R2 in [0;1]x[0;1] (if one likes, he can change the seed) and next compute the
-# alpha shape for a random value of alpha
+# alpha shape for a random value of alpha.
+#
+# NB: this script compares speed of constructions of the alpha shape, it doesn't include the time spent to
+# compute the Voronoi tesselation/Delanuay triangulation.
 
 require(rbenchmark)
 require(alphahull)
