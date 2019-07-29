@@ -33,14 +33,14 @@ n.test = 1000
 for(i in 1:n.test){
   if(i%%50==0) print(i) # print the number of the test on the command line (can be commented to save some time)
   set.seed(i)  # setting the seed for the test (feel free to modify and set your own seed)
-  x = runif(n) # sampling points
+  x = runif(n,0,10) # sampling points
   y = runif(n,0,10)
 
   alpha = runif(1); # sampling alpha
 
   # calling the RcppAlphahull and alphahull function to compute the alpha shape
-  ascpp = my.ashape(x,y,alpha)
-  asR = ashape(x,y,alpha)
+  ascpp = RcppAlphahull::ashape(x,y,alpha)
+  asR = alphahull::ashape(x,y,alpha)
 
   # check lengths
   # do the alpha shapes have the same length? if not adding the test to the queue not.matching.length

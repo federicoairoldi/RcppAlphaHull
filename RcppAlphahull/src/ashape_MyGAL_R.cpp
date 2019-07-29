@@ -2,7 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include "MyGAL/FortuneAlgorithm.h"
-#include "Segment.h"
+#include "newClasses/Segment.h"
 
 using namespace mygal;
 using namespace Rcpp;
@@ -38,9 +38,7 @@ std::vector<long double> computeAlphaLimits(const Rcpp::List& delvor_obj){
    return alpha_L;
 }
 
-/*
- *
- */
+// Computes the length of the alpha-shape
 template<typename T>
 T ashape_length(const Rcpp::NumericMatrix& mesh){
    T length = 0;
@@ -62,7 +60,7 @@ std::vector<size_t> getAlphaNeighbours(const Rcpp::NumericMatrix& mesh,
    long double alpha_min, alpha_max, dist1, dist2, dist3;
    for(int i=0; i<mesh.rows(); i++)
       if(std::find(alpha_extremes.begin(), alpha_extremes.end(), mesh(i,0)) != alpha_extremes.end()
-            & std::find(alpha_extremes.begin(), alpha_extremes.end(), mesh(i,1)) != alpha_extremes.end()){
+         && std::find(alpha_extremes.begin(), alpha_extremes.end(), mesh(i,1)) != alpha_extremes.end()){
          // checking alpha_min e alpha_max
          Vector2<long double> p(mesh(i,2), mesh(i,3));
          Vector2<long double> q(mesh(i,4), mesh(i,5));
@@ -78,7 +76,7 @@ std::vector<size_t> getAlphaNeighbours(const Rcpp::NumericMatrix& mesh,
          alpha_min = (s1.intersect(s2)? dist3/2: std::min(dist1, dist2));
          alpha_max = std::max(dist1, dist2);
 
-         if(alpha_min <= alpha & alpha <= alpha_max)
+         if(alpha_min <= alpha && alpha <= alpha_max)
             which_rows.push_back(i);
       }
 
@@ -87,7 +85,7 @@ std::vector<size_t> getAlphaNeighbours(const Rcpp::NumericMatrix& mesh,
 
 // [[Rcpp::export]]
 Rcpp::List computeAshapeRcpp(const Rcpp::List& delvor_obj, const long double& alpha) {
-  /* delvor_obj has to be a "delvor" object and therefore has to be a list with the following components:
+  /* delvor_obj has to be a "delvor" object and therefore is a list with the following components:
    * - mesh: matrix containing information about the voronoi tesselation and delanuay
    *   triangulation relative to the sites contained in the 2nd element of the list
    * - x: matrix nx2 containing the coordinates of the sites

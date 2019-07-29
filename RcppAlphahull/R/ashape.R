@@ -12,16 +12,15 @@
 #' @examples
 #' x = runif(10)
 #' y = runif(10)
-#' a.shape = my.ashape(x, y, alpha = 0.8)
+#' a.shape = ashape(x, y, alpha = 0.8)
 #' plot(a.shape)
 #'
 #' @export
-my.ashape = function(x, y = NULL, alpha){
-  if (alpha < 0) {
+ashape = function(x, y = NULL, alpha){if (alpha < 0) {
     stop("Parameter alpha must be greater or equal to zero")
   }
   if (!inherits(x, "delvor")) {
-    dd.obj <- my.delvor(x, y)
+    dd.obj <- delvor(x, y)
   }
   else {
     dd.obj <- x

@@ -17,10 +17,10 @@
 #' @examples
 #' x = runif(10)
 #' y = runif(10)
-#' vor.del = my.delvor(x, y)
+#' vor.del = delvor(x, y)
 #'
 #' @export
-my.delvor = function(x, y = NULL){
+delvor = function(x, y = NULL){
   X <- xy.coords(x, y)
   x <- cbind(X$x, X$y)
 

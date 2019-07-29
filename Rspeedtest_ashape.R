@@ -26,15 +26,16 @@ for(n in n.nodes){
   x = runif(n)
   y = runif(n)
   alpha = runif(1)
-  vorcpp = my.delvor(x, y)
-  vorR = delvor(x, y)
-  res = benchmark("Cpp" = my.ashape(x,y,alpha), "R" = ashape(x,y,alpha), replications = 1)
+  vorcpp = RcppAlphahull::delvor(x, y)
+  vorR = alphahull::delvor(x, y)
+  res = benchmark("Cpp" = RcppAlphahull::ashape(x,y,alpha),
+                  "R" = alphahull::ashape(x,y,alpha),
+                  replications = 1)
   CppTime = rbind(CppTime, res[which(res[,"test"] == "Cpp"), c("elapsed", "user.self", "sys.self")])
   RTime = rbind(RTime, res[which(res[,"test"] == "R"), c("elapsed", "user.self", "sys.self")])
   relative = c(relative, res[which(res[,"test"] == "R"), c("relative")])
 }
 tmp = cbind(CppTime, RTime)
-
 
 Cpp.User = tmp[,2]
 R.User = tmp[,5]

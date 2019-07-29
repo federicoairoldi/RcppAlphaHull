@@ -22,7 +22,7 @@ for(n in n.nodes){
   print(paste("Simulation:",n))
   x = runif(n)
   y = runif(n)
-  res = benchmark("Cpp" = my.delvor(x, y), "R" = delvor(x, y), replications = 1)
+  res = benchmark("Cpp" = RcppAlphahull::delvor(x, y), "R" = alphahull::delvor(x, y), replications = 1)
   CppTime = rbind(CppTime, res[which(res[,"test"] == "Cpp"), c("elapsed", "user.self", "sys.self")])
   RTime = rbind(RTime, res[which(res[,"test"] == "R"), c("elapsed", "user.self", "sys.self")])
   relative = c(relative, res[which(res[,"test"] == "R"), c("relative")])

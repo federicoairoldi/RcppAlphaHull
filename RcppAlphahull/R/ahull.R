@@ -11,10 +11,13 @@
 #' @examples
 #' x = runif(10)
 #' y = runif(10)
-#' a.hull = my.ahull(x, y)
+#' a.hull = ahull(x, y)
 #' plot(a.hull)
 #'
 #' @export
-my.ahull = function (x, y = NULL, alpha){
-  ashape.obj <- my.ashape(x, y, alpha)
+ahull = function (x, y = NULL, alpha){
+  print("using RcppAlphahull ahull")
+
+  ashape.obj <- ashape(x, y, alpha)
+  invisivìble(computeAhullRcpp(ashape.obj))
 }

@@ -40,8 +40,8 @@ for(i in 1:n.test){
   y = runif(n)
 
   # calling the RcppAlphahull and alphahull function to compute Voronoi diagram
-  vorcpp = my.delvor(x,y)
-  vorR = delvor(x,y)
+  vorcpp = RcppAlphahull::delvor(x,y)
+  vorR = alphahull::delvor(x,y)
 
   # checking infinite edges
   # same number of infinite edges? if not adding the test to the queue ninfedges

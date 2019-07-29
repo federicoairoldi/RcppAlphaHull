@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <iostream>
+#include <cmath>
 #include "MyGAL/FortuneAlgorithm.h"
 
 using namespace mygal;
@@ -9,11 +10,11 @@ using namespace Rcpp;
 template <typename T>
 bool isboundary(const Vector2<T>& point, const Box<T>& box){
   T eps(10e-5);
-  if( ( std::abs((point.x-box.left)/box.left) < eps | std::abs((point.x-box.right)/box.right) < eps  )
-        & point.y <= box.top & point.y >= box.bottom )
+  if( ( std::fabs((point.x-box.left)/box.left) < eps | std::fabs((point.x-box.right)/box.right) < eps  )
+        && point.y <= box.top && point.y >= box.bottom )
         return true;
-  if( ( std::abs((point.y-box.top)/box.top) < eps | std::abs((point.y-box.bottom)/box.bottom) < eps  )
-        & point.x <= box.right & point.x >= box.left )
+  if( ( std::fabs((point.y-box.top)/box.top) < eps | std::fabs((point.y-box.bottom)/box.bottom) < eps  )
+        && point.x <= box.right && point.x >= box.left )
         return true;
   return false;
 }
@@ -30,8 +31,8 @@ std::vector<std::size_t> plusone(const std::vector<std::size_t>& v){
 }
 
 /*
- * Function to retrieve a delvor object (almost) like the one returned by the
- * alphahull function delvor, but using the c++ library MyGAL
+ * Function to retrieve a delvor object (almost) like the one returned by the alphahull function delvor,
+ * but using the c++ library MyGAL
  */
 // [[Rcpp::export]]
 Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVector y) {
