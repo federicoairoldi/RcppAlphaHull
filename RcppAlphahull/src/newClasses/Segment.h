@@ -38,11 +38,22 @@ bool inRange(const Segment<T>& seg, const Vector2<T>& point){
   return true;
 }
 
+// Insert a segment in a stream
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const Segment<T>& seg){
+  os << seg.p << "<->" << seg.q;
+  return os;
+}
+
 template<typename T>
 class Segment{
-  public:
+  friend bool inRange<T>(const Segment<T>& seg, const Vector2<T>& point);
+  friend std::ostream& operator<<<T>(std::ostream& os, const Segment<T>& seg);
+
+  private:
     Vector2<T> p, q;
 
+  public:
     // Constructors
     Segment(const Vector2<T>& p, const Vector2<T>& q): p(p), q(q) {}
     Segment(const T& xp, const T& yp, const T& xq, const T& yq): p(xp,yp), q(xq,yq) {}
@@ -61,7 +72,7 @@ class Segment{
     }
 
     // Returns the direction rect for the segment
-    Rect<T> getRect() const{ return (!isVertical()? Rect<T>(slope(), intercept()): Rect<T>(p.x)); }
+    Rect<T> getRect() const{ return Rect<T>(p,q); }
 
     // Returns true if the rect corresponding to the segment has form x = const
     bool isVertical() const {return p.x == q.x;}
@@ -73,14 +84,14 @@ class Segment{
 
       // check position of 2nd segment w.r.t. the 1st: if val1 and val2 have different signs then the
       // segment s2 crosses the rect r1
-      T val1 = r1.eval(other.p);
-      T val2 = r1.eval(other.q);
+      int val1 = r1.eval(other.p);
+      int val2 = r1.eval(other.q);
       // check position of 1st segment w.r.t. the 2nd: if val3 and val4 have different signs then the
       // segment s1 crosses the rect r2
-      T val3 = r2.eval(p);
-      T val4 = r2.eval(q);
+      int val3 = r2.eval(p);
+      int val4 = r2.eval(q);
 
-      if(sign<T>(val1)!=sign<T>(val2) && sign<T>(val3)!=sign<T>(val4))
+      if(val1!=val2 && val3!=val4)
         return true;
 
       // colinear case
@@ -101,13 +112,6 @@ class Segment{
 template<typename T>
 bool intersect(const Segment<T>& s1, const Segment<T>& s2){
   return s1.intersect(s2);
-}
-
-// Insert a segment in a stream
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const Segment<T>& seg){
-  os << seg.p << "<->" << seg.q;
-  return os;
 }
 
 #endif
