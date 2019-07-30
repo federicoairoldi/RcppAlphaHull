@@ -9,6 +9,10 @@ computeAshapeRcpp <- function(delvor_obj, alpha) {
     .Call(`_RcppAlphahull_computeAshapeRcpp`, delvor_obj, alpha)
 }
 
+testRcpp <- function() {
+    invisible(.Call(`_RcppAlphahull_testRcpp`))
+}
+
 computeVoronoiRcpp <- function(x, y) {
     .Call(`_RcppAlphahull_computeVoronoiRcpp`, x, y)
 }

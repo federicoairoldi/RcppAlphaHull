@@ -7,7 +7,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-void test() {
+void testRcpp() {
   Rect<double> r1(2,7), rvert(2.457489485);
   Vector2<double> p(1,9), q(1/3, 2/3+7), t(2.457489485, 393);
   Vector2<double> u(1/11, r1.eval(1/11));
@@ -37,7 +37,7 @@ void test() {
   std::cout << s2 << std::endl << std::endl;
 
   Vector2<double> pp(1,1);
-  std::vector<Vector2<double>> res = r1.getDistNeigh(pp, std::sqrt(37));
+  std::vector<Vector2<double>> res = r1.getDistNeigh(pp, r1.getDistance(pp));
   for(int i=0; i<res.size(); i++)
     std::cout << res[i] << std::endl;
   std::cout << res.size() << std::endl;
@@ -57,9 +57,30 @@ void test() {
     std::cout << res2[i] << std::endl;
   std::cout << res2.size() << std::endl;
 
-  std::cout << r1.getDistance(pp);
+  std::cout << r1.getDistance(pp) << std::endl;
+
+  p.x = 0; p.y = 1;
+  q.x = 4; q.y = -1;
+  r3 = Rect<double>(p,q);
+  std::cout << r3 << std::endl << std::endl << std::endl;
+
+  Segment<double> seg1(0,0,2,0), seg2(1,-1,1,1);
+  std::cout << seg1 << std::endl;
+  std::cout << seg1.getRect() << std::endl;
+  std::cout << seg2 << std::endl;
+  std::cout << seg2.getRect() << std::endl;
+
+  std::cout << "intersect? "<< seg1.intersect(seg2) << std::endl;
+
+  std::cout << seg1.getRect().eval(Vector2<double>(1,-1)) << std::endl;
+  std::cout << seg1.getRect().eval(Vector2<double>(1,1)) << std::endl;
+  std::cout << seg2.getRect().eval(Vector2<double>(0,0)) << std::endl;
+  std::cout << seg2.getRect().eval(Vector2<double>(2,0)) << std::endl;
+
+  Vector2<double> a(0,0), b(1,1), c(0,1), d(1,0);
+
 }
 
 /*** R
-  test()
+testRcpp()
 */

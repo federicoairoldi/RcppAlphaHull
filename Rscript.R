@@ -8,24 +8,24 @@ require(RcppAlphahull)
 View(vorR$mesh)
 View(vorcpp$mesh)
 
-system.time(plot(vorR, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = F,
-                 xlim = c(0,1), ylim = c(0,1), wlines = 'both', number = T))
-system.time(RcppAlphahull::plot.delvor(vorcpp, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = F,
-                            xlim = c(0,1), ylim = c(0,1), wlines = 'vor', number = T))
+system.time(plot(vorR, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T,
+                 xlim = c(0,1), ylim = c(0,1), wlines = 'vor', number = F))
+system.time(RcppAlphahull::plot.delvor(vorcpp, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T,
+                            xlim = c(0,1), ylim = c(0,1), wlines = 'vor', number = F))
 
 for(i in 1:dim(vorcpp$mesh)[1])
   lines(c(vorcpp$mesh[i, "mx1"], vorcpp$mesh[i, "mx2"]),
         c(vorcpp$mesh[i, "my1"], vorcpp$mesh[i, "my2"]),
         col = ifelse(vorcpp$mesh[i, "bp2"] == 1 | vorcpp$mesh[i, "bp1"] == 1, "blue", "red"))
 
-n = 20
-set.seed(n)
+n = 200
+set.seed(3453)
 x = runif(n)
 y = runif(n)
 
 vorcpp = RcppAlphahull::delvor(x,y)
 vorR = alphahull::delvor(x, y)
-alpha = 1.2
+alpha = 0.08
 asR = alphahull::ashape(vorR, alpha = alpha)
 ascpp = RcppAlphahull::ashape(vorcpp, alpha = alpha)
 asR$alpha.extremes
