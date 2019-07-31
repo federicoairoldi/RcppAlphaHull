@@ -28,11 +28,13 @@ eps = 1e-15 # tollerance for confrontation of alpha shape lengths
 # up to 1e-15 lengths are the "same"
 
 n = 50 # number of point to sample for the voronoi diagram tests (feel free to change)
-n.test = 1000
+n.test = 5000
+used.n = c() # keeps track of the number of points sampled for the different tests
 
 for(i in 1:n.test){
   if(i%%50==0) print(i) # print the number of the test on the command line (can be commented to save some time)
   set.seed(i)  # setting the seed for the test (feel free to modify and set your own seed)
+  n = sample(50:300, 1)
   x = runif(n,0,10) # sampling points
   y = runif(n,0,10)
 
@@ -62,6 +64,8 @@ for(i in 1:n.test){
 
   if(k > 0)
     not.matching = c(not.matching, i)
+
+  used.n = c(used.n, n)
 }
 
 not.matching.length = which(perc.length.diff >= eps)

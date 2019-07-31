@@ -5,7 +5,7 @@
 #' @param x coordinates of the sites
 #' @param y coordinates of the sites
 #'
-#' @return A list with the following components
+#' @return A list with the following components:
 #'
 #'
 #' @examples
@@ -18,6 +18,10 @@
 ahull = function (x, y = NULL, alpha){
   print("using RcppAlphahull ahull")
 
-  ashape.obj <- ashape(x, y, alpha)
-  invisivìble(computeAhullRcpp(ashape.obj))
+  if (!inherits(x, "ashape"))
+    ashape.obj <- ashape(x, y, alpha)
+  else
+    ashape.obj <- x
+
+  invisible(computeAhullRcpp(ashape.obj))
 }

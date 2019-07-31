@@ -11,6 +11,20 @@ template<typename T> int sign(const T& value);
 template<typename T> class Segment;
 template<typename T> class Rect;
 
+/* Returns the sign of the given value:
+ * - 1 if positive
+ * - -1 if negative
+ * - 0 if null
+ */
+template<typename T>
+int sign(const T& value){
+  if(value > T(0))
+    return 1;
+  if(value < T(0))
+    return -1;
+  return 0;
+}
+
 // Insert a rect in a stream
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const Rect<T>& r){

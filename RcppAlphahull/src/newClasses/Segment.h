@@ -9,20 +9,6 @@ using namespace mygal;
 
 template<typename T> class Segment;
 
-/* Returns the sign of the given value:
- * - 1 if positive
- * - -1 if negative
- * - 0 if null
- */
-template<typename T>
-int sign(const T& value){
-  if(value > T(0))
-    return 1;
-  if(value < T(0))
-    return -1;
-  return 0;
-}
-
 // Given a point and a segment which both lie on the same rect, check whether or not the
 // point falls inside the segment.
 template<typename T>
@@ -101,17 +87,25 @@ class Segment{
       return false;
     }
 
+    // Returns the intersection point of the two segment if it exists
+    // Vector2<T> intersectionPoint(const Segment<T>& other) const{
+    //   if(intersect(other))
+    // }
+
     /* Returns whether or not the given point falls in the segment
      * first evaluate whether or not the point is on the rect
      * secondly check that the point coordinates fall in the same range of the segment span
      * if both condition are true then the point is in the segment
      */
-    bool inside(const Vector2<T>& point){ return getRect().eval(point)==0 && inRange(*this, point); };
+    bool inside(const Vector2<T>& point) const { return getRect().eval(point)==0 && inRange(*this, point); };
 };
 
 template<typename T>
 bool intersect(const Segment<T>& s1, const Segment<T>& s2){
   return s1.intersect(s2);
 }
+
+template<typename T>
+bool inside(const Segment<T>& seg, const Vector2<T>& point) { return seg.inside(point); }
 
 #endif

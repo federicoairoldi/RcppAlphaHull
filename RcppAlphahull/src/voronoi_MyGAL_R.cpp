@@ -2,10 +2,22 @@
 #include <iostream>
 #include <cmath>
 #include "MyGAL/FortuneAlgorithm.h"
+#include "utilities.h"
 
 using namespace mygal;
 using namespace Rcpp;
 
+// NB: TRY TO MOVE IT TO UTILITIES.H //
+/* Function to translate indices: since in c++ vectors starts from 0 and in R from 1,
+ * then indeces of the sites are shifted by a -1 in c++ with respect the
+ * correspondent in R
+ */
+std::vector<std::size_t> add_one(const std::vector<std::size_t>& v){
+  std::vector<std::size_t> newvett = v;
+  for(size_t i=0; i<newvett.size(); i++)
+    newvett[i]+=1;
+  return newvett;
+}
 // Returns if the point "point" is at the boundary of the box "box"
 template <typename T>
 bool isboundary(const Vector2<T>& point, const Box<T>& box){
@@ -19,41 +31,30 @@ bool isboundary(const Vector2<T>& point, const Box<T>& box){
   return false;
 }
 
-/* Function to translate indices: since in c++ vectors starts from 0 and in R from 1,
- * then indeces of the sites are shifted by a -1 in c++ with respect the
- * correspondent in R
- */
-std::vector<std::size_t> plusone(const std::vector<std::size_t>& v){
-  std::vector<std::size_t> newvett = v;
-  for(int i=0; i<newvett.size(); i++)
-    newvett[i]+=1;
-  return newvett;
-}
-
 /*
  * Function to retrieve a delvor object (almost) like the one returned by the alphahull function delvor,
  * but using the c++ library MyGAL
  */
 // [[Rcpp::export]]
 Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVector y) {
+  // choosing the floating point representation to be used
+  typedef long double real;
+
   // useless if performed by xy.coord in R
   if( x.size() != y.size() )
     Rcpp::stop("Error! x and y vectors don't have same length!");
 
-  // Set the precision for the algorithm
-  typedef double ftype;
-
   // Build the set of sites
-  std::vector<Vector2<ftype>> points;
-  for(int i=0; i<x.size(); i++)
-    points.push_back(Vector2<ftype>(x[i], y[i]));
+  std::vector<Vector2<real>> points;
+  for(size_t i=0; i<x.size(); i++)
+    points.push_back(Vector2<real>(x[i], y[i]));
 
   // Call of the Fortune's algorithm to build the tesselation and the triangulation:
   // procedure suggested by the author of the library MyGAL
-  auto algorithm = FortuneAlgorithm<ftype>(points); // initialize an instance of Fortune's algorithm
+  auto algorithm = FortuneAlgorithm<real>(points); // initialize an instance of Fortune's algorithm
   algorithm.construct();                            // construct the diagram
 
-  Box<ftype> localbox{0, 0, 1, 1};
+  Box<real> localbox{0, 0, 1, 1};
   algorithm.bound(&localbox);            // Bound the diagram
   auto diagram = algorithm.getDiagram(); // Get the constructed diagram
   //diagram.intersect(Box<ftype>{0, 0, 2, 2}); // Compute the intersection between the diagram and a box
@@ -82,7 +83,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   Rcpp::NumericVector x1(N), y1(N), x2(N), y2(N), mx1(N), my1(N), mx2(N), my2(N);
 
   auto it = halfedges.begin();
-  for(int i = 0; i < N; i++){
+  for(size_t i = 0; i < N; i++){
       ind1[i] =  it->incidentFace->site->index + 1;
       ind2[i] =  it->twin->incidentFace->site->index + 1;
 
@@ -97,8 +98,8 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
       my2[i] =  it->origin->point.y;
 
       // check if the current half edge is an infinite one
-      bp1[i] =  isboundary(Vector2<ftype>(it->destination->point.x, it->destination->point.y), localbox);
-      bp2[i] =  isboundary(Vector2<ftype>(it->origin->point.x, it->origin->point.y), localbox);
+      bp1[i] =  isboundary(Vector2<real>(it->destination->point.x, it->destination->point.y), localbox);
+      bp2[i] =  isboundary(Vector2<real>(it->origin->point.x, it->origin->point.y), localbox);
 
       // luckily, twin halfedges are stored one after the other so I just need
       // to skip the subsequent halfedge to not include the same information twice
@@ -133,8 +134,8 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
    * each site the indeces of its neighbours in the Delanuay triangulation
    */
   Rcpp::List neighbors(x.size());
-  for(int i=0; i<x.size(); i++)
-    neighbors[i] = plusone(triangulation.getNeighbors(i)); // retrieve information about neighbors
+  for(size_t i=0; i<x.size(); i++)
+    neighbors[i] = add_one(triangulation.getNeighbors(i)); // retrieve information about neighbors
 
   Rcpp::List tri = Rcpp::List::create(Rcpp::Named("n") = x.size(),
                                       Rcpp::Named("x") = Rcpp::NumericVector(x),

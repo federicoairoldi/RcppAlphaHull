@@ -1,0 +1,118 @@
+#ifndef _UTILITIES_ALPHAHULL_
+#define _UTILITIES_ALPHAHULL_
+
+#include <Rcpp.h>
+#include <cmath>
+#include <iostream>
+#include "newClasses/Rect.h"
+#include "newClasses/Ball.h"
+#include "newClasses/Segment.h"
+#include "newClasses/HalfPlane.h"
+#include "MyGAL/Vector2.h"
+using namespace Rcpp;
+
+namespace util{
+  template<typename T>
+  Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const T& alpha){
+    std::vector<Ball<T>> balls; // vector that contains the open balls that form the complement
+    std::vector<HalfPlane<T>> halfplanes; // vector that contains the open halfplanes that form the complement
+    std::vector<size_t> rows_balls; // vectors that contains the rows to which balls refer to
+    std::vector<size_t> rows_halfplanes; // vectors that contains the rows to which halfplanes refer to
+  
+    // reserving memory for the worst case
+    balls.reserve(4*mesh.rows());
+    halfplanes.reserve(mesh.rows());
+    rows_balls.reserve(5*mesh.rows());
+    rows_halfplanes.reserve(5*mesh.rows());
+  
+    for(size_t i=0; i<mesh.rows(); i++){
+      Rcpp::checkUserInterrupt();
+  
+      bool bp1 = (mesh(i,10) == 1), bp2 = (mesh(i,11) == 1);
+      // computing rects
+      Vector2<T>  p(mesh(i,2), mesh(i,3)); // 1st site
+      Vector2<T>  q(mesh(i,4), mesh(i,5)); // 2nd site
+      Vector2<T> e1(mesh(i,6), mesh(i,7)); // 1st extreme of the voronoi segment
+      Vector2<T> e2(mesh(i,8), mesh(i,9)); // 2nd extreme of the voronoi segment
+      Rect<T> r(p,q), bis(e1,e2); // rect through p and q and bisectrix of p and q
+      Segment<T> vor_edge(e1,e2);
+      // eventual halfplane to add or evaluate
+      HalfPlane<T> h1(r, r.eval(e1)==1? true: false ), h2(r, r.eval(e2)==1? true: false );
+  
+      // computing distances from p to endpoints of the voronoi segment (for infinite segments I use infinity)
+      T d1 = bp1? std::numeric_limits<T>::infinity(): p.getDistance(e1),
+        d2 = bp2? std::numeric_limits<T>::infinity(): p.getDistance(e2);
+  
+      // searching extremes with distance alpha on the rect "bis"
+      std::vector<Vector2<T>> points = bis.getDistNeigh(p,alpha);
+  
+      // add ball or halfplane for side of e1
+      if(bp1){ // add an halfplane
+        halfplanes.push_back(HalfPlane<T>(r, r.eval(e1)==1? true: false ));
+        rows_halfplanes.push_back(i);
+      }
+      else if(d1>=alpha){ // add a ball but only if e1 is at least distant alpha from p
+        balls.push_back(Ball<T>(e1,d1));
+        rows_balls.push_back(i);
+      }
+  
+      // add ball or halfplane for side of e2
+      if(!bp1 && bp2){ // add an halfplane
+        halfplanes.push_back(HalfPlane<T>(r, r.eval(e2)==1? true: false ));
+        rows_halfplanes.push_back(i);
+      }
+      else if(d2>=alpha){ // add a ball but only if e1 is at least distant alpha from p
+        balls.push_back(Ball<T>(e2,d2));
+        rows_balls.push_back(i);
+      }
+  
+      // add eventual ball for intersection points
+      for(size_t k=0; k<points.size(); k++)
+        if(inside(vor_edge,points[k]) || (bp1 && h1.isIn(points[k])) || (bp2 && h2.isIn(points[k]))){
+          balls.push_back(Ball<T>(points[k], p.getDistance(points[k])));
+          rows_balls.push_back(i);
+        }
+    }
+  
+    // constructing the output matrix
+    Rcpp::NumericMatrix complement(balls.size()+halfplanes.size(), 19);
+    for(size_t i=0; i<balls.size(); i++){
+      size_t idx = rows_balls[i];
+      complement(i,0) = balls[i].center().x; // c1
+      complement(i,1) = balls[i].center().y; // c2
+      complement(i,2) = balls[i].radius();   // r
+    
+      for(size_t j=0; j<mesh.cols(); j++) // mesh informations
+        complement(i,3+j) = mesh(idx,j);
+      
+      // retrieving the arc information
+      Vector2<T> p(mesh(idx,2), mesh(idx,3)), q(mesh(idx,4), mesh(idx,5));
+      Vector2<T> pc = p - balls[i].center(), qc = q - balls[i].center();
+      Vector2<T> v = (pc+qc);
+      v = 1/v.getNorm()*v;
+      T theta = std::acos((v.x*pc.x+v.y*pc.y)/(v.getNorm()*pc.getNorm()));
+      
+      complement(i,16) = v.x;
+      complement(i,17) = v.y;
+      complement(i,18) = theta;
+    }
+    for(size_t i=0; i<halfplanes.size(); i++){
+      size_t idx = rows_halfplanes[i];
+      complement(balls.size()+i,0) = halfplanes[i].rectIntercept();
+      complement(balls.size()+i,1) = halfplanes[i].rectSlope();
+      complement(balls.size()+i,2) = (!halfplanes[i].isVertical()? -1: -3) - (halfplanes[i].getSide()==-1);
+      
+      for(size_t j=0; j<mesh.cols(); j++)
+        complement(balls.size()+i,3+j) = mesh(idx,j);
+      
+    }
+    colnames(complement) = Rcpp::CharacterVector::create("c1", "c2", "r", "ind1", "ind2", "x1", "y1", 
+                                                         "x2", "y2", "mx1", "my1", "mx2", "my2", "bp1", 
+                                                         "bp2", "ind", "v.x", "v.y", "theta");
+    
+    return complement;
+  };
+
+}
+
+#endif

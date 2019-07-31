@@ -28,15 +28,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// testRcpp
-void testRcpp();
-RcppExport SEXP _RcppAlphahull_testRcpp() {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    testRcpp();
-    return R_NilValue;
-END_RCPP
-}
 // computeVoronoiRcpp
 Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVector y);
 RcppExport SEXP _RcppAlphahull_computeVoronoiRcpp(SEXP xSEXP, SEXP ySEXP) {
@@ -53,7 +44,6 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlphahull_computeAhullRcpp", (DL_FUNC) &_RcppAlphahull_computeAhullRcpp, 1},
     {"_RcppAlphahull_computeAshapeRcpp", (DL_FUNC) &_RcppAlphahull_computeAshapeRcpp, 2},
-    {"_RcppAlphahull_testRcpp", (DL_FUNC) &_RcppAlphahull_testRcpp, 0},
     {"_RcppAlphahull_computeVoronoiRcpp", (DL_FUNC) &_RcppAlphahull_computeVoronoiRcpp, 2},
     {NULL, NULL, 0}
 };

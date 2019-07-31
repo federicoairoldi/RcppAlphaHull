@@ -2,18 +2,14 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 computeAhullRcpp <- function(ashape) {
-    .Call(`_RcppAlphahull_computeAhullRcpp`, ashape)
+    .Call('_RcppAlphahull_computeAhullRcpp', PACKAGE = 'RcppAlphahull', ashape)
 }
 
 computeAshapeRcpp <- function(delvor_obj, alpha) {
-    .Call(`_RcppAlphahull_computeAshapeRcpp`, delvor_obj, alpha)
-}
-
-testRcpp <- function() {
-    invisible(.Call(`_RcppAlphahull_testRcpp`))
+    .Call('_RcppAlphahull_computeAshapeRcpp', PACKAGE = 'RcppAlphahull', delvor_obj, alpha)
 }
 
 computeVoronoiRcpp <- function(x, y) {
-    .Call(`_RcppAlphahull_computeVoronoiRcpp`, x, y)
+    .Call('_RcppAlphahull_computeVoronoiRcpp', PACKAGE = 'RcppAlphahull', x, y)
 }
 

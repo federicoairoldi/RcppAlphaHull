@@ -13,8 +13,7 @@ require(RcppAlphahull)
 
 set.seed(7658)
 n.nodes = c( seq(100,900,by=100),
-             seq(1000,9000,by=1000),
-             seq(10000,60000,by=10000))
+             seq(1000,9000,by=1000))
 relative = c()
 RTime = c()
 CppTime = c()
@@ -41,12 +40,12 @@ summary(fit.R)
 
 N = 15
 x11()
-tiff("speed.tiff")
+#tiff("speed.tiff")
 matplot(n.nodes[1:N], cbind(Cpp.User[1:N], R.User[1:N]), type = "l", col = c("blue", "red"), lty = 1,
         xlab = "Number of nodes", ylab = "CPU time")
 lines(n.nodes[1:N], fit.cpp$fitted.values[1:N], col = "green", lty = 2)
 lines(n.nodes[1:N], fit.R$fitted.values[1:N], col = "orange", lty = 2)
 legend("topleft", legend = c("C++", "R", "nlogn"), fill = c("blue", "red", "green"), )
-graphics.off()
+#graphics.off()
 
 R.User/Cpp.User
