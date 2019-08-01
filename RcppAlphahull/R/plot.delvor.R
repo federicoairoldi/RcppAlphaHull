@@ -1,21 +1,41 @@
-#' Voronoi diagram/Delanuay tesselation plot
+#' Voronoi tesselation/Delanuay triangulation plot
 #'
 #' Plot of an object "del.vor" with a "fake.tri" tri object
 #'
-#' @param x object of class del.vor
-#' @param if TRUE add the plot to the current ative graphics windows
-#' @param aaa
+#' @param x object of class del.vor.
+#' @param add if TRUE the plot is added to the active graphic window.
+#' @param wlines a string specifying what has to be plotted:
+#' \itemize{
+#'   \item "vor": shows the Voronoi tesselation;
+#'   \item "del": shows the Delanuay triangulation plot;
+#'   \item "both": shows both of the above structures.
+#' }
+#' @param wpoints if true, the sites are added to the plot.
+#' @param numbers if true, the plot shows the indeces of the sites between their locations.
+#' @param col specifies in a vector the colors to be used for the different objects to be plotted and the
+#' order is:
+#' \itemize{
+#'   \item col[1] -> color of the points;
+#'   \item col[2] -> color of Delanuay triangulation;
+#'   \item col[3] -> color of Voronoi tesselation
+#'   \item col[4] -> color for the numbers
+#' } 
+#' Alternatively just one color can be provided.
+#' @param xlim x axis limits.
+#' @param ylim y axis limits.
+#' @param ... graphical arguments to be passes to methods (see par)
+#'
+#' @seealso \code{\link{delvor}}
 #'
 #' @return
-#'
 #'
 #' @examples
 #' x = runif(10)
 #' y = runif(10)
 #' vor.del = my.delvor(x, y)
 #'
-#' plot.delvor(vor.del, wlines = "both", wpoints = FALSE, number = TRUE,
-#'                 col = c("black", "blue", "red", "black"))
+#' plot.delvor(vor.del, wlines = "both", wpoints = FALSE, number = TRUE, 
+#'             col = c("black", "blue", "red", "black"))
 #'
 #' @export
 plot.delvor = function (x, add = FALSE, wlines = c("both", "del", "vor"), wpoints = TRUE,

@@ -15,14 +15,16 @@ template<typename T> class Rect;
  * - 1 if positive
  * - -1 if negative
  * - 0 if null
+ * NB: control with tollerance since I'm working with floating point
  */
 template<typename T>
 int sign(const T& value){
+  if(std::fabs(value)<=std::numeric_limits<T>::epsilon()) 
+    return 0;
   if(value > T(0))
     return 1;
-  if(value < T(0))
-    return -1;
-  return 0;
+  // otherwise value < T(0))
+  return -1;
 }
 
 // Insert a rect in a stream

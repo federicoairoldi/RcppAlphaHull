@@ -3,6 +3,7 @@
 S3method(plot,delvor)
 export(ahull)
 export(ashape)
+export(complement)
 export(delvor)
 exportPattern("[[:alpha:]]+")
 import(alphahull)

@@ -85,11 +85,11 @@ std::vector<size_t> getAlphaNeighbours(const Rcpp::NumericMatrix& mesh,
       return which_rows;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(".computeAshapeRcpp")]]
 Rcpp::List computeAshapeRcpp(const Rcpp::List& delvor_obj, const long double& alpha) {
    // choosing the floating point representation to be used
    typedef long double real;
-
+   
   /* delvor_obj has to be a "delvor" object and therefore is a list with the following components:
    * - mesh: matrix containing information about the voronoi tesselation and delanuay
    *   triangulation relative to the sites contained in the 2nd element of the list
@@ -110,7 +110,7 @@ Rcpp::List computeAshapeRcpp(const Rcpp::List& delvor_obj, const long double& al
    for(size_t i=0; i<(size_t) as<Rcpp::List>(delvor_obj["tri.obj"])["n"]; i++)
         if(alpha <= alpha_L[i])
            alpha_extremes.push_back(i+1); // may be quite slow (remember to check it)
-
+        
    // Select the alpha-neighbours rows of the matrix mesh
    std::vector<size_t> which_rows = getAlphaNeighbours<real>(delvor_obj["mesh"], alpha_extremes, alpha);
 

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <cmath>
 #include "MyGAL/FortuneAlgorithm.h"
-#include "utilities.h"
 
 using namespace mygal;
 using namespace Rcpp;
@@ -12,12 +11,22 @@ using namespace Rcpp;
  * then indeces of the sites are shifted by a -1 in c++ with respect the
  * correspondent in R
  */
-std::vector<std::size_t> add_one(const std::vector<std::size_t>& v){
-  std::vector<std::size_t> newvett = v;
+template<typename T>
+std::vector<T> add_one(const std::vector<T>& v){
+  std::vector<T> newvett = v;
   for(size_t i=0; i<newvett.size(); i++)
     newvett[i]+=1;
   return newvett;
 }
+
+// casts a vector of size_t ro a vector of int
+Rcpp::IntegerVector to_RcppInt(const std::vector<size_t>& v){
+  Rcpp::IntegerVector newvett(v.size());
+  for(size_t i=0; i<v.size(); i++)
+    newvett[i]=v[i];
+  return newvett;
+}
+
 // Returns if the point "point" is at the boundary of the box "box"
 template <typename T>
 bool isboundary(const Vector2<T>& point, const Box<T>& box){
@@ -35,7 +44,7 @@ bool isboundary(const Vector2<T>& point, const Box<T>& box){
  * Function to retrieve a delvor object (almost) like the one returned by the alphahull function delvor,
  * but using the c++ library MyGAL
  */
-// [[Rcpp::export]]
+// [[Rcpp::export(".computeVoronoiRcpp")]]
 Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVector y) {
   // choosing the floating point representation to be used
   typedef long double real;
@@ -135,14 +144,12 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
    */
   Rcpp::List neighbors(x.size());
   for(size_t i=0; i<x.size(); i++)
-    neighbors[i] = add_one(triangulation.getNeighbors(i)); // retrieve information about neighbors
+    neighbors[i] = to_RcppInt(add_one<size_t>(triangulation.getNeighbors(i))); // retrieve information about neighbors
 
-  Rcpp::List tri = Rcpp::List::create(Rcpp::Named("n") = x.size(),
+  Rcpp::List tri = Rcpp::List::create(Rcpp::Named("n") = Rcpp::IntegerVector(1,x.size()),
                                       Rcpp::Named("x") = Rcpp::NumericVector(x),
                                       Rcpp::Named("y") = Rcpp::NumericVector(y),
-                                      Rcpp::Named("neighbours") = neighbors,
-                                      Rcpp::Named("lc") = 0,
-                                      Rcpp::Named("call") = 1);
+                                      Rcpp::Named("neighbours") = neighbors);
   tri.attr("class") = "tri.fake";
 
   // Construct the final del.vor object

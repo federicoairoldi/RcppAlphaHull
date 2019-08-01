@@ -7,23 +7,27 @@
 ashape(x, y = NULL, alpha)
 }
 \arguments{
-\item{x}{coordinates of the sites}
+\item{alpha}{value of alpha}
 
-\item{y}{coordinates of the sites}
-
-\item{alpha}{}
+\item{{x, y}}{coordinates of the sites. ALternatively a single argument x can be provided (see Details).}
 }
 \value{
 A list with the following components: 
 \describe{
-   \item{edges}{a mesh describing the alpha shape}
-   \item{length}{length of the alpha shape}
-   \item{alpha}{the value of alpha for which the shape is computed}
-   \item{alpha.extremes}{containes the indices of those sites that are alpha extremes}
+   \item{edges}{a mesh describing the alpha shape, this object is a submatrix of the mesh matrix 
+   contained in a "delvor" object since the alpha shape is a subset of the Delanuay triangulation.}
+   \item{length}{length of the alpha shape.}
+   \item{alpha}{the value of alpha for which the shape is computed.}
+   \item{alpha.extremes}{containes the indices of those sites that are alpha extremes.}
+   \item{delvor.obj}{a delvor object returned by the function delvor, if a delvor object is provided
+   instead of the sites coordinates, this field contains such object}
 }
 }
 \description{
 Computes the alpha-shape for the given set of points
+}
+\details{
+
 }
 \examples{
 x = runif(10)

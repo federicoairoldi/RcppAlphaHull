@@ -16,12 +16,10 @@
 #'
 #' @export
 ahull = function (x, y = NULL, alpha){
-  print("using RcppAlphahull ahull")
-
   if (!inherits(x, "ashape"))
     ashape.obj <- ashape(x, y, alpha)
   else
     ashape.obj <- x
 
-  invisible(computeAhullRcpp(ashape.obj))
+  invisible(.computeAhullRcpp(ashape.obj))
 }

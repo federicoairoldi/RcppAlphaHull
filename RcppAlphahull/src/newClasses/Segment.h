@@ -14,11 +14,11 @@ template<typename T> class Segment;
 template<typename T>
 bool inRange(const Segment<T>& seg, const Vector2<T>& point){
   T inf=std::min(seg.p.x, seg.q.x), sup=std::max(seg.p.x, seg.q.x);
-  if( point.x < inf | sup < point.x )
+  if( point.x <= inf | sup <= point.x )
     return false;
 
   inf=std::min(seg.p.y, seg.q.y); sup=std::max(seg.p.y, seg.q.y);
-  if( point.y < inf | sup < point.y )
+  if( point.y <= inf | sup <= point.y )
     return false;
 
   return true;
@@ -86,11 +86,6 @@ class Segment{
 
       return false;
     }
-
-    // Returns the intersection point of the two segment if it exists
-    // Vector2<T> intersectionPoint(const Segment<T>& other) const{
-    //   if(intersect(other))
-    // }
 
     /* Returns whether or not the given point falls in the segment
      * first evaluate whether or not the point is on the rect

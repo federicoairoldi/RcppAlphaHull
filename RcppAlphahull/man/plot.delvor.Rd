@@ -2,18 +2,43 @@
 % Please edit documentation in R/plot.delvor.R
 \name{plot.delvor}
 \alias{plot.delvor}
-\title{Voronoi diagram/Delanuay tesselation plot}
+\title{Voronoi tesselation/Delanuay triangulation plot}
 \usage{
 \method{plot}{delvor}(x, add = FALSE, wlines = c("both", "del", "vor"),
   wpoints = TRUE, number = FALSE, col = NULL, xlim = NULL,
   ylim = NULL, ...)
 }
 \arguments{
-\item{x}{object of class del.vor}
+\item{x}{object of class del.vor.}
 
-\item{if}{TRUE add the plot to the current ative graphics windows}
+\item{add}{if TRUE the plot is added to the active graphic window.}
 
-\item{aaa}{}
+\item{wlines}{a string specifying what has to be plotted:
+\itemize{
+  \item "vor": shows the Voronoi tesselation;
+  \item "del": shows the Delanuay triangulation plot;
+  \item "both": shows both of the above structures.
+}}
+
+\item{wpoints}{if true, the sites are added to the plot.}
+
+\item{col}{specifies in a vector the colors to be used for the different objects to be plotted and the
+order is:
+\itemize{
+  \item col[1] -> color of the points;
+  \item col[2] -> color of Delanuay triangulation;
+  \item col[3] -> color of Voronoi tesselation
+  \item col[4] -> color for the numbers
+} 
+Alternatively just one color can be provided.}
+
+\item{xlim}{x axis limits.}
+
+\item{ylim}{y axis limits.}
+
+\item{...}{graphical arguments to be passes to methods (see par)}
+
+\item{numbers}{if true, the plot shows the indeces of the sites between their locations.}
 }
 \value{
 
@@ -26,7 +51,10 @@ x = runif(10)
 y = runif(10)
 vor.del = my.delvor(x, y)
 
-plot.delvor(vor.del, wlines = "both", wpoints = FALSE, number = TRUE,
-                col = c("black", "blue", "red", "black"))
+plot.delvor(vor.del, wlines = "both", wpoints = FALSE, number = TRUE, 
+            col = c("black", "blue", "red", "black"))
 
+}
+\seealso{
+\code{\link{delvor}}
 }

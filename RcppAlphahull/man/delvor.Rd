@@ -2,25 +2,41 @@
 % Please edit documentation in R/delvor.R
 \name{delvor}
 \alias{delvor}
-\title{Voronoi diagram/Delanuay tesselation}
+\title{Voronoi tesselation/Delanuay triangulation}
 \usage{
 delvor(x, y = NULL)
 }
 \arguments{
-\item{x}{coordinates of the sites}
+\item{x}{x coordinates of the sites or a matrix with two columns containing both sites coordinates.}
 
-\item{y}{coordinates of the sites}
+\item{y}{y coordinates of the sites. Alternatively a single argument can be provided (see x).}
 }
 \value{
 An invisible object of class "del.vor", a list, with the following components:
 \describe{
-   \item{mesh}{a mesh describing the diagram}
-   \item{x}{nx2 matrix containing the coordinates of the sites}
-   \item{tri.obj}{a "fake" tri object describing the triangulation}
+   \item{mesh}{a matrix describing the Voronoi tesselation and the Delanuay triangulation.}
+   \item{x}{a 2-column matrix containing the coordinates of the sites.}
+   \item{tri.obj}{a "fake" tri object describing the triangulation similar to the one of the 
+   package tri.mesh.}
 }
 }
 \description{
 Computing Voronoi diagram and Delanuay tesselation for the specified set of points
+}
+\details{
+This function retrieves the Voronoi tesselation and the Delanuay triangulation of a given set
+of points in the plane; results are returned in a list of three elements (see Value).
+
+Each row of mesh contains information about one of the edges of the tesselation and its dual:
+\itemize{
+\item ind1 and ind2: indices of the sites to which the edge refers to;
+\item x1 and y1: coordinates of the site denoted by ind1;
+\item x2 and y2: coordinates of the site denoted by ind2;
+\item mx1 and my1: coordinates of the first extreme, e1, of the Voronoi tesselation edge;
+\item mx2 and my2: coordinates of the second extreme, e2, of the Voronoi tesselation edge;
+\item bp1 and bp2: denote wether one of the direction of the Voronoi edge is infinite, either from the
+side of e1 or e2.
+}
 }
 \examples{
 x = runif(10)
