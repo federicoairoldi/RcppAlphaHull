@@ -1,22 +1,24 @@
-#' Alpha-shape computation
+#' \eqn{\alpha}-shape computation
 #'
-#' Computes the alpha-shape for the given set of points
+#' Computes the \eqn{\alpha}-shape for the given set of points.
 #'
-#' @param {x,y} coordinates of the sites. ALternatively a single argument x can be provided (see Details).
-#' @param alpha value of alpha
+#' @param x x coordinates of the sites. Alternatively, a matrix with two columns containing both sites 
+#' coordinates or an object of class delvor.
+#' @param y y coordinates of the sites; do not insert if x is not a vector of coordinates (see x).
+#' @param alpha a strictly positive value for \eqn{\alpha}.
 #' 
 #' @return A list with the following components: 
 #' \describe{
-#'    \item{edges}{a mesh describing the alpha shape, this object is a submatrix of the mesh matrix 
+#'    \item{edges}{a mesh describing the \eqn{\alpha}-shape, this object is a submatrix of the mesh matrix 
 #'    contained in a "delvor" object since the alpha shape is a subset of the Delanuay triangulation.}
 #'    \item{length}{length of the alpha shape.}
-#'    \item{alpha}{the value of alpha for which the shape is computed.}
-#'    \item{alpha.extremes}{containes the indices of those sites that are alpha extremes.}
+#'    \item{alpha}{the value of \eqn{\alpha} for which the shape is computed.}
+#'    \item{alpha.extremes}{containes the indices of those sites that are \eqn{\alpha}-extremes.}
 #'    \item{delvor.obj}{a delvor object returned by the function delvor, if a delvor object is provided
 #'    instead of the sites coordinates, this field contains such object}
 #' }
 #'
-#' @details 
+#' @seealso \code{\link{delvor}}
 #'
 #' @examples
 #' x = runif(10)

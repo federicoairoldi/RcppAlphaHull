@@ -13,10 +13,10 @@ using namespace Rcpp;
 
 // [[Rcpp::export(".computeComplement")]]
 Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const long double& alpha){
-  typedef long double T;
+  typedef long double real;
   
-  std::vector<Ball<T>> balls; // vector that contains the open balls that form the complement
-  std::vector<HalfPlane<T>> halfplanes; // vector that contains the open halfplanes that form the complement
+  std::vector<Ball<real>> balls; // vector that contains the open balls that form the complement
+  std::vector<HalfPlane<real>> halfplanes; // vector that contains the open halfplanes that form the complement
   std::vector<size_t> rows_balls; // vectors that contains the rows to which balls refer to
   std::vector<size_t> rows_halfplanes; // vectors that contains the rows to which halfplanes refer to
 
@@ -31,41 +31,47 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
 
     bool bp1 = (mesh(i,10) == 1), bp2 = (mesh(i,11) == 1);
     // computing rects
-    Vector2<T>  p(mesh(i,2), mesh(i,3)); // 1st site
-    Vector2<T>  q(mesh(i,4), mesh(i,5)); // 2nd site
-    Vector2<T> e1(mesh(i,6), mesh(i,7)); // 1st extreme of the voronoi segment
-    Vector2<T> e2(mesh(i,8), mesh(i,9)); // 2nd extreme of the voronoi segment
-    Rect<T> r(p,q), bis(e1,e2); // rect through p and q and bisectrix of p and q
-    Segment<T> vor_edge(e1,e2);
+    Vector2<real>  p(mesh(i,2), mesh(i,3)); // 1st site
+    Vector2<real>  q(mesh(i,4), mesh(i,5)); // 2nd site
+    Vector2<real> e1(mesh(i,6), mesh(i,7)); // 1st extreme of the voronoi segment
+    Vector2<real> e2(mesh(i,8), mesh(i,9)); // 2nd extreme of the voronoi segment
+    Rect<real> r(p,q), bis(e1,e2); // rect through p and q and bisectrix of p and q
+    Segment<real> vor_edge(e1,e2);
     // eventual halfplane to add or evaluate
-    HalfPlane<T> h1(r, r.eval(e1)==1? true: false ), // halfplane for bp1 = 1
+    HalfPlane<real> h1(r, r.eval(e1)==1? true: false ), // halfplane for bp1 = 1
                  h2(r, r.eval(e2)==1? true: false ); // halfplane for bp1 = 2
 
     // computing distances from p to endpoints of the voronoi segment (for infinite segments I use infinity)
-    T d1 = bp1? std::numeric_limits<T>::infinity(): p.getDistance(e1),
-      d2 = bp2? std::numeric_limits<T>::infinity(): p.getDistance(e2);
+    real d1 = bp1? std::numeric_limits<real>::infinity(): p.getDistance(e1),
+         d2 = bp2? std::numeric_limits<real>::infinity(): p.getDistance(e2);
 
     // searching extremes with distance alpha on the rect "bis"
-    std::vector<Vector2<T>> points = bis.getDistNeigh(p,alpha);
+    std::vector<Vector2<real>> points = bis.getDistNeigh(p,alpha);
+    
+    //std::cout << "Edge: " << mesh(i,0) << " " << mesh(i,1) << std::endl;
 
     // add ball or halfplane for side of e1
     if(bp1){ // add an halfplane
-      halfplanes.push_back(HalfPlane<T>(r, r.eval(e1)==1? true: false ));
+      halfplanes.push_back(HalfPlane<real>(r, r.eval(e1)==1? true: false ));
       rows_halfplanes.push_back(i);
+      //std::cout << "Adding upper halfplane" << std::endl;
     }
     else if(d1>=alpha){ // add a ball but only if e1 is at least distant alpha from p
-      balls.push_back(Ball<T>(e1,d1));
+      balls.push_back(Ball<real>(e1,d1));
       rows_balls.push_back(i);
+      //std::cout << "Adding ball: " << e1 << " " << d1 << std::endl;
     }
 
     // add ball or halfplane for side of e2
     if(!bp1 && bp2){ // add an halfplane
-      halfplanes.push_back(HalfPlane<T>(r, r.eval(e2)==1? true: false ));
+      halfplanes.push_back(HalfPlane<real>(r, r.eval(e2)==1? true: false ));
       rows_halfplanes.push_back(i);
+      //std::cout << "Adding lower halfplane" << std::endl;
     }
     else if(d2>=alpha){ // add a ball but only if e1 is at least distant alpha from p
-      balls.push_back(Ball<T>(e2,d2));
+      balls.push_back(Ball<real>(e2,d2));
       rows_balls.push_back(i);
+      //std::cout << "Adding ball: " << e2 << " " << d2 << std::endl;
     }
 
     bool same_side1 = (h1.isIn(e1) == h1.isIn(e2)), // e1 and e2 are both in the upper (right) halfplane
@@ -74,13 +80,21 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     for(size_t k=0; k<points.size(); k++){
       bool add = false;
       add = inside(vor_edge,points[k]);
+      // std::cout << "points[" << k << "] inside?" << inside(vor_edge,points[k]) << std::endl;
+      
+      if( bis.eval(points[k])!=0 ){
+        // std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH! " << "points[" << k << "] in rect?" << bis.eval(points[k]) << std::endl;
+      }
+        
       add = add || (bp1 && h1.isIn(points[k]) && (same_side1? alpha>=d2: true));
       add = add || (bp2 && h2.isIn(points[k]) && (same_side2? alpha>=d1: true));
       if(add){
-        balls.push_back(Ball<T>(points[k], p.getDistance(points[k])));
+        balls.push_back(Ball<real>(points[k], p.getDistance(points[k])));
         rows_balls.push_back(i);
+        // std::cout << "Adding ball: " << points[k] << " " << p.getDistance(points[k]) << std::endl;
       }
     }
+    // std::cout << std::endl;
   }
 
   // constructing the output matrix
@@ -95,11 +109,11 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
       complement(i,3+j) = mesh(idx,j);
     
     // retrieving the arc information
-    Vector2<T> p(mesh(idx,2), mesh(idx,3)), q(mesh(idx,4), mesh(idx,5));
-    Vector2<T> pc = p - balls[i].center(), qc = q - balls[i].center();
-    Vector2<T> v = (pc+qc);
+    Vector2<real> p(mesh(idx,2), mesh(idx,3)), q(mesh(idx,4), mesh(idx,5));
+    Vector2<real> pc = p - balls[i].center(), qc = q - balls[i].center();
+    Vector2<real> v = (pc+qc);
     v = 1/v.getNorm()*v;
-    T theta = std::acos((v.x*pc.x+v.y*pc.y)/(v.getNorm()*pc.getNorm()));
+    real theta = std::acos((v.x*pc.x+v.y*pc.y)/(v.getNorm()*pc.getNorm()));
     
     complement(i,16) = v.x;
     complement(i,17) = v.y;
@@ -121,7 +135,5 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
   
   return complement;
 };
-
-
 
 #endif

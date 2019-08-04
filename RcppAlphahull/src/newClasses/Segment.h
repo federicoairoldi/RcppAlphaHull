@@ -33,18 +33,23 @@ std::ostream& operator<<(std::ostream& os, const Segment<T>& seg){
 
 template<typename T>
 class Segment{
-  friend bool inRange<T>(const Segment<T>& seg, const Vector2<T>& point);
+  typedef Vector2<T> vector;
+  typedef Rect<T> rect;
+  
+  friend bool inRange<T>(const Segment<T>& seg, const vector& point);
   friend std::ostream& operator<<<T>(std::ostream& os, const Segment<T>& seg);
 
   private:
-    Vector2<T> p, q;
+    vector p, q;
 
   public:
-    // Constructors
-    Segment(const Vector2<T>& p, const Vector2<T>& q): p(p), q(q) {}
+    // CONSTRUCTORS
+    Segment(const vector& p, const vector& q): p(p), q(q) {}
     Segment(const T& xp, const T& yp, const T& xq, const T& yq): p(xp,yp), q(xq,yq) {}
     Segment() = delete;
 
+    // OTHER METHODS
+    
     // Returns the slope of the corresponding rect for the segment: I use as convention a +inf slope for
     // rects of the form x = const
     T slope() const {
@@ -58,7 +63,7 @@ class Segment{
     }
 
     // Returns the direction rect for the segment
-    Rect<T> getRect() const{ return Rect<T>(p,q); }
+    rect getRect() const{ return rect(p,q); }
 
     // Returns true if the rect corresponding to the segment has form x = const
     bool isVertical() const {return p.x == q.x;}
@@ -66,7 +71,7 @@ class Segment{
     // Returns wheter or not two segment intersect (in R2)
     bool intersect(const Segment<T>& other) const{
       // retrieving rects
-      Rect<T> r1=getRect(), r2=other.getRect();
+      rect r1=getRect(), r2=other.getRect();
 
       // check position of 2nd segment w.r.t. the 1st: if val1 and val2 have different signs then the
       // segment s2 crosses the rect r1

@@ -33,10 +33,10 @@ bool isboundary(const Vector2<T>& point, const Box<T>& box){
   T eps(10e-5);
   if( ( std::fabs((point.x-box.left)/box.left) < eps | std::fabs((point.x-box.right)/box.right) < eps  )
         && point.y <= box.top && point.y >= box.bottom )
-        return true;
+    return true;
   if( ( std::fabs((point.y-box.top)/box.top) < eps | std::fabs((point.y-box.bottom)/box.bottom) < eps  )
         && point.x <= box.right && point.x >= box.left )
-        return true;
+    return true;
   return false;
 }
 

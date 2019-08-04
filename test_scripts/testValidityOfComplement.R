@@ -1,7 +1,7 @@
 # Federico Airoldi    matricola: 892377   codice persona: 10484065
 #
-# this script tests that my alpha-shape object retrieved starting from a delvor objectt has the same
-# structure of the one returned by the "ashape" function of the package alphahull
+# this script tests that my complement object retrieved starting from a delvor object has the same
+# structure of the one returned by the "ahull" function of the package alphahull
 #
 # parameters that can be modified:
 # - n:                 number of sites
@@ -18,17 +18,12 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source("search.R")
 
 print("executing test")
-# contains those test cases in which the ashape matrice don't coincide
-not.matching = c()
-not.matching.size = c()
-not.matching.length = c()
+# contains those test cases in which the complement matrix don't coincide
+not.matching.length = c() # different number of components
+not.matching.planes = c() # different planes
+not.matching.balls = c() # different balls
 
-perc.length.diff = c()
-eps = 1e-15 # tollerance for confrontation of alpha shape lengths
-# up to 1e-15 lengths are the "same"
-
-n = 50 # number of point to sample for the voronoi diagram tests (feel free to change)
-n.test = 5000
+n.test = 1000
 used.n = c() # keeps track of the number of points sampled for the different tests
 
 for(i in 1:n.test){
@@ -37,42 +32,45 @@ for(i in 1:n.test){
   n = sample(50:300, 1)
   x = runif(n,0,10) # sampling points
   y = runif(n,0,10)
-
+  
   alpha = runif(1); # sampling alpha
-
+  
   # calling the RcppAlphahull and alphahull function to compute the alpha shape
-  ascpp = RcppAlphahull::ashape(x,y,alpha)
-  asR = alphahull::ashape(x,y,alpha)
-
+  complementcpp = RcppAlphahull::complement(x,y,alpha)
+  complementR = alphahull::complement(x,y,alpha)
+  
   # check lengths
   # do the alpha shapes have the same length? if not adding the test to the queue not.matching.length
-  if( dim(asR$edges)[1]!=0 )
-    perc.length.diff = c(perc.length.diff, abs( (asR$length - ascpp$length)/ascpp$length ))
-  else
-    perc.length.diff = c(perc.length.diff, 0)
-
-  # checking edges
-  # same number of edges? if not adding the test to the queue not.matching.size
-  if(dim(asR$edges)[1]!=dim(ascpp$edges)[1])
-    not.matching.size = c(not.matching.size, i)
-
-  # same edges for the alpha? if not adding the test to the queue of wrong tests
+  if( dim(complementcpp)[1]!=dim(complementR)[1] )
+    not.matching.length = c(not.matching.length, 1)
+  
   k = 0
-  if(dim(asR$edges)[1]!=0)
-    for(i in 1:dim(asR$edges)[1])
-      k = k + !(search(asR$edges[i,"ind1"], asR$edges[i,"ind2"], ascpp$edges))
-
+  for(type in c(-1, -2, -3, -4)){
+    planesR = complementR[which(complementR[,"r"] == type),]
+    planescpp = complementcpp[which(complementcpp[,"r"] == type),]
+    if(dim(planesR)[1]>0)
+      for(j in dim(planesR)[1])
+        k = k + !search(planesR[j,"ind1"], planesR[j,"ind2"], planescpp)
+  }
+  
   if(k > 0)
-    not.matching = c(not.matching, i)
-
+    not.matching.planes = c(not.matching.planes, i)
+  
+  k = 0
+  ballsR = complementR[which(complementR[,"r"] > 0),]
+  ballscpp = complementcpp[which(complementcpp[,"r"] > 0),]
+  for(i in dim(ballsR)[1])
+    k = k + !search(ballsR[i,"ind1"], ballsR[i,"ind2"], ballscpp)
+  
+  if(k > 0)
+    not.matching.balls = c(not.matching.balls, i)
+  
   used.n = c(used.n, n)
 }
 
-not.matching.length = which(perc.length.diff >= eps)
+rm(list = c("k", "i", "complementR", "complementcpp", "x", "y"))
 
-rm(list = c("k", "i", "ascpp", "asR", "x", "y"))
-
-not.matching.size
 not.matching.length
-not.matching
+not.matching.planes
+not.matching.balls
 

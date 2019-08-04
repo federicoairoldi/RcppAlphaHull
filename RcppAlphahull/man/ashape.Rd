@@ -2,32 +2,32 @@
 % Please edit documentation in R/ashape.R
 \name{ashape}
 \alias{ashape}
-\title{Alpha-shape computation}
+\title{\eqn{\alpha}-shape computation}
 \usage{
 ashape(x, y = NULL, alpha)
 }
 \arguments{
-\item{alpha}{value of alpha}
+\item{x}{x coordinates of the sites. Alternatively, a matrix with two columns containing both sites 
+coordinates or an object of class delvor.}
 
-\item{{x, y}}{coordinates of the sites. ALternatively a single argument x can be provided (see Details).}
+\item{y}{y coordinates of the sites; do not insert if x is not a vector of coordinates (see x).}
+
+\item{alpha}{a strictly positive value for \eqn{\alpha}.}
 }
 \value{
 A list with the following components: 
 \describe{
-   \item{edges}{a mesh describing the alpha shape, this object is a submatrix of the mesh matrix 
+   \item{edges}{a mesh describing the \eqn{\alpha}-shape, this object is a submatrix of the mesh matrix 
    contained in a "delvor" object since the alpha shape is a subset of the Delanuay triangulation.}
    \item{length}{length of the alpha shape.}
-   \item{alpha}{the value of alpha for which the shape is computed.}
-   \item{alpha.extremes}{containes the indices of those sites that are alpha extremes.}
+   \item{alpha}{the value of \eqn{\alpha} for which the shape is computed.}
+   \item{alpha.extremes}{containes the indices of those sites that are \eqn{\alpha}-extremes.}
    \item{delvor.obj}{a delvor object returned by the function delvor, if a delvor object is provided
    instead of the sites coordinates, this field contains such object}
 }
 }
 \description{
-Computes the alpha-shape for the given set of points
-}
-\details{
-
+Computes the \eqn{\alpha}-shape for the given set of points.
 }
 \examples{
 x = runif(10)
@@ -35,4 +35,7 @@ y = runif(10)
 a.shape = ashape(x, y, alpha = 0.8)
 plot(a.shape)
 
+}
+\seealso{
+\code{\link{delvor}}
 }

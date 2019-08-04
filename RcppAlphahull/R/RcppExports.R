@@ -13,6 +13,10 @@
     .Call('_RcppAlphahull_computeComplement', PACKAGE = 'RcppAlphahull', mesh, alpha)
 }
 
+.inahullRcpp <- function(complement, x, y) {
+    .Call('_RcppAlphahull_inahullRcpp', PACKAGE = 'RcppAlphahull', complement, x, y)
+}
+
 .computeVoronoiRcpp <- function(x, y) {
     .Call('_RcppAlphahull_computeVoronoiRcpp', PACKAGE = 'RcppAlphahull', x, y)
 }

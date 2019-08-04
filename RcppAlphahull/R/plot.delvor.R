@@ -1,6 +1,6 @@
 #' Voronoi tesselation/Delanuay triangulation plot
 #'
-#' Plot of an object "del.vor" with a "fake.tri" tri object
+#' Plot of an object "del.vor" with a "fake.tri" tri object.
 #'
 #' @param x object of class del.vor.
 #' @param add if TRUE the plot is added to the active graphic window.
@@ -11,7 +11,7 @@
 #'   \item "both": shows both of the above structures.
 #' }
 #' @param wpoints if true, the sites are added to the plot.
-#' @param numbers if true, the plot shows the indeces of the sites between their locations.
+#' @param number if true, the plot shows the indeces of the sites between their locations.
 #' @param col specifies in a vector the colors to be used for the different objects to be plotted and the
 #' order is:
 #' \itemize{
@@ -23,7 +23,7 @@
 #' Alternatively just one color can be provided.
 #' @param xlim x axis limits.
 #' @param ylim y axis limits.
-#' @param ... graphical arguments to be passes to methods (see par)
+#' @param ... graphical arguments to be passes to methods (see \code{\link[graphics]{par}})
 #'
 #' @seealso \code{\link{delvor}}
 #'
@@ -32,7 +32,7 @@
 #' @examples
 #' x = runif(10)
 #' y = runif(10)
-#' vor.del = my.delvor(x, y)
+#' del.vor = delvor(x, y)
 #'
 #' plot.delvor(vor.del, wlines = "both", wpoints = FALSE, number = TRUE, 
 #'             col = c("black", "blue", "red", "black"))
@@ -40,7 +40,6 @@
 #' @export
 plot.delvor = function (x, add = FALSE, wlines = c("both", "del", "vor"), wpoints = TRUE,
                         number = FALSE, col = NULL, xlim = NULL, ylim = NULL, ...){
-    print("Printing with RcppAlphahull plot.delvor");
     wlines <- match.arg(wlines)
     if (is.null(class(x)) || class(x) != "delvor") {
       cat("Argument is not of class delvor!!\n")

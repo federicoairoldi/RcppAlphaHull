@@ -19,7 +19,8 @@ template<typename T> class Rect;
  */
 template<typename T>
 int sign(const T& value){
-  if(std::fabs(value)<=std::numeric_limits<T>::epsilon()) 
+  T eps = 10e-10; // NB: maybe you have to check this!!!!!!!!!!!!!!!!!!!!!!!!!
+  if( std::fabs(value)<=eps )// std::numeric_limits<T>::epsilon()
     return 0;
   if(value > T(0))
     return 1;
@@ -52,6 +53,7 @@ class Rect{
     };
 
   public:
+    // CONSTRUCTORS
     Rect()=delete;
     Rect(const T& m, const T& q): a(1), b(-m), c(-q) {};
     Rect(const T& xr): a(0), b(1), c(-xr) {};
@@ -63,6 +65,7 @@ class Rect{
     Rect(const Vector2<T>& p1, const Vector2<T>& p2): Rect(p2.x-p1.x, p1.y-p2.y, p1.x*p2.y-p2.x*p1.y)
     { if(p1.x==p2.x & p1.y==p2.y) std::cerr << "Error! p1 and p2 are the same point" << std::endl; };
 
+    // GETTERS
     T slope() const { return a!=0? -b/a: std::numeric_limits<T>::infinity(); };
     T intercept() const { return a!=0? -c/a: -std::numeric_limits<T>::infinity(); };
     bool isVertical() const { return a==0; };
@@ -70,6 +73,7 @@ class Rect{
     // for vertical lines returns the abscissa of its equation, if the line is not vertical it returns a NaN
     T x_r() const { return (isVertical()? -c/b: std::numeric_limits<T>::quiet_NaN()); };
 
+    // OTHER METHODS
     /* Returns on which side of the rect the point is:
      * -  1 => a*y_p + b*x_p + c > 0 ( y_p - (m*x_p + q) > or x_p > x for vertical rects)
      * - -1 => a*y_p + b*x_p + c = 0 ( y_p - (m*x_p + q) > or x_p > x for vertical rects)

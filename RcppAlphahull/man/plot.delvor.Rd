@@ -22,6 +22,8 @@
 
 \item{wpoints}{if true, the sites are added to the plot.}
 
+\item{number}{if true, the plot shows the indeces of the sites between their locations.}
+
 \item{col}{specifies in a vector the colors to be used for the different objects to be plotted and the
 order is:
 \itemize{
@@ -36,15 +38,13 @@ Alternatively just one color can be provided.}
 
 \item{ylim}{y axis limits.}
 
-\item{...}{graphical arguments to be passes to methods (see par)}
-
-\item{numbers}{if true, the plot shows the indeces of the sites between their locations.}
+\item{...}{graphical arguments to be passes to methods (see \code{\link[graphics]{par}})}
 }
 \value{
 
 }
 \description{
-Plot of an object "del.vor" with a "fake.tri" tri object
+Plot of an object "del.vor" with a "fake.tri" tri object.
 }
 \examples{
 x = runif(10)

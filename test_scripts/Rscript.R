@@ -2,6 +2,7 @@
 #
 # auxiliary script used to check features and correctness of the package RcppAlphahull
 
+require(rbenchmark)
 require(alphahull)
 require(RcppAlphahull)
 
@@ -25,7 +26,7 @@ y = runif(n)
 
 vorcpp = RcppAlphahull::delvor(x,y)
 vorR = alphahull::delvor(x, y)
-alpha = 0.5
+alpha = 0.1
 asR = alphahull::ashape(vorR, alpha = alpha)
 ascpp = RcppAlphahull::ashape(vorcpp, alpha = alpha)
 asR$alpha.extremes
@@ -35,22 +36,34 @@ View(ascpp$edges)
 plot(asR, wpoints = T)
 plot(ascpp, wpoints = T)
 
-ahR = alphahull::ahull(vorR, alpha = alpha)
-ahcpp = RcppAlphahull::ahull(x, y, alpha = alpha)
-
-alpha = 0.1
+alpha = 9
 ahR = alphahull::ahull(x, y, alpha = alpha)
-plot(ahR)
 ahcpp = RcppAlphahull::ahull(x, y, alpha = alpha)
-plot(vorR, number = T, wpoints = F, wlines = "vor", col = "grey", xlim = c(0,1), ylim = c(0,1), asp = 1)
 View(ahR$complement)
 View(ahcpp$complement)
+plot(vorR, number = T, wpoints = F, wlines = "vor", col = "grey", xlim = c(0,1), ylim = c(0,1), asp = 1)
 
-# plotting arcs
+# plotting arcs from complement
 wrow = which(ahR$complement[,3]>0)
 for(i in wrow){
-  # invisible(readline(prompt="Press [enter] to continue"))
+  #invisible(readline(prompt="Press [enter] to continue"))
+  #Sys.sleep(0.5)
   alphahull::arc(ahR$complement[i,1:2], ahR$complement[i,3], ahR$complement[i,17:18], ahR$complement[i,19], col = "red", lty = 2)
+  points(ahR$complement[i,1],ahR$complement[i,2], pch = 19, col = "red")
+}
+wrow = which(ahcpp$complement[,3]>0)
+for(i in wrow){
+  #invisible(readline(prompt="Press [enter] to continue"))
+  #Sys.sleep(0.5)
+  alphahull::arc(ahcpp$complement[i,1:2], ahcpp$complement[i,3], ahcpp$complement[i,17:18], ahcpp$complement[i,19], col = "cyan", lty = 2)
+  points(ahcpp$complement[i,1],ahcpp$complement[i,2], pch = 19, col = "cyan")
+}
+
+# plotting arcs
+wrow = which(ahR$arcs[,3]>0)
+for(i in wrow){
+  # invisible(readline(prompt="Press [enter] to continue"))
+  alphahull::arc(ahR$arcs[i,1:2], ahR$arcs[i,3], ahR$arcs[i,4:5], ahR$arcs[i,6], col = "red", lty = 2)
 }
 wrow = which(ahcpp$complement[,3]>0)
 for(i in wrow){
@@ -74,14 +87,13 @@ for(i in wrow){
   points(ahcpp$complement[i,1],ahcpp$complement[i,2], pch = 19, col = "cyan")
 }
 
-plot(ascpp)
-plot(ahcpp)
 
-n = 35
-set.seed(353)
-x = runif(n)
-y = runif(n)
-vorR = alphahull::delvor(x, y)
-vorcpp = RcppAlphahull::delvor(x,y)
-system.time(alphahull::ahull(vorR, alpha = alpha))
-system.time(RcppAlphahull::ahull(vorcpp, alpha = alpha))
+alpha = 0.05
+ahR = alphahull::ahull(x, y, alpha = alpha)
+ahcpp = RcppAlphahull::ahull(x, y, alpha = alpha)
+
+system.time(plot(ahR, xlim = c(0,1), ylim = c(0,1), asp = 1))
+system.time(plot.ahull.not(ahcpp, add = T, col = "red"))
+points(0.7, 0.8, pch = 19, col = "blue")
+alphahull::inahull(ahR, c(0.7, 0.8))
+RcppAlphahull::inahull(ahcpp, 0.7, 0.8)

@@ -2,20 +2,33 @@
 % Please edit documentation in R/ahull.R
 \name{ahull}
 \alias{ahull}
-\title{Alpha-hull computation}
+\title{\eqn{\alpha}-hull computation}
 \usage{
 ahull(x, y = NULL, alpha)
 }
 \arguments{
-\item{x}{coordinates of the sites}
+\item{x}{coordinates of the sites. Alternatively, a matrix with two columns containing both sites 
+coordinates, an object of class delvor or an object of class ashape.}
 
-\item{y}{coordinates of the sites}
+\item{y}{y coordinates of the sites; do not insert if x is not a vector of coordinates (see x).}
+
+\item{alpha}{a strictly positive value for \eqn{\alpha} (NULL if x is of class ashape).}
 }
 \value{
 A list with the following components:
+\itemize{
+\item \code{arcs}: a matrix containing the arcs that form the boundary of the \eqn{\alpha}-hull;
+\item \code{xahull}: 2-column matrix containing coordinates of those sites that are on the boundary
+of the \eqn{\alpha}-hull and other endpoints of the boundary arcs that are not sites;
+\item \code{length}: length of the \eqn{\alpha}-hull boundary;
+\item \code{complement}: a matrix describing the complement of the \eqn{\alpha}-hull, see function
+\code{\link{complement}} for a detailed description;
+\item \code{alpha}: the value of \eqn{\alpha} for which the shape is computed;
+\item \code{ashape}: output of function \code{\link{ashape}}.
+}
 }
 \description{
-Computes the alpha-hull for the given set of points
+Computes the \eqn{\alpha}-hull for the given set of points.
 }
 \examples{
 x = runif(10)
@@ -23,4 +36,7 @@ y = runif(10)
 a.hull = ahull(x, y)
 plot(a.hull)
 
+}
+\seealso{
+\code{\link{delvor}}, \code{\link{ashape}}, \code{\link{complement}}
 }

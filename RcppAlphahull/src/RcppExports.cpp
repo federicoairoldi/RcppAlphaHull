@@ -40,6 +40,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// inahullRcpp
+Rcpp::LogicalVector inahullRcpp(const Rcpp::NumericMatrix& complement, const Rcpp::NumericVector& x, const Rcpp::NumericVector& y);
+RcppExport SEXP _RcppAlphahull_inahullRcpp(SEXP complementSEXP, SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type complement(complementSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(inahullRcpp(complement, x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // computeVoronoiRcpp
 Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVector y);
 RcppExport SEXP _RcppAlphahull_computeVoronoiRcpp(SEXP xSEXP, SEXP ySEXP) {
@@ -57,6 +70,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlphahull_computeAhullRcpp", (DL_FUNC) &_RcppAlphahull_computeAhullRcpp, 1},
     {"_RcppAlphahull_computeAshapeRcpp", (DL_FUNC) &_RcppAlphahull_computeAshapeRcpp, 2},
     {"_RcppAlphahull_computeComplement", (DL_FUNC) &_RcppAlphahull_computeComplement, 2},
+    {"_RcppAlphahull_inahullRcpp", (DL_FUNC) &_RcppAlphahull_inahullRcpp, 3},
     {"_RcppAlphahull_computeVoronoiRcpp", (DL_FUNC) &_RcppAlphahull_computeVoronoiRcpp, 2},
     {NULL, NULL, 0}
 };
