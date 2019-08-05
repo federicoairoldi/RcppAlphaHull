@@ -26,7 +26,7 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
   rows_balls.reserve(5*mesh.rows());
   rows_halfplanes.reserve(5*mesh.rows());
 
-  for(size_t i=0; i<mesh.rows(); i++){
+  for(int i=0; i<mesh.rows(); i++){
     Rcpp::checkUserInterrupt();
 
     bool bp1 = (mesh(i,10) == 1), bp2 = (mesh(i,11) == 1);
@@ -105,7 +105,7 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     complement(i,1) = balls[i].center().y; // c2
     complement(i,2) = balls[i].radius();   // r
   
-    for(size_t j=0; j<mesh.cols(); j++) // mesh informations
+    for(int j=0; j<mesh.cols(); j++) // mesh informations
       complement(i,3+j) = mesh(idx,j);
     
     // retrieving the arc information
@@ -125,7 +125,7 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     complement(balls.size()+i,1) = halfplanes[i].rectSlope();
     complement(balls.size()+i,2) = (!halfplanes[i].isVertical()? -1: -3) - (halfplanes[i].getSide()==-1);
     
-    for(size_t j=0; j<mesh.cols(); j++)
+    for(int j=0; j<mesh.cols(); j++)
       complement(balls.size()+i,3+j) = mesh(idx,j);
     
   }

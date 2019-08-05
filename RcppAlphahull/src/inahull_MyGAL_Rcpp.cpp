@@ -9,7 +9,7 @@ template<typename T>
 void complement_matrix_to_vectors(const Rcpp::NumericMatrix& complement, 
                                   std::vector<Ball<T>>& balls, std::vector<HalfPlane<T>>& halfplanes){
   // constructing balls and halfplanes that form the complement
-  for(size_t i=0; i<complement.rows(); i++)
+  for(int i=0; i<complement.rows(); i++)
     if(complement(i,2)>0){ // r > 0 => ball
       Ball<T> b(complement(i,0), complement(i,1), complement(i,2));
       // it may happen that some balls are inserted more than one time, in those cases I just insert one
@@ -54,7 +54,7 @@ Rcpp::LogicalVector inahullRcpp(const Rcpp::NumericMatrix& complement,
   
   // spanning the points
   Rcpp::LogicalVector res(x.size());
-  for(size_t i=0; i<x.size(); i++)
+  for(int i=0; i<x.size(); i++)
     res[i] = inahull_point<real>(Vector2<real>(x[i], y[i]), balls, halfplanes)? 1: 0;
   
   return res;

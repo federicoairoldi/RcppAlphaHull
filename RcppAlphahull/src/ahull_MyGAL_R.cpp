@@ -36,7 +36,7 @@ Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement, const T& alph
   std::vector<HalfPlane<T>> halfplanes;
   
   // constructing balls, halfplanes and arcs that has to be "reduced"
-  for(size_t i=0; i<complement.rows(); i++)
+  for(int i=0; i<complement.rows(); i++)
     if(complement(i,2)>0){ // r > 0 => ball
       Ball<T> b(complement(i,0), complement(i,1), complement(i,2));
       // it may happen that some balls are inserted more than one time, in those cases I just insert one
