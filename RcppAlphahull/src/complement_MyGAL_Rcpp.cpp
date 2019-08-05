@@ -127,7 +127,6 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     
     for(int j=0; j<mesh.cols(); j++)
       complement(balls.size()+i,3+j) = mesh(idx,j);
-    
   }
   colnames(complement) = Rcpp::CharacterVector::create("c1", "c2", "r", "ind1", "ind2", "x1", "y1", 
                                                        "x2", "y2", "mx1", "my1", "mx2", "my2", "bp1", 

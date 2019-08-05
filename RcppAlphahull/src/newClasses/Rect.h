@@ -1,32 +1,15 @@
+#ifndef _RECT_
+#define _RECT_
+
 #include <limits.h>
 #include <ostream>
 #include <cmath>
 #include "../MyGAL/Vector2.h"
+#include "geomUtil.h"
 using namespace mygal;
 
-#ifndef _RECT_
-#define _RECT_
-
-template<typename T> int sign(const T& value);
 template<typename T> class Segment;
 template<typename T> class Rect;
-
-/* Returns the sign of the given value:
- * - 1 if positive
- * - -1 if negative
- * - 0 if null
- * NB: control with tollerance since I'm working with floating point
- */
-template<typename T>
-int sign(const T& value){
-  T eps = 10e-10; // NB: maybe you have to check this!!!!!!!!!!!!!!!!!!!!!!!!!
-  if( std::fabs(value)<=eps )// std::numeric_limits<T>::epsilon()
-    return 0;
-  if(value > T(0))
-    return 1;
-  // otherwise value < T(0))
-  return -1;
-}
 
 // Insert a rect in a stream
 template<typename T>
@@ -63,7 +46,7 @@ class Rect{
       normalize(); // normalizes the rect
     }; // raises an error if both a and b are 0
     Rect(const Vector2<T>& p1, const Vector2<T>& p2): Rect(p2.x-p1.x, p1.y-p2.y, p1.x*p2.y-p2.x*p1.y)
-    { if(p1.x==p2.x && p1.y==p2.y) std::cerr << "Error! p1 and p2 are the same point" << std::endl; };
+    { if( p1==p2 ) std::cerr << "Error! p1 and p2 are the same point" << std::endl; };
 
     // GETTERS
     T slope() const { return a!=0? -b/a: std::numeric_limits<T>::infinity(); };

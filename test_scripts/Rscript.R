@@ -20,8 +20,8 @@ for(i in 1:dim(vorcpp$mesh)[1])
 
 n = 35
 set.seed(353)
-x = runif(n,0,10)
-y = runif(n,0,10)
+x = runif(n)
+y = runif(n)
 
 vorcpp = RcppAlphahull::delvor(x,y)
 vorR = alphahull::delvor(x, y)
@@ -35,15 +35,15 @@ View(ascpp$edges)
 plot(asR, wpoints = T)
 plot(ascpp, wpoints = T, col = c("red","black"))
 
-alpha = 9
-ahR = alphahull::ahull(x, y, alpha = alpha)
-ahcpp = RcppAlphahull::ahull(x, y, alpha = alpha)
+alpha = 0.1
+ahR = alphahull::ahull(vorR, alpha = alpha)
+ahcpp = RcppAlphahull::ahull(vorcpp, alpha = alpha)
 View(ahR$complement)
 View(ahcpp$complement)
 plot(vorR, number = T, wpoints = F, wlines = "vor", col = "grey", asp = 1)
 
 # plotting arcs from complement
-wrow = which(ahR$complement[,3]>0)
+wrow = which(ahR$complement[,3]>0 & ahR$complement[,"ind"] == 1)
 for(i in wrow){
   #invisible(readline(prompt="Press [enter] to continue"))
   #Sys.sleep(0.5)
@@ -102,4 +102,5 @@ n <- 300
 theta<-runif(n,0,2*pi)
 r<-sqrt(runif(n,0.25^2,0.5^2))
 x<-cbind(0.5+r*cos(theta),0.5+r*sin(theta))
-
+vorcpp = RcppAlphahull::delvor(x)
+vorR = alphahull::delvor(x)

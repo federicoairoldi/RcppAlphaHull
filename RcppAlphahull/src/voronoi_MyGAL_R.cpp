@@ -6,7 +6,8 @@
 using namespace mygal;
 using namespace Rcpp;
 
-// NB: TRY TO MOVE IT TO UTILITIES.H //
+void hello();
+
 /* Function to translate indices: since in c++ vectors starts from 0 and in R from 1,
  * then indeces of the sites are shifted by a -1 in c++ with respect the
  * correspondent in R
@@ -17,7 +18,7 @@ std::vector<T> add_one(const std::vector<T>& v){
   for(size_t i=0; i<newvett.size(); i++)
     newvett[i]+=1;
   return newvett;
-}
+};
 
 // casts a vector of size_t ro a vector of int
 Rcpp::IntegerVector to_RcppInt(const std::vector<size_t>& v){
@@ -55,7 +56,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
 
   // Build the set of sites
   std::vector<Vector2<real>> points;
-  for(size_t i=0; i<x.size(); i++)
+  for(int i=0; i<x.size(); i++)
     points.push_back(Vector2<real>(x[i], y[i]));
 
   // Call of the Fortune's algorithm to build the tesselation and the triangulation:
@@ -79,7 +80,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   auto halfedges = diagram.getHalfEdges();
 
   // since push_back is really slow I'd like to know the number of edges in advance
-  int N = 0;
+  size_t N = 0;
   for(auto it = halfedges.begin(); it->twin != nullptr; it++){
     // luckily, twin halfedges are stored one after the other so I just need
     // to skip the subsequent halfedge to not include the same information twice
