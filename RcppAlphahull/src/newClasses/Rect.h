@@ -47,7 +47,7 @@ class Rect{
      * - a=0 and b<0 => switches sings of b and c
      */
     void normalize(){
-      if(a<0 || (a==0 & b<0)){
+      if(a<0 || (a==0 && b<0)){
         a=-a; b=-b; c=-c;
       }
     };
@@ -63,7 +63,7 @@ class Rect{
       normalize(); // normalizes the rect
     }; // raises an error if both a and b are 0
     Rect(const Vector2<T>& p1, const Vector2<T>& p2): Rect(p2.x-p1.x, p1.y-p2.y, p1.x*p2.y-p2.x*p1.y)
-    { if(p1.x==p2.x & p1.y==p2.y) std::cerr << "Error! p1 and p2 are the same point" << std::endl; };
+    { if(p1.x==p2.x && p1.y==p2.y) std::cerr << "Error! p1 and p2 are the same point" << std::endl; };
 
     // GETTERS
     T slope() const { return a!=0? -b/a: std::numeric_limits<T>::infinity(); };

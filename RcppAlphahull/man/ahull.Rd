@@ -7,7 +7,7 @@
 ahull(x, y = NULL, alpha)
 }
 \arguments{
-\item{x}{coordinates of the sites. Alternatively, a matrix with two columns containing both sites 
+\item{x}{x coordinates of the sites. Alternatively, a matrix with two columns containing both sites 
 coordinates, an object of class delvor or an object of class ashape.}
 
 \item{y}{y coordinates of the sites; do not insert if x is not a vector of coordinates (see x).}

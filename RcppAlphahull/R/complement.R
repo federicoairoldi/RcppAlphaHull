@@ -1,6 +1,6 @@
 #' Complementary \eqn{\alpha}-hull computation
 #'
-#' Computes the complement of an alpha hull .
+#' Computes the complement of an \eqn{\alpha}-hull for the given value of \eqn{\alpha} provided.
 #'
 #' @param x coordinates of the sites. Alternatively, a matrix with two columns containing both sites 
 #' coordinates or an object of class delvor.
@@ -15,13 +15,15 @@
 #'   \item \code{c2}: y coordinate of the center of the ball;
 #'   \item \code{r}: radius of the ball;
 #' }
-#' If the row refers to an halfplane then:
+#' If the row refers to an halfplane then \code{complement[i,1:3]} has the following forms:
 #' \itemize{
-#'   \item \code{c1}: ;
-#'   \item \code{c2}: ;
-#'   \item \code{r}: 
+#'   \item x>a+bx: \code{(a,b,-1)};
+#'   \item x<a+bx: \code{(a,b,-2)};
+#'   \item x>a:    \code{(a,0,-3)};
+#'   \item x<a:    \code{(a,0,-4)}.
 #' }
 #'
+#' @seealso \code{\link{ahull}}
 #'
 #' @examples
 #' x = runif(10)

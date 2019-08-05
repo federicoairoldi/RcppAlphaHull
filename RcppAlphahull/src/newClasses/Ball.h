@@ -90,4 +90,7 @@ class Ball{
     }
 };
 
+template<typename T>
+std::vector<Vector2<T>> intersections(const Ball<T>& b1, const Ball<T>& b2){ return b1.intersections(b2); }
+
 #endif

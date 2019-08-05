@@ -12,6 +12,7 @@
 #' inspired by the R/Fortran package alphahull which does the same job, but much slower. Plot of some 
 #' graphs are done by using this package functions. 
 #'
+#' @docType package
 #' @useDynLib RcppAlphahull
 #' @import alphahull
 #' @importFrom Rcpp evalCpp

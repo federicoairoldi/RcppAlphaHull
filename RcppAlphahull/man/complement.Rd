@@ -23,15 +23,16 @@ saved in the following way:
   \item \code{c2}: y coordinate of the center of the ball;
   \item \code{r}: radius of the ball;
 }
-If the row refers to an halfplane then:
+If the row refers to an halfplane then \code{complement[i,1:3]} has the following forms:
 \itemize{
-  \item \code{c1}: ;
-  \item \code{c2}: ;
-  \item \code{r}: 
+  \item x>a+bx: \code{(a,b,-1)};
+  \item x<a+bx: \code{(a,b,-2)};
+  \item x>a:    \code{(a,0,-3)};
+  \item x<a:    \code{(a,0,-4)}.
 }
 }
 \description{
-Computes the complement of an alpha hull .
+Computes the complement of an \eqn{\alpha}-hull for the given value of \eqn{\alpha} provided.
 }
 \examples{
 x = runif(10)
@@ -39,4 +40,7 @@ y = runif(10)
 alpha = 2
 ahull.compl = complement(x, y, alpha)
 
+}
+\seealso{
+\code{\link{ahull}}
 }

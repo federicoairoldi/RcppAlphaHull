@@ -1,10 +1,10 @@
 #include <Rcpp.h>
 #include <cmath>
-#include "newClasses/Rect.h"
 #include "newClasses/Ball.h"
+#include "newClasses/Rect.h"
 #include "newClasses/Segment.h"
 #include "newClasses/HalfPlane.h"
-#include "newClasses/Arc.h"
+#include "newClasses/CircArc.h"
 #include "MyGAL/Vector2.h"
 using namespace Rcpp;
 
@@ -12,8 +12,8 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
 
 // reduces the arcs by substracting those part that are inside the given balls
 template<typename T>
-std::vector<Arc<T>> reduce(const Arc<T>& arc, const std::vector<Ball<T>>& balls){
-  std::vector<Arc<T>> arc_res{arc};
+std::vector<CircArc<T>> reduce(const CircArc<T>& arc, const std::vector<Ball<T>>& balls){
+  std::vector<CircArc<T>> arc_res{arc};
   Ball<T> ball = arc.getBall(); // ball on which pieces of arcs lays
   
   for(size_t i=0; i<balls.size(); i++){
@@ -23,13 +23,15 @@ std::vector<Arc<T>> reduce(const Arc<T>& arc, const std::vector<Ball<T>>& balls)
       //Arc<T>
     }
   }
+  
+  return arc_res;
 }
 
 // starting from the complement matrix of the alpha hull returns a matrix containing arcs that describe
 // the boundary
 template<typename T>
 Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement, const T& alpha){
-  std::vector<Arc<T>> arcs;
+  std::vector<CircArc<T>> arcs;
   std::vector<Ball<T>> balls;
   std::vector<HalfPlane<T>> halfplanes;
   
@@ -40,7 +42,7 @@ Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement, const T& alph
       // it may happen that some balls are inserted more than one time, in those cases I just insert one
       if( std::find(balls.begin(), balls.end(), b)==balls.end() ){
         balls.push_back(b);
-        arcs.push_back(Arc<T>(b));
+        arcs.push_back(CircArc<T>(b));
       }
     }
     else{
@@ -53,9 +55,10 @@ Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement, const T& alph
   
   // cutting the arcs
   for(size_t i=0; i<arcs.size(); i++){
-    std::vector<Arc<T>> tmp = reduce(arcs[i], balls);
+    std::vector<CircArc<T>> tmp = reduce(arcs[i], balls);
   }
   
+  // building arcs matrix
   Rcpp::NumericMatrix arcs_mat;
   return arcs_mat;
 }
@@ -76,11 +79,11 @@ Rcpp::List computeAhullRcpp(Rcpp::List ashape) {
   Rcpp::NumericMatrix complement = computeComplement(mesh, alpha);
 
   // arcs
-  Rcpp::NumericMatrix arcs;
+  Rcpp::NumericMatrix arcs = getArcs(complement, alpha);
   
   // computing length of the alpha hull boundary
   real length = 0;
-  for(size_t i=0; i<arcs.rows(); i++)
+  for(int i=0; i<arcs.rows(); i++)
     if(arcs(i,2)>0)
       length+=2*arcs(i,5)*arcs(i,2); // 2*theta*r
   

@@ -49,7 +49,7 @@ Plot of an object "del.vor" with a "fake.tri" tri object.
 \examples{
 x = runif(10)
 y = runif(10)
-vor.del = my.delvor(x, y)
+del.vor = delvor(x, y)
 
 plot.delvor(vor.del, wlines = "both", wpoints = FALSE, number = TRUE, 
             col = c("black", "blue", "red", "black"))

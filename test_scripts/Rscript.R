@@ -9,11 +9,10 @@ require(RcppAlphahull)
 View(vorR$mesh)
 View(vorcpp$mesh)
 
-system.time(plot(vorR, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T,
-                 xlim = c(0,1), ylim = c(0,1), wlines = 'both', number = F))
-system.time(RcppAlphahull::plot.delvor(vorcpp, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T,
-                                       xlim = c(0,1), ylim = c(0,1), wlines = 'both', number = F))
+system.time(plot(vorR, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T, wlines = 'both', number = F))
+system.time(RcppAlphahull::plot.delvor(vorcpp, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T, wlines = 'vor', number = F))
 
+# plots in blue infinite edges
 for(i in 1:dim(vorcpp$mesh)[1])
   lines(c(vorcpp$mesh[i, "mx1"], vorcpp$mesh[i, "mx2"]),
         c(vorcpp$mesh[i, "my1"], vorcpp$mesh[i, "my2"]),
@@ -21,8 +20,8 @@ for(i in 1:dim(vorcpp$mesh)[1])
 
 n = 35
 set.seed(353)
-x = runif(n)
-y = runif(n)
+x = runif(n,0,10)
+y = runif(n,0,10)
 
 vorcpp = RcppAlphahull::delvor(x,y)
 vorR = alphahull::delvor(x, y)
@@ -34,14 +33,14 @@ ascpp$alpha.extremes
 View(asR$edges)
 View(ascpp$edges)
 plot(asR, wpoints = T)
-plot(ascpp, wpoints = T)
+plot(ascpp, wpoints = T, col = c("red","black"))
 
 alpha = 9
 ahR = alphahull::ahull(x, y, alpha = alpha)
 ahcpp = RcppAlphahull::ahull(x, y, alpha = alpha)
 View(ahR$complement)
 View(ahcpp$complement)
-plot(vorR, number = T, wpoints = F, wlines = "vor", col = "grey", xlim = c(0,1), ylim = c(0,1), asp = 1)
+plot(vorR, number = T, wpoints = F, wlines = "vor", col = "grey", asp = 1)
 
 # plotting arcs from complement
 wrow = which(ahR$complement[,3]>0)
@@ -88,12 +87,19 @@ for(i in wrow){
 }
 
 
-alpha = 0.05
+alpha = 0.09
 ahR = alphahull::ahull(x, y, alpha = alpha)
 ahcpp = RcppAlphahull::ahull(x, y, alpha = alpha)
 
-system.time(plot(ahR, xlim = c(0,1), ylim = c(0,1), asp = 1))
-system.time(plot.ahull.not(ahcpp, add = T, col = "red"))
+system.time(plot(ahR, asp = 1))
+system.time(RcppAlphahull::plot.ahull.not(ahcpp, add = T, col = "red"))
 points(0.7, 0.8, pch = 19, col = "blue")
 alphahull::inahull(ahR, c(0.7, 0.8))
 RcppAlphahull::inahull(ahcpp, 0.7, 0.8)
+
+# annulus sampling
+n <- 300
+theta<-runif(n,0,2*pi)
+r<-sqrt(runif(n,0.25^2,0.5^2))
+x<-cbind(0.5+r*cos(theta),0.5+r*sin(theta))
+

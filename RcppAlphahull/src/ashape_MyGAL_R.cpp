@@ -1,7 +1,6 @@
 #include <Rcpp.h>
 #include <iostream>
 #include <algorithm>
-#include "MyGAL/FortuneAlgorithm.h"
 #include "newClasses/Segment.h"
 
 using namespace mygal;
@@ -16,8 +15,7 @@ template<typename T>
 std::vector<T> computeAlphaLimits(const Rcpp::List& delvor_obj){
    std::vector<T> alpha_L((int) as<Rcpp::List>(delvor_obj["tri.obj"])["n"], 0);
    const Rcpp::NumericMatrix& mesh = delvor_obj["mesh"];
-   T dist1, dist2, tmp;
-   for(size_t i=0; i<mesh.rows(); i++){
+   for(int i=0; i<mesh.rows(); i++){
       size_t idx1 = (mesh(i,0)-1), idx2 = (mesh(i,1)-1);
       if(mesh(i,10) == 1 || mesh(i,11) == 1){
          alpha_L[idx1] = R_PosInf;
@@ -28,9 +26,9 @@ std::vector<T> computeAlphaLimits(const Rcpp::List& delvor_obj){
          Vector2<T> e1(mesh(i,6), mesh(i,7));
          Vector2<T> e2(mesh(i,8), mesh(i,9));
 
-         dist1 = p.getDistance(e1);
-         dist2 = p.getDistance(e2);
-         tmp = std::max(dist1, dist2);
+         T dist1 = p.getDistance(e1);
+         T dist2 = p.getDistance(e2);
+         T tmp = std::max(dist1, dist2);
          alpha_L[idx1] = std::max(alpha_L[idx1], tmp);
          alpha_L[idx2] = std::max(alpha_L[idx2], tmp);
       }
@@ -43,7 +41,7 @@ std::vector<T> computeAlphaLimits(const Rcpp::List& delvor_obj){
 template<typename T>
 T ashape_length(const Rcpp::NumericMatrix& mesh){
    T length = 0;
-   for(size_t i=0; i<mesh.rows(); i++){
+   for(int i=0; i<mesh.rows(); i++){
       Vector2<T> p1(mesh(i,2), mesh(i,3));
       Vector2<T> p2(mesh(i,4), mesh(i,5));
       length+=p1.getDistance(p2);
@@ -60,7 +58,7 @@ std::vector<size_t> getAlphaNeighbours(const Rcpp::NumericMatrix& mesh,
                                        const T& alpha){
    std::vector<size_t> which_rows;
    T alpha_min, alpha_max, dist1, dist2, dist3;
-   for(size_t i=0; i<mesh.rows(); i++)
+   for(int i=0; i<mesh.rows(); i++)
       if(std::find(alpha_extremes.begin(), alpha_extremes.end(), mesh(i,0)) != alpha_extremes.end()
          && std::find(alpha_extremes.begin(), alpha_extremes.end(), mesh(i,1)) != alpha_extremes.end()){
          // checking alpha_min e alpha_max

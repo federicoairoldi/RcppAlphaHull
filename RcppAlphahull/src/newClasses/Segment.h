@@ -14,11 +14,11 @@ template<typename T> class Segment;
 template<typename T>
 bool inRange(const Segment<T>& seg, const Vector2<T>& point){
   T inf=std::min(seg.p.x, seg.q.x), sup=std::max(seg.p.x, seg.q.x);
-  if( point.x <= inf | sup <= point.x )
+  if( point.x <= inf || sup <= point.x )
     return false;
 
   inf=std::min(seg.p.y, seg.q.y); sup=std::max(seg.p.y, seg.q.y);
-  if( point.y <= inf | sup <= point.y )
+  if( point.y <= inf || sup <= point.y )
     return false;
 
   return true;
@@ -87,7 +87,7 @@ class Segment{
 
       // colinear case
       if( val1 == 0 && val2 == 0 )
-        return ( inRange<T>(Segment<T>(p,q), other.p) | inRange<T>(Segment<T>(p,q), other.q) );
+        return ( inRange<T>(Segment<T>(p,q), other.p) || inRange<T>(Segment<T>(p,q), other.q) );
 
       return false;
     }
