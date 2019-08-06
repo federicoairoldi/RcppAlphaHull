@@ -14,7 +14,7 @@ template<typename T> class Ball;
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const CircArc<T>& a){
   os << "center: " << a.b.center() << " radius: " << a.b.radius() << " v: " << a.v << " alpha: " 
-     << a.alpha;
+     << a.alpha << " end: " << a.getEndVector();
   return os;
 }
 
@@ -23,41 +23,49 @@ class CircArc{
   typedef Ball<T> ball;
   typedef Vector2<T> vector;
   
+  // FRIENDS
   friend std::ostream& operator<<<T>(std::ostream& os, const CircArc<T>& a);
   
   private:
+    // ATTRIBUTES
     ball b; // ball
     vector v; // vector pointing to the start of the arc
-    T alpha; // 
+    T alpha; // width of the angle defining the arc
   
   public:
     // CONSTRUCTORS
     CircArc() = delete; // deleting default constructor
     CircArc(const ball& b): b(b), v(vector(1,0)), alpha(2*M_PI) {}; // defines an arc that covers the whole circle
-    CircArc(const ball& b, const vector& v, const T& alpha = 2*M_PI): b(b), v(1/v.getNorm()*v), alpha(alpha) 
-    { if(alpha<0 || alpha>2*M_PI) std::cerr << "Error! Magnitude for angle not in [0;2*pi]"; };
+    CircArc(const ball& b, const vector& v, const T& alpha = 2*M_PI): b(b), v(normalize_vect(v)), alpha(alpha) 
+    { if(alpha<0 || alpha>2*M_PI) std::cout << "Error! Magnitude for angle not in [0;2*pi] " << alpha; };
     CircArc(const ball& b, const T& vx, const T& vy, const T& alpha = 2*M_PI): CircArc(b, vector(vx,vy), alpha) {};
     CircArc(const T& cx, const T& cy,const T& r, const T& vx = 1, const T& vy = 0, const T& alpha = 2*M_PI): 
       b(cx, cy, r), v(vx, vy), alpha(alpha) {};
     
     // GETTERS
     ball getBall() const { return b; };
+    // positions wrt the center of the ball
     vector getVector() const { return v; }; // a vector pointing the starting of the arc from center
     vector getEndVector() const { return rotate<T>(v,alpha); }; // a vector pointing the ending of the arc from center
+    vector getMidVector() const { return rotate<T>(v,alpha/2); }; // a vector pointing the middle of the arc from center
+    // positions wrt the reference system (0,0)
+    vector getPoint() const { return b.radius()*getVector()+b.center(); }; // a vector pointing the starting point of the arc
+    vector getEndPoint() const { return b.radius()*getEndVector()+b.center(); }; // a vector pointing the ending point of the arc
+    vector getMidPoint() const { return b.radius()*getMidVector()+b.center(); }; // a vector pointing the middle point of the arc
     T width() const { return alpha; };
     
     // OTHER METHODS
     // computes the length of the arc
     T length() const { return alpha*b.radius(); };
     
-    // return the angle of v, starting point of the arc (value between 0 and 2*PI)
+    // returns the angle of v, starting point of the arc (value between 0 and 2*PI)
     T theta1() const { 
       T theta1 = std::atan2(v.y, v.x);
       theta1+= theta1<0? 2*M_PI: 0;
       return theta1;
     };
     
-    // return end point of the arc (value between 0 and 2*PI)
+    // returns end point of the arc (value between 0 and 2*PI)
     T theta2() const { 
       T theta2 = theta1()+alpha;
       theta2-= theta2>2*M_PI? 2*M_PI: 0;
@@ -71,7 +79,7 @@ class CircArc{
     // returns an arc rotated (counter-clockwise) by the angle theta
     CircArc<T> rotate_arc(const T& theta) const { return CircArc<T>(b, rotate<T>(v,theta), alpha); }
     
-    // compute the set difference between two arcs on the same circumference
+    // computes the set difference between two arcs on the same circumference
     std::vector<CircArc> diff(const CircArc& a2) const{// arcs not on the same circumference
       if( b.center()!=a2.b.center() ){
         std::cerr << "Error! arc difference with arcs in differet circles" << std::endl;
@@ -96,13 +104,13 @@ class CircArc{
       // if we arrive here then we have that theta1 of first arc is 0.
       
       // case 1: 0 < alpha < a2.theta1 < a2.theta2 (0 < alpha is always true by construction)
-      if( alpha < a2.theta1() && a2.theta1() < a2.theta2() ){
+      if( alpha <= a2.theta1() && a2.theta1() < a2.theta2() ){
         // std::cout << "case 1" << std::endl;
         return std::vector<CircArc>{*this};
       }
       
       // case 2: 0 < a2.theta1 < alpha < a2.theta2
-      if( 0 < a2.theta1() && a2.theta1() < alpha && alpha < a2.theta2() ){
+      if( 0 < a2.theta1() && a2.theta1() < alpha && alpha <= a2.theta2() ){
         // std::cout << "case 2" << std::endl;
         return std::vector<CircArc>{CircArc(b,v,a2.theta1())};
       }
@@ -131,7 +139,7 @@ class CircArc{
       }
       
       // case 6: 0 < a2.theta2 < alpha < a2.theta1
-      if( 0 < a2.theta2() && a2.theta2() < alpha && alpha < a2.theta1() ){
+      if( 0 < a2.theta2() && a2.theta2() < alpha && alpha <= a2.theta1() ){
         // std::cout << "case 6" << std::endl;
         return std::vector<CircArc>{CircArc(b, a2.getEndVector(), alpha-a2.theta2())};
       }
@@ -150,7 +158,7 @@ class CircArc{
       
       // NB: to be removed if no errors occur in future
       // case 7: 0 = a2.theta1 < alpha < a2.theta2 (maybe this shouldn't happen)
-      if(a2.theta2() == 0 && a2.theta2() < alpha){
+      if(a2.theta2() == 0 && alpha <= a2.theta1()){
         // std::cout << "case 7" << std::endl;
         return std::vector<CircArc>{CircArc(b, a2.getEndVector(), alpha-a2.theta2())};
       }
@@ -179,19 +187,5 @@ std::vector<CircArc<T>> diff(const CircArc<T>& a1, const CircArc<T>& a2) { retur
 // returns an arc rotated (counter-clockwise) by the angle theta
 template<typename T>
 CircArc<T> rotate_arc(const CircArc<T>& a, const T& theta){ return a.rotate(theta); }
-
-// given a vector of arcs remove from each one the parts in common with the provided ball returning
-// a vector containing the new arc parts
-template<typename T>
-std::vector<CircArc<T>> collective_removeBall(const std::vector<CircArc<T>>& arcs, const Ball<T>& b){
-  std::vector<CircArc<T>> res;
-  
-  for(size_t i=0; i<arcs.size(); i++){
-    std::vector<CircArc<T>> tmp = arcs[i].removeBall(b); // subtracting the ball from the current element
-    res.insert(res.end(), tmp.begin(), tmp.end()); // adding the subtracted arcs to the result
-  }
-  
-  return res;
-}
 
 #endif

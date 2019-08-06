@@ -30,6 +30,7 @@ bool operator!=(const Ball<T>& b1, const Ball<T>& b2) { return !(b1==b2); };
 
 template<typename T>
 class Ball{
+  // FRIENDS
   friend std::ostream& operator<<<T>(std::ostream& os, const Ball<T>& ball);
   friend bool operator==<T>(const Ball<T>& b1, const Ball<T>& b2);
   
@@ -37,6 +38,7 @@ class Ball{
   typedef CircArc<T> arc;
   
   private:
+    // ATTRIBUTES
     vector c; // center of the ball
     T r; // radius of the ball
 

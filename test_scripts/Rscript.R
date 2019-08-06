@@ -18,8 +18,8 @@ for(i in 1:dim(vorcpp$mesh)[1])
         c(vorcpp$mesh[i, "my1"], vorcpp$mesh[i, "my2"]),
         col = ifelse(vorcpp$mesh[i, "bp2"] == 1 | vorcpp$mesh[i, "bp1"] == 1, "blue", "red"))
 
-n = 35
-set.seed(353)
+n = 35 # 35
+set.seed(35343) # 353
 x = runif(n)
 y = runif(n)
 
@@ -35,12 +35,30 @@ View(ascpp$edges)
 plot(asR, wpoints = T)
 plot(ascpp, wpoints = T, col = c("red","black"))
 
-alpha = 0.1
+alpha = 1
 ahR = alphahull::ahull(vorR, alpha = alpha)
 ahcpp = RcppAlphahull::ahull(vorcpp, alpha = alpha)
 View(ahR$complement)
 View(ahcpp$complement)
+View(ahR$arcs)
+View(ahcpp$arcs)
+ahcpp$length
+ahR$length
+plot(ahR, col = c("red", "black", "black", "black", "black", "black"), asp = 1)
+plot(ahcpp, col = c("cyan", "black", "black", "black", "black", "black"), asp = 1, add = T)
 plot(vorR, number = T, wpoints = F, wlines = "vor", col = "grey", asp = 1)
+
+# plotting arcs
+wrow = which(ahR$arcs[,3]>0)
+for(i in wrow){
+  # invisible(readline(prompt="Press [enter] to continue"))
+  alphahull::arc(ahR$arcs[i,1:2], ahR$arcs[i,3], ahR$arcs[i,4:5], ahR$arcs[i,6], col = "red", lty = 2)
+}
+wrow = which(ahcpp$arcs[,3]>0)
+for(i in wrow){
+  # invisible(readline(prompt="Press [enter] to continue"))
+  alphahull::arc(ahcpp$arcs[i,1:2], ahcpp$arcs[i,3], ahcpp$arcs[i,4:5], ahcpp$arcs[i,6], col = "cyan", lty = 2)
+}
 
 # plotting arcs from complement
 wrow = which(ahR$complement[,3]>0 & ahR$complement[,"ind"] == 1)
@@ -56,18 +74,6 @@ for(i in wrow){
   #Sys.sleep(0.5)
   alphahull::arc(ahcpp$complement[i,1:2], ahcpp$complement[i,3], ahcpp$complement[i,17:18], ahcpp$complement[i,19], col = "cyan", lty = 2)
   points(ahcpp$complement[i,1],ahcpp$complement[i,2], pch = 19, col = "cyan")
-}
-
-# plotting arcs
-wrow = which(ahR$arcs[,3]>0)
-for(i in wrow){
-  # invisible(readline(prompt="Press [enter] to continue"))
-  alphahull::arc(ahR$arcs[i,1:2], ahR$arcs[i,3], ahR$arcs[i,4:5], ahR$arcs[i,6], col = "red", lty = 2)
-}
-wrow = which(ahcpp$complement[,3]>0)
-for(i in wrow){
-  # invisible(readline(prompt="Press [enter] to continue"))
-  alphahull::arc(ahcpp$complement[i,1:2], ahcpp$complement[i,3], ahcpp$complement[i,17:18], ahcpp$complement[i,19], col = "cyan", lty = 2)
 }
 
 # plotting circles
@@ -87,7 +93,7 @@ for(i in wrow){
 }
 
 
-alpha = 0.09
+alpha = 0.1
 ahR = alphahull::ahull(x, y, alpha = alpha)
 ahcpp = RcppAlphahull::ahull(x, y, alpha = alpha)
 
@@ -96,6 +102,11 @@ system.time(RcppAlphahull::plot.ahull.not(ahcpp, add = T, col = "red"))
 points(0.7, 0.8, pch = 19, col = "blue")
 alphahull::inahull(ahR, c(0.7, 0.8))
 RcppAlphahull::inahull(ahcpp, 0.7, 0.8)
+
+system.time(alphahull::ahull(vorR, alpha = alpha))
+system.time(RcppAlphahull::ahull(vorcpp, alpha = alpha))
+system.time(alphahull::inahull(ahR, c(0.7, 0.8)))
+system.time(RcppAlphahull::inahull(ahcpp, 0.7, 0.8))
 
 # annulus sampling
 n <- 300

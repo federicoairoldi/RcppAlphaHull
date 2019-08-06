@@ -39,7 +39,7 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     Segment<real> vor_edge(e1,e2);
     // eventual halfplane to add or evaluate
     HalfPlane<real> h1(r, r.eval(e1)==1? true: false ), // halfplane for bp1 = 1
-                 h2(r, r.eval(e2)==1? true: false ); // halfplane for bp1 = 2
+                    h2(r, r.eval(e2)==1? true: false ); // halfplane for bp2 = 1
 
     // computing distances from p to endpoints of the voronoi segment (for infinite segments I use infinity)
     real d1 = bp1? std::numeric_limits<real>::infinity(): p.getDistance(e1),

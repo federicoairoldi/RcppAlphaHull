@@ -20,8 +20,12 @@ std::ostream& operator<<(std::ostream& os, const Rect<T>& r){
 
 template<typename T>
 class Rect{
+  typedef Vector2<T> vector;
+  
+  // FRIENDS
   friend std::ostream& operator<<<T>(std::ostream& os, const Rect<T>& r);
 
+  // ATTRIBUTES
   private:
     T a,b,c; // a*y + b*x + c = 0 -> m=-b/a and q = -c/a for non vertical rects
 
@@ -45,7 +49,7 @@ class Rect{
         std::cerr << "Error! both a nd b are null" << std::endl;
       normalize(); // normalizes the rect
     }; // raises an error if both a and b are 0
-    Rect(const Vector2<T>& p1, const Vector2<T>& p2): Rect(p2.x-p1.x, p1.y-p2.y, p1.x*p2.y-p2.x*p1.y)
+    Rect(const vector& p1, const vector& p2): Rect(p2.x-p1.x, p1.y-p2.y, p1.x*p2.y-p2.x*p1.y)
     { if( p1==p2 ) std::cerr << "Error! p1 and p2 are the same point" << std::endl; };
 
     // GETTERS
@@ -59,10 +63,10 @@ class Rect{
     // OTHER METHODS
     /* Returns on which side of the rect the point is:
      * -  1 => a*y_p + b*x_p + c > 0 ( y_p - (m*x_p + q) > or x_p > x for vertical rects)
-     * - -1 => a*y_p + b*x_p + c = 0 ( y_p - (m*x_p + q) > or x_p > x for vertical rects)
-     * -  0 => a*y_p + b*x_p + c < 0 ( y_p - (m*x_p + q) > or x_p > x for vertical rects)
+     * -  0 => a*y_p + b*x_p + c = 0 ( y_p - (m*x_p + q) = or x_p = x for vertical rects)
+     * - -1 => a*y_p + b*x_p + c < 0 ( y_p - (m*x_p + q) < or x_p < x for vertical rects)
      */
-    int eval(const Vector2<T> point) const{ return sign<T>(a*point.y + b*point.x + c); }
+    int eval(const vector& point) const{ return sign<T>(a*point.y + b*point.x + c); }
 
     // Provided a x abscissa returns the y coordinate, if the rect is vertical and x!=xr then a quite_NaN
     // is returned, otherwise it returns the same value x.
@@ -73,13 +77,11 @@ class Rect{
     }
 
     // Compute rect/point distance
-    T getDistance(const Vector2<T>& p) const{
-      return std::fabs(a*p.y + b*p.x + c)/std::sqrt(a*a+b*b);
-    }
+    T getDistance(const vector& p) const{ return std::fabs(a*p.y + b*p.x + c)/std::sqrt(a*a+b*b); }
 
     // Returns the points of the rect with distance d from the provided point, if such points don't exist
     // the returned vector is empty
-    std::vector<Vector2<T>> getDistNeigh(const Vector2<T>& p, const T& d){
+    std::vector<vector> getDistNeigh(const vector& p, const T& d){
       T delta = d*d - std::pow(getDistance(p),2), m = slope(), q = intercept();
       if(!isVertical())
         delta*=1+m*m;
@@ -87,13 +89,13 @@ class Rect{
       // if the provided distance d is less than the distance between the rect and the point p, we can't
       // find such pair of points, this translates in the fact that delta < 0
       if(delta < 0)
-        return std::vector<Vector2<T>>();
+        return std::vector<vector>();
 
       // int his case there's only one point
       if(delta == 0){
         T x = !isVertical()? (p.x-m*(q-p.y))/(1+m*m): x_r();
         T y = !isVertical()? m*x+q: p.y;
-        return std::vector<Vector2<T>>{Vector2<T>(x,y)};
+        return std::vector<vector>{vector(x,y)};
       }
 
       T x1 = !isVertical()? (p.x-m*(q-p.y)-std::sqrt(delta))/(1+m*m): x_r(),
@@ -101,7 +103,7 @@ class Rect{
       T y1 = !isVertical()? m*x1+q: p.y-std::sqrt(delta),
         y2 = !isVertical()? m*x2+q: p.y+std::sqrt(delta);
 
-      return std::vector<Vector2<T>>{Vector2<T>(x1,y1), Vector2<T>(x2,y2)};
+      return std::vector<vector>{vector(x1,y1), vector(x2,y2)};
     };
 };
 
