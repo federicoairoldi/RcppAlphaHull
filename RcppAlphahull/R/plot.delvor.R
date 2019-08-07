@@ -1,6 +1,6 @@
 #' Voronoi tesselation/Delanuay triangulation plot
 #'
-#' Plot of an object "del.vor" with a "fake.tri" tri object.
+#' Plot of an object "del.vor" with a "tri.mod" tri object.
 #'
 #' @param x object of class del.vor.
 #' @param add if TRUE the plot is added to the active graphic window.

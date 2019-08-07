@@ -17,10 +17,6 @@
     .Call('_RcppAlphahull_inahullRcpp', PACKAGE = 'RcppAlphahull', complement, x, y)
 }
 
-testRcpp <- function() {
-    invisible(.Call('_RcppAlphahull_testRcpp', PACKAGE = 'RcppAlphahull'))
-}
-
 .computeVoronoiRcpp <- function(x, y) {
     .Call('_RcppAlphahull_computeVoronoiRcpp', PACKAGE = 'RcppAlphahull', x, y)
 }

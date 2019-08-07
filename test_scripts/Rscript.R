@@ -19,9 +19,14 @@ for(i in 1:dim(vorcpp$mesh)[1])
         col = ifelse(vorcpp$mesh[i, "bp2"] == 1 | vorcpp$mesh[i, "bp1"] == 1, "blue", "red"))
 
 n = 35 # 35
-set.seed(35343) # 353
+set.seed(12345) # 353
 x = runif(n)
 y = runif(n)
+theta = runif(300, 0, 2*pi)
+r = runif(300, 0.2, 0.5)
+x = r*cos(theta)+0.5
+y = r*sin(theta)+0.5
+
 
 vorcpp = RcppAlphahull::delvor(x,y)
 vorR = alphahull::delvor(x, y)
@@ -35,7 +40,7 @@ View(ascpp$edges)
 plot(asR, wpoints = T)
 plot(ascpp, wpoints = T, col = c("red","black"))
 
-alpha = 1
+alpha = 0.2
 ahR = alphahull::ahull(vorR, alpha = alpha)
 ahcpp = RcppAlphahull::ahull(vorcpp, alpha = alpha)
 View(ahR$complement)
@@ -45,7 +50,7 @@ View(ahcpp$arcs)
 ahcpp$length
 ahR$length
 plot(ahR, col = c("red", "black", "black", "black", "black", "black"), asp = 1)
-plot(ahcpp, col = c("cyan", "black", "black", "black", "black", "black"), asp = 1, add = T)
+plot(ahcpp, col = c("cyan", "black", "black", "black", "black", "black"), asp = 1)
 plot(vorR, number = T, wpoints = F, wlines = "vor", col = "grey", asp = 1)
 
 # plotting arcs

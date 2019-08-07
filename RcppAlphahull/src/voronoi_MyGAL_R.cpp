@@ -151,7 +151,7 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
                                       Rcpp::Named("x") = Rcpp::NumericVector(x),
                                       Rcpp::Named("y") = Rcpp::NumericVector(y),
                                       Rcpp::Named("neighbours") = neighbors);
-  tri.attr("class") = "tri.fake";
+  tri.attr("class") = "tri.mod";
 
   // Construct the final del.vor object
   Rcpp::List res = Rcpp::List::create(Rcpp::Named("mesh") = mesh,

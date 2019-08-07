@@ -11,8 +11,8 @@
 #' \describe{
 #'    \item{mesh}{a matrix describing the Voronoi tesselation and the Delanuay triangulation.}
 #'    \item{x}{a 2-column matrix containing the coordinates of the sites.}
-#'    \item{tri.obj}{a "fake" tri object describing the triangulation similar to the one of the 
-#'    package tri.mesh.}
+#'    \item{tri.obj}{an S3 object of class "tri.mod" describing the triangulation similar to the one of 
+#'    the package tri.mesh.}
 #' }
 #'
 #' @details This function retrieves the Voronoi tesselation and the Delanuay triangulation of a given set
@@ -27,17 +27,18 @@
 #' edge; 
 #' \item \code{mx2} and \code{my2}: coordinates of the second extreme, e2, of the Voronoi tesselation 
 #' edge; 
-#' \item \code{bp1} and \code{bp2}: denote wether one of the direction of the Voronoi edge is infinite, either from the
-#' side of e1 or e2. 
+#' \item \code{bp1} and \code{bp2}: denote wether one of the direction of the Voronoi edge is infinite, 
+#' either from the side of e1 or e2. 
 #' }
 #' 
-#' \bold{tri.obj} is a list of four elements that describe the Delanuay triangulation:
+#' \bold{tri.obj}, S3 object of class "tri.mod",  is a list of four elements that describe the Delanuay 
+#' triangulation:
 #' \itemize{
 #' \item \code{n}: number of sites of the triangulation;
 #' \item \code{x}: x coordinates of the sites;
 #' \item \code{y}: y coordinates of the sites;
-#' \item \code{neighbours}: a list of integer vectors where the i-th vectors contains the indeces of neighbours
-#' sites of the i-th site in the triangulation.
+#' \item \code{neighbours}: a list of integer vectors where the i-th vectors contains the indeces of 
+#' neighbours sites of the i-th site in the triangulation.
 #' }
 #' 
 #' @seealso \code{\link{plot.delvor}}

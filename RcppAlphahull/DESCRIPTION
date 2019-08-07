@@ -1,11 +1,11 @@
 Package: RcppAlphahull
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: What the package does.
 Version: 1.0
 Date: 2019-07-31
 Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more full sentences.
+Maintainer: Your Name <your.name@mail.it>
+Description: 
 License: GPL (>= 2)
 Depends: R (>= 3.4.4)
 Imports: Rcpp (>= 1.0.1)

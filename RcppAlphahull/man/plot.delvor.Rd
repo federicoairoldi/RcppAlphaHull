@@ -44,7 +44,7 @@ Alternatively just one color can be provided.}
 
 }
 \description{
-Plot of an object "del.vor" with a "fake.tri" tri object.
+Plot of an object "del.vor" with a "tri.mod" tri object.
 }
 \examples{
 x = runif(10)

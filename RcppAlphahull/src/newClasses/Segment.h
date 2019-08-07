@@ -70,6 +70,21 @@ class Segment{
     // Returns true if the rect corresponding to the segment has form x = const
     bool isVertical() const {return p.x == q.x;}
     
+    // Returns wheter or not two segment intersect (in R2)
+    bool intersect(const Segment<T>& other) const{
+      // retrieving rects
+      rect r1=getRect(), r2=other.getRect();
+      
+      // check position of 2nd segment w.r.t. the 1st: if val1 and val2 have different signs then the
+      // segment s2 crosses the rect r1
+      int val1 = r1.eval(other.p);
+      int val2 = r1.eval(other.q);
+      // check position of 1st segment w.r.t. the 2nd: if val3 and val4 have different signs then the
+      // segment s1 crosses the rect r2
+      int val3 = r2.eval(p);
+      int val4 = r2.eval(q);
+      
+      
       if(val1!=val2 && val3!=val4)
         return true;
 
