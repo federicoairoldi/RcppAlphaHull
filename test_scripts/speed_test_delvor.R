@@ -29,7 +29,6 @@ for(n in n.nodes){
 }
 tmp = cbind(CppTime, RTime)
 
-
 Cpp.User = tmp[,2]
 R.User = tmp[,5]
 transfCpp = n.nodes*log(n.nodes, 2)

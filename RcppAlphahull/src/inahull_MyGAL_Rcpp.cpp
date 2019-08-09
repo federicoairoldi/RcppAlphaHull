@@ -42,6 +42,8 @@ bool inahull_point(const Vector2<T>& point,
   return true;
 }
 
+// This function evaluates wether or not the points (x and y coordinates) fall in the alpha hull denoted
+// by the the given complement matrix
 // [[Rcpp::export(".inahullRcpp")]]
 Rcpp::LogicalVector inahullRcpp(const Rcpp::NumericMatrix& complement, 
                                 const Rcpp::NumericVector& x, const Rcpp::NumericVector& y){

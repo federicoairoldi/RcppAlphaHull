@@ -31,7 +31,7 @@ finedges = c()
 nfinedges = c()
 
 n = 50 # number of point to sample for the voronoi diagram tests (feel free to change)
-n.test = 1000
+n.test = 200
 
 for(i in 1:n.test){
   if(i%%50==0) print(i) # print the number of the test on the command line (can be commented to save some time)

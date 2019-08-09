@@ -9,7 +9,7 @@ require(RcppAlphahull)
 View(vorR$mesh)
 View(vorcpp$mesh)
 
-system.time(plot(vorR, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T, wlines = 'both', number = F))
+system.time(plot(vorR, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T, wlines = 'vor', number = F))
 system.time(RcppAlphahull::plot.delvor(vorcpp, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T, wlines = 'vor', number = F))
 
 # plots in blue infinite edges
@@ -27,6 +27,8 @@ r = runif(300, 0.2, 0.5)
 x = r*cos(theta)+0.5
 y = r*sin(theta)+0.5
 
+system.time(RcppAlphahull::delvor(x,y))
+system.time(alphahull::delvor(x,y))
 
 vorcpp = RcppAlphahull::delvor(x,y)
 vorR = alphahull::delvor(x, y)

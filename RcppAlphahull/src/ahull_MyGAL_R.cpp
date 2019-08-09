@@ -13,7 +13,7 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
 // starting from the complement matrix of the alpha hull returns a matrix containing arcs that describe
 // the boundary
 template<typename T>
-Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement, const T& alpha){
+Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement){
   std::vector<Ball<T>> balls;
   std::vector<HalfPlane<T>> halfplanes;
   
@@ -37,7 +37,8 @@ Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement, const T& alph
   std::list<CircArc<T>> arcs_list(arcs.begin(), arcs.end());
   
   // clamping arcs that are outside the convex hull (namely are in the halfplanes). By construction such
-  // arcs are 
+  // arcs have their starting and ending point at most on the boundary of one halfplane so I check if
+  // the middle point is in any of them.
   for(size_t i=0; i<halfplanes.size(); i++)
     arcs_list.remove_if([&](const CircArc<T>& a){ return halfplanes[i].isIn(a.getMidPoint()); });
   
@@ -46,8 +47,7 @@ Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement, const T& alph
   // building arcs matrix
   Rcpp::NumericMatrix arcs_mat(arcs.size(), 8);
   for(size_t i=0; i<arcs.size(); i++){
-    // I need to rotate the arc vector to match the alphahull description of arcs
-    Vector2<T> v = arcs[i].getMidVector(); 
+    Vector2<T> v = arcs[i].getMidVector(); // retrieving this vector in order to match alphahull description of arcs
     arcs_mat(i,0) = arcs[i].getBall().center().x;
     arcs_mat(i,1) = arcs[i].getBall().center().y;
     arcs_mat(i,2) = arcs[i].getBall().radius();
@@ -58,6 +58,16 @@ Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement, const T& alph
   colnames(arcs_mat) = Rcpp::CharacterVector::create("c1", "c2", "r", "vx", "vy", "theta", "end1", "end2");
   
   return arcs_mat;
+}
+
+// given the arcs that form the boundary of the alpha-hull return its length
+template<typename T>
+T ahull_boundary_length(const Rcpp::NumericMatrix& arcs){
+  T length = 0;
+  for(int i=0; i<arcs.rows(); i++)
+    if(arcs(i,2)>0)
+      length+=2*arcs(i,5)*arcs(i,2); // 2*theta*r
+  return length;
 }
 
 /* Function to retrieve a ahull object (almost) like the one returned by the alphahull function ahull,
@@ -75,14 +85,11 @@ Rcpp::List computeAhullRcpp(Rcpp::List ashape) {
   // the complement is a union of open balls and open halfplanes
   Rcpp::NumericMatrix complement = computeComplement(mesh, alpha);
 
-  // arcs
-  Rcpp::NumericMatrix arcs = getArcs(complement, alpha);
+  // arcs of the boundary of the alpha-hull
+  Rcpp::NumericMatrix arcs = getArcs<real>(complement);
   
   // computing length of the alpha hull boundary
-  real length = 0;
-  for(int i=0; i<arcs.rows(); i++)
-    if(arcs(i,2)>0)
-      length+=2*arcs(i,5)*arcs(i,2); // 2*theta*r
+  real length = ahull_boundary_length<real>(arcs);
   
   Rcpp::List ahull = Rcpp::List::create(Rcpp::Named("arcs") = arcs,
                                         Rcpp::Named("xahull") = 1, // seems unused in alphahull functions (I'm seriously thinking of removing it)
