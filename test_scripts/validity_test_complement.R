@@ -15,7 +15,7 @@
 require(alphahull)
 require(RcppAlphahull)
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-source("search.R")
+source("search_complement.R")
 
 print("executing test")
 # contains those test cases in which the complement matrix don't coincide
@@ -23,6 +23,7 @@ not.matching.length = c() # different number of components
 not.matching.planes = c() # different planes
 not.matching.balls = c() # different balls
 
+eps = 1e-11
 n.test = 1000
 used.n = c() # keeps track of the number of points sampled for the different tests
 
@@ -42,7 +43,7 @@ for(i in 1:n.test){
   # check lengths
   # do the alpha shapes have the same length? if not adding the test to the queue not.matching.length
   if( dim(complementcpp)[1]!=dim(complementR)[1] )
-    not.matching.length = c(not.matching.length, 1)
+    not.matching.length = c(not.matching.length, i)
   
   k = 0
   for(type in c(-1, -2, -3, -4)){
@@ -50,7 +51,7 @@ for(i in 1:n.test){
     planescpp = complementcpp[which(complementcpp[,"r"] == type),]
     if(dim(planesR)[1]>0)
       for(j in dim(planesR)[1])
-        k = k + !search(planesR[j,"ind1"], planesR[j,"ind2"], planescpp)
+        k = k + !search_complement(planesR[j,"c1"], planesR[j,"c2"], planesR[j,"r"], planescpp, eps)
   }
   
   if(k > 0)
@@ -59,8 +60,9 @@ for(i in 1:n.test){
   k = 0
   ballsR = complementR[which(complementR[,"r"] > 0),]
   ballscpp = complementcpp[which(complementcpp[,"r"] > 0),]
-  for(i in dim(ballsR)[1])
-    k = k + !search(ballsR[i,"ind1"], ballsR[i,"ind2"], ballscpp)
+  if(dim(ballsR)[1]>0)
+    for(j in dim(ballsR)[1])
+      k = k + !search_complement(ballsR[j,"c1"], ballsR[j,"c2"], ballsR[j,"r"], ballscpp, eps)
   
   if(k > 0)
     not.matching.balls = c(not.matching.balls, i)
@@ -68,7 +70,7 @@ for(i in 1:n.test){
   used.n = c(used.n, n)
 }
 
-rm(list = c("k", "i", "complementR", "complementcpp", "x", "y"))
+# rm(list = c("k", "i", "complementR", "complementcpp", "x", "y"))
 
 not.matching.length
 not.matching.planes

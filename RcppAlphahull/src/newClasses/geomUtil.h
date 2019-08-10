@@ -20,7 +20,7 @@ template<typename T> class CircArc;
 template<typename T>
 int sign(const T& value){
   T eps = 10e-10; // NB: maybe you have to check this!!!!!!!!!!!!!!!!!!!!!!!!!
-  if( std::fabs(value)<=eps )// std::numeric_limits<T>::epsilon()
+  if( std::fabs(value)<=eps ) // std::numeric_limits<T>::epsilon()
     return 0;
   if(value > T(0))
     return 1;
@@ -28,8 +28,13 @@ int sign(const T& value){
   return -1;
 };
 
+// given a vector2, returns its normalization
 template<typename T>
-Vector2<T> normalize_vect(const Vector2<T>& v){ return 1/v.getNorm()*v; };
+Vector2<T> normalize_vect(const Vector2<T>& v){ 
+  if(v.getNorm()>0)
+    return 1/v.getNorm()*v;
+  return v;
+};
 
 // returns true if two points are the same
 template<typename T>
@@ -66,11 +71,16 @@ template<typename T>
 std::vector<CircArc<T>> collective_removeBall(const std::vector<CircArc<T>>& arcs, const Ball<T>& b){
   std::vector<CircArc<T>> res;
   
+  for(typename std::vector<CircArc<T>>::const_iterator it = arcs.cbegin(); it!=arcs.cend(); it++){
+    std::vector<CircArc<T>> tmp = it->removeBall(b); // subtracting the ball from the current element
+    res.insert(res.end(), tmp.begin(), tmp.end()); // adding the subtracted arcs to the result
+  }
+  /*
   for(size_t i=0; i<arcs.size(); i++){
     std::vector<CircArc<T>> tmp = arcs[i].removeBall(b); // subtracting the ball from the current element
     res.insert(res.end(), tmp.begin(), tmp.end()); // adding the subtracted arcs to the result
   }
-  
+  */
   return res;
 }
 

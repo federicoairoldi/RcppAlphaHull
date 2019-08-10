@@ -36,12 +36,12 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     Vector2<real> e1(mesh(i,6), mesh(i,7)); // 1st extreme of the voronoi segment
     Vector2<real> e2(mesh(i,8), mesh(i,9)); // 2nd extreme of the voronoi segment
     Rect<real> r(p,q), bis(e1,e2); // rect through p and q and bisectrix of p and q
-    Segment<real> vor_edge(e1,e2);
-    // eventual halfplane to add or evaluate
+    Segment<real> vor_edge(e1,e2); // NB: infinite edge are clipped!! I will handle this later (*)
+    // eventual halfplanes to add or evaluate
     HalfPlane<real> h1(r, r.eval(e1)==1? true: false ), // halfplane for bp1 = 1
                     h2(r, r.eval(e2)==1? true: false ); // halfplane for bp2 = 1
 
-    // computing distances from p to endpoints of the voronoi segment (for infinite segments I use infinity)
+    // computing distances from p to endpoints of the voronoi edge (for infinite segments I use infinity)
     real d1 = bp1? std::numeric_limits<real>::infinity(): p.getDistance(e1),
          d2 = bp2? std::numeric_limits<real>::infinity(): p.getDistance(e2);
 
@@ -51,7 +51,7 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     //std::cout << "Edge: " << mesh(i,0) << " " << mesh(i,1) << std::endl;
 
     // add ball or halfplane for side of e1
-    if(bp1){ // add an halfplane
+    if(bp1){ // if bp1 = 1 then I need to add an an halfplane
       halfplanes.push_back(HalfPlane<real>(r, r.eval(e1)==1? true: false ));
       rows_halfplanes.push_back(i);
       //std::cout << "Adding upper halfplane" << std::endl;
@@ -63,12 +63,12 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     }
 
     // add ball or halfplane for side of e2
-    if(!bp1 && bp2){ // add an halfplane
+    if(!bp1 && bp2){ // if bp2 = 1 then I need to add an halfplane
       halfplanes.push_back(HalfPlane<real>(r, r.eval(e2)==1? true: false ));
       rows_halfplanes.push_back(i);
       //std::cout << "Adding lower halfplane" << std::endl;
     }
-    else if(d2>=alpha){ // add a ball but only if e1 is at least distant alpha from p
+    else if(d2>=alpha){ // add a ball but only if e2 is at least distant alpha from p
       balls.push_back(Ball<real>(e2,d2));
       rows_balls.push_back(i);
       //std::cout << "Adding ball: " << e2 << " " << d2 << std::endl;
@@ -79,15 +79,16 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     // add eventual ball for intersection points
     for(size_t k=0; k<points.size(); k++){
       bool add = false;
-      add = inside(vor_edge,points[k]);
+      add = inside(vor_edge,points[k]); // if point[k] falls inside the Voronoi edge then for sure I need to add a ball
       // std::cout << "points[" << k << "] inside?" << inside(vor_edge,points[k]) << std::endl;
-      
       if( bis.eval(points[k])!=0 ){
         // std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH! " << "points[" << k << "] in rect?" << bis.eval(points[k]) << std::endl;
       }
-        
-      add = add || (bp1 && h1.isIn(points[k]) && (same_side1? alpha>=d2: true));
-      add = add || (bp2 && h2.isIn(points[k]) && (same_side2? alpha>=d1: true));
+      // (*) here I handle that problem
+      // if point[k] is not in the finite version of the Voronoi edge then I need to check whether orù
+      // not it belongs to an infinite edge
+      add = add || (bp1 && h1.isIn(points[k]) && (same_side1? alpha>=d2: true)); // checking if belongs to h1 (if bp1 = 1) AND distant at least alpha if the other edge estreme is in the same side
+      add = add || (bp2 && h2.isIn(points[k]) && (same_side2? alpha>=d1: true)); // checking if belongs to h2 (if bp2 = 1) AND distant at least alpha if the other edge estreme is in the same side
       if(add){
         balls.push_back(Ball<real>(points[k], p.getDistance(points[k])));
         rows_balls.push_back(i);

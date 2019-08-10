@@ -2,28 +2,8 @@
 #include "newClasses/Ball.h"
 #include "newClasses/HalfPlane.h"
 #include "MyGAL/Vector2.h"
+#include "utilities.h"
 using namespace Rcpp;
-
-// provides vector containings balls and halfplanes describing the alpha hull complement
-template<typename T>
-void complement_matrix_to_vectors(const Rcpp::NumericMatrix& complement, 
-                                  std::vector<Ball<T>>& balls, std::vector<HalfPlane<T>>& halfplanes){
-  // constructing balls and halfplanes that form the complement
-  for(int i=0; i<complement.rows(); i++)
-    if(complement(i,2)>0){ // r > 0 => ball
-      Ball<T> b(complement(i,0), complement(i,1), complement(i,2));
-      // it may happen that some balls are inserted more than one time, in those cases I just insert one
-      if( std::find(balls.begin(), balls.end(), b)==balls.end() )
-        balls.push_back(b);
-    }
-    else{
-      bool side = complement(i,2) == -1 || complement(i,2) == -3? true: false; // halfplane has form with ">"
-      if( complement(i,0) > -3 ) // in case r = -1 or r = -2 (non vertical halfplane)
-        halfplanes.push_back(HalfPlane<T>(complement(i,1),complement(i,0),side));
-      else
-        halfplanes.push_back(HalfPlane<T>(complement(i,0),side));
-    }
-}
 
 template<typename T>
 bool inahull_point(const Vector2<T>& point, 
@@ -42,7 +22,7 @@ bool inahull_point(const Vector2<T>& point,
   return true;
 }
 
-// This function evaluates wether or not the points (x and y coordinates) fall in the alpha hull denoted
+// This function evaluates whether or not the points (x and y coordinates) fall in the alpha hull denoted
 // by the the given complement matrix
 // [[Rcpp::export(".inahullRcpp")]]
 Rcpp::LogicalVector inahullRcpp(const Rcpp::NumericMatrix& complement, 

@@ -6,6 +6,8 @@
 
 #include <Rcpp.h>
 #include "MyGAL/FortuneAlgorithm.h"
+#include "newClasses/Ball.h"
+#include "newClasses/HalfPlane.h"
 using namespace mygal;
 using namespace Rcpp;
 
@@ -41,6 +43,27 @@ C as(const std::vector<T>& v){
   for(size_t i=0; i<v.size(); i++)
     new_v[i] = v[i];
   return new_v;
+}
+
+// provides vector containings balls and halfplanes describing the alpha hull complement
+template<typename T>
+void complement_matrix_to_vectors(const Rcpp::NumericMatrix& complement, 
+                                  std::vector<Ball<T>>& balls, std::vector<HalfPlane<T>>& halfplanes){
+  // constructing balls and halfplanes that form the complement
+  for(int i=0; i<complement.rows(); i++)
+    if(complement(i,2)>0){ // r > 0 => ball
+      Ball<T> b(complement(i,0), complement(i,1), complement(i,2));
+      // it may happen that some balls are inserted more than one time, in those cases I just insert one
+      if( std::find(balls.begin(), balls.end(), b)==balls.end() )
+        balls.push_back(b);
+    }
+    else{
+      bool side = (complement(i,2) == -1 || complement(i,2) == -3)? true: false; // halfplane has form with ">"
+      if( complement(i,2) > -3 )// in case r = -1 or r = -2 (non vertical halfplane)
+        halfplanes.push_back(HalfPlane<T>(complement(i,1),complement(i,0),side));
+      else
+        halfplanes.push_back(HalfPlane<T>(complement(i,0),side));
+    }
 }
 
 #endif

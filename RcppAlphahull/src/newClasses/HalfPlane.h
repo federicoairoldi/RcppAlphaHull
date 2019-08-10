@@ -47,10 +47,15 @@ class HalfPlane{
     int getSide() const { return side; };
     
     // OTHER METHODS
-    // Returns if the given belongs to the halfplane or not
+    // Returns if the given point belongs to the halfplane or not
     bool isIn(const vector& p) const { return sign<T>(r.eval(p)) == side; };
+    bool isIn(const T& xp, const T& yp) const { return isIn(vector(xp,yp)); };
+    // Returns if the given point is on the boundaryof the halfplane or not
     bool isOnBoundary(const vector& p) const { return sign<T>(r.eval(p)) == 0; };
+    bool isOnBoundary(const T& xp, const T& yp) const { return isOnBoundary(vector(xp,yp)); };
+    // Returns if the halfplane is a vertical one
     bool isVertical() const { return r.isVertical(); };
+    // Returns if the halfplane is an horizontral one
     bool isHorizontal() const { return r.isHorizontal(); };
 };
 

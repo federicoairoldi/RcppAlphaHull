@@ -105,19 +105,16 @@ class CircArc{
       
       // case 1: 0 < alpha < a2.theta1 < a2.theta2 (0 < alpha is always true by construction)
       if( alpha <= a2.theta1() && a2.theta1() < a2.theta2() ){
-        // std::cout << "case 1" << std::endl;
         return std::vector<CircArc>{*this};
       }
       
       // case 2: 0 < a2.theta1 < alpha < a2.theta2
       if( 0 < a2.theta1() && a2.theta1() < alpha && alpha <= a2.theta2() ){
-        // std::cout << "case 2" << std::endl;
         return std::vector<CircArc>{CircArc(b,v,a2.theta1())};
       }
       
       // case 3: 0 < a2.theta1 < a2.theta2 < alpha
       if( 0 < a2.theta1() && a2.theta1() < a2.theta2() && a2.theta2() < alpha){
-        // std::cout << "case 3" << std::endl;
         // I have to split the arc in two parts
         if( alpha == 2*M_PI ) // sub-special case: instead of two arcs I just form one
           return std::vector<CircArc>{CircArc(b, a2.getEndVector(), alpha-a2.theta2()+a2.theta1())};
@@ -128,31 +125,26 @@ class CircArc{
       
       // case 4: 0 = a2.theta1 < alpha < a2.theta2
       if(a2.theta1() == 0 && alpha <= a2.theta2()){
-        // std::cout << "case 4" << std::endl;
         return std::vector<CircArc>();
       }
       
       // case 5: 0 = a2.theta1 < alpha < a2.theta2
       if(a2.theta1() == 0 && a2.theta2() < alpha){
-        // std::cout << "case 5" << std::endl;
         return std::vector<CircArc>{CircArc(b, a2.getEndVector(), alpha-a2.theta2())};
       }
       
       // case 6: 0 < a2.theta2 < alpha < a2.theta1
       if( 0 < a2.theta2() && a2.theta2() < alpha && alpha <= a2.theta1() ){
-        // std::cout << "case 6" << std::endl;
         return std::vector<CircArc>{CircArc(b, a2.getEndVector(), alpha-a2.theta2())};
       }
       
       // case 8: 0 < alpha < a2.theta2 < a2.theta1
       if(alpha <= a2.theta2() && a2.theta2() < a2.theta1()){
-        // std::cout << "case 8" << std::endl;
         return std::vector<CircArc>();;
       }
       
       // case 9: 0 < a2.theta2 < a2.theta1 < alpha
       if(a2.theta2() < a2.theta1() && a2.theta1() <= alpha){
-        // std::cout << "case 9" << std::endl;
         return std::vector<CircArc>{CircArc(b, a2.getEndVector(), a2.theta1()-a2.theta2())};
       }
       

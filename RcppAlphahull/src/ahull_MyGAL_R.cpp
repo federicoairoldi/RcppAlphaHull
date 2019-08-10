@@ -6,6 +6,7 @@
 #include "newClasses/HalfPlane.h"
 #include "newClasses/CircArc.h"
 #include "MyGAL/Vector2.h"
+#include "utilities.h"
 using namespace Rcpp;
 
 Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const long double& alpha);
@@ -17,30 +18,28 @@ Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement){
   std::vector<Ball<T>> balls;
   std::vector<HalfPlane<T>> halfplanes;
   
-  // constructing balls, halfplanes and arcs that has to be "reduced"
-  for(int i=0; i<complement.rows(); i++)
-    if(complement(i,2)>0){ // r > 0 => ball
-      Ball<T> b(complement(i,0), complement(i,1), complement(i,2));
-      // it may happen that some balls are inserted more than one time, in those cases I just insert one
-      if( std::find(balls.begin(), balls.end(), b)==balls.end() )
-        balls.push_back(b);
-    }
-    else{
-      bool side = complement(i,2) == -1 || complement(i,2) == -3? true: false; // halfplane has form with ">"
-      if( complement(i,0) > -3 ) // in case r = -1 or r = -2 (non vertical halfplane)
-        halfplanes.push_back(HalfPlane<T>(complement(i,1),complement(i,0),side));
-      else
-        halfplanes.push_back(HalfPlane<T>(complement(i,0),side));
-    }
-    
+  complement_matrix_to_vectors(complement, balls, halfplanes);
+  
   std::vector<CircArc<T>> arcs = union_boundary(balls); // construct the boundary of the union of balls
-  std::list<CircArc<T>> arcs_list(arcs.begin(), arcs.end());
+  std::list<CircArc<T>> arcs_list(arcs.begin(), arcs.end()); // inserting in a list since it's easier to remove elements in the middle
   
   // clamping arcs that are outside the convex hull (namely are in the halfplanes). By construction such
   // arcs have their starting and ending point at most on the boundary of one halfplane so I check if
   // the middle point is in any of them.
-  for(size_t i=0; i<halfplanes.size(); i++)
-    arcs_list.remove_if([&](const CircArc<T>& a){ return halfplanes[i].isIn(a.getMidPoint()); });
+  for(typename std::vector<HalfPlane<T>>::const_iterator hp_it=halfplanes.cbegin(); hp_it!=halfplanes.cend(); hp_it++)
+    arcs_list.remove_if([&](const CircArc<T>& a){ return hp_it->isIn(a.getMidPoint()); });
+  
+  /*
+  for(size_t i=0; i<halfplanes.size(); i++){
+    std::cout << std::endl << "currente hp: " << halfplanes[i] << std::endl;
+    for(auto it = arcs_list.begin(); it!=arcs_list.end(); it++){
+      std::cout << "mid point: " << it->getMidPoint() << " is in?" << halfplanes[i].isIn(it->getMidPoint()) << std::endl;
+      if(halfplanes[i].isIn(it->getMidPoint())){
+        it = arcs_list.erase(it);
+        it--;
+      }
+    }
+  }*/
   
   arcs = std::vector<CircArc<T>>(arcs_list.begin(), arcs_list.end());
   
@@ -92,7 +91,7 @@ Rcpp::List computeAhullRcpp(Rcpp::List ashape) {
   real length = ahull_boundary_length<real>(arcs);
   
   Rcpp::List ahull = Rcpp::List::create(Rcpp::Named("arcs") = arcs,
-                                        Rcpp::Named("xahull") = 1, // seems unused in alphahull functions (I'm seriously thinking of removing it)
+                                        //Rcpp::Named("xahull") = 1, // seems unused in alphahull functions (I'm seriously thinking of removing it)
                                         Rcpp::Named("length") = length,
                                         Rcpp::Named("complement") = complement,
                                         Rcpp::Named("alpha") = ashape["alpha"],

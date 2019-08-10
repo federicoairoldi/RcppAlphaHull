@@ -27,7 +27,7 @@ perc.length.diff = c()
 eps = 1e-15 # tollerance for confrontation of alpha shape lengths
 # up to 1e-15 lengths are the "same"
 
-n.test = 5000
+n.test = 1000
 used.n = c() # keeps track of the number of points sampled for the different tests
 
 for(i in 1:n.test){
