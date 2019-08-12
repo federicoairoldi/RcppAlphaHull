@@ -40,18 +40,6 @@ std::vector<T> computeAlphaLimits(const Rcpp::List& delvor_obj){
    return alpha_L;
 }
 
-// Computes the length of the alpha-shape given the mesh matrix describing it
-template<typename T>
-T ashape_length(const Rcpp::NumericMatrix& mesh){
-   T length = 0;
-   for(int i=0; i<mesh.rows(); i++){
-      Vector2<T> p(mesh(i,2), mesh(i,3));
-      Vector2<T> q(mesh(i,4), mesh(i,5));
-      length+=p.getDistance(q);
-   }
-   return length;
-}
-
 /* Returns which rows of the matrix mesh are part of the alpha hull for the given value of alpha (recall
  * that the alpha-shape is a subset of the Delaunay triangulation)
  * 
@@ -87,6 +75,18 @@ std::vector<T2> getAlphaNeighbours(const Rcpp::NumericMatrix& mesh,
       }
 
    return which_rows;
+}
+
+// Computes the length of the alpha-shape given the mesh matrix describing it
+template<typename T>
+T ashape_length(const Rcpp::NumericMatrix& mesh){
+   T length = 0;
+   for(int i=0; i<mesh.rows(); i++){
+      Vector2<T> p(mesh(i,2), mesh(i,3));
+      Vector2<T> q(mesh(i,4), mesh(i,5));
+      length+=p.getDistance(q);
+   }
+   return length;
 }
 
 // [[Rcpp::export(".computeAshapeRcpp")]]

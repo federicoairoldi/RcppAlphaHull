@@ -5,9 +5,9 @@
 #
 # by setting a different number of sites the script computes the Voronoi diagram and Delanuay tesselation
 # of n randomized point of R2 in [0;1]x[0;1] (if one likes, he can change the seed) and next computes the
-# alpha shape for a random value of alpha.
+# alpha hull complement for a random value of alpha.
 #
-# NB: this script compares speed of constructions of the alpha shape only, it doesn't consider the time 
+# NB: this script compares speed of constructions of the alpha hull only, it doesn't consider the time 
 # spent to compute the Voronoi tesselation/Delanuay triangulation.
 
 require(rbenchmark)
@@ -16,7 +16,7 @@ require(RcppAlphahull)
 if( getwd()!=dirname(rstudioapi::getActiveDocumentContext()$path) )
   setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-print("TESTING SPEED OF ASHAPE")
+print("TESTING SPEED OF AHULL")
 
 set.seed(1234)
 n.nodes = c( seq(100,900,by=100),
@@ -33,8 +33,8 @@ for(n in n.nodes){
   alpha = runif(1)
   vorcpp = RcppAlphahull::delvor(x, y)
   vorR = alphahull::delvor(x, y)
-  res = benchmark("Cpp" = RcppAlphahull::ashape(vorcpp, alpha = alpha),
-                  "R" = alphahull::ashape(vorR, alpha = alpha),
+  res = benchmark("Cpp" = RcppAlphahull::ahull(vorcpp, alpha = alpha),
+                  "R" = alphahull::ahull(vorR, alpha = alpha),
                   replications = 1)
   CppTime = rbind(CppTime, res[which(res[,"test"] == "Cpp"), c("elapsed", "user.self", "sys.self")])
   RTime = rbind(RTime, res[which(res[,"test"] == "R"), c("elapsed", "user.self", "sys.self")])
@@ -50,11 +50,12 @@ fit.cpp = lm(Cpp.User ~ transfCpp)
 summary(fit.cpp)
 fit.R = lm(R.User ~ transfCpp)
 summary(fit.R)
+
 if(!dir.exists("img")) dir.create("img")
 
 N = 18
 x11()
-tiff("img/speed_ashape.tiff")
+tiff("img/speed_ahull.tiff")
 matplot(n.nodes[1:N], cbind(Cpp.User[1:N], R.User[1:N]), type = "l", col = c("blue", "red"), lty = 1,
         xlab = "Number of nodes", ylab = "CPU time")
 lines(n.nodes[1:N], fit.cpp$fitted.values[1:N], col = "green", lty = 2)

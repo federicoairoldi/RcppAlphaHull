@@ -5,6 +5,8 @@
 #include "utilities.h"
 using namespace Rcpp;
 
+// checks if the given point falls in the alpha-hull whose complmenet is described by the two vectors
+// balls and halfplanes
 template<typename T>
 bool inahull_point(const Vector2<T>& point, 
                    const std::vector<Ball<T>>& balls, const std::vector<HalfPlane<T>>& halfplanes){

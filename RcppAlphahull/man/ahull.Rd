@@ -18,8 +18,6 @@ coordinates, an object of class delvor or an object of class ashape.}
 A list with the following components:
 \itemize{
 \item \code{arcs}: a matrix containing the arcs that form the boundary of the \eqn{\alpha}-hull;
-\item \code{xahull}: 2-column matrix containing coordinates of those sites that are on the boundary
-of the \eqn{\alpha}-hull and other endpoints of the boundary arcs that are not sites;
 \item \code{length}: length of the \eqn{\alpha}-hull boundary;
 \item \code{complement}: a matrix describing the complement of the \eqn{\alpha}-hull, see function
 \code{\link{complement}} for a detailed description;

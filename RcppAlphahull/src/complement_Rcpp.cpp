@@ -20,12 +20,6 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
   std::vector<size_t> rows_balls; // vectors that contains the rows to which balls refer to
   std::vector<size_t> rows_halfplanes; // vectors that contains the rows to which halfplanes refer to
 
-  // reserving memory for the worst case
-  balls.reserve(4*mesh.rows());
-  halfplanes.reserve(mesh.rows());
-  rows_balls.reserve(5*mesh.rows());
-  rows_halfplanes.reserve(5*mesh.rows());
-
   for(int i=0; i<mesh.rows(); i++){
     Rcpp::checkUserInterrupt();
 

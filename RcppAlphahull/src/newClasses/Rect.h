@@ -11,7 +11,7 @@ using namespace mygal;
 template<typename T> class Segment;
 template<typename T> class Rect;
 
-// Insert a rect in a stream
+// Inserts a rect in a stream
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const Rect<T>& r){
   os << r.a << "*y +" << r.b << "*x + " << r.c;
@@ -41,21 +41,24 @@ class Rect{
 
   public:
     // CONSTRUCTORS
-    Rect()=delete;
+    Rect() = delete;
     Rect(const T& m, const T& q): a(1), b(-m), c(-q) {};
     Rect(const T& xr): a(0), b(1), c(-xr) {};
     Rect(const T& a, const T& b, const T& c): a(a), b(b), c(c) {
-      if(std::fabs(a)+std::fabs(b) == 0)
+      if( std::fabs(a) + std::fabs(b) == 0 ) // can't define a rect if both a and b are null
         std::cerr << "Error! both a nd b are null" << std::endl;
       normalize(); // normalizes the rect
     }; // raises an error if both a and b are 0
     Rect(const vector& p1, const vector& p2): Rect(p2.x-p1.x, p1.y-p2.y, p1.x*p2.y-p2.x*p1.y)
-    { if( p1==p2 ) std::cerr << "Error! p1 and p2 are the same point" << std::endl; };
+    { if( p1 == p2 ) std::cerr << "Error! p1 and p2 are the same point" << std::endl; };
 
     // GETTERS
-    T slope() const { return a!=0? -b/a: std::numeric_limits<T>::infinity(); };
-    T intercept() const { return a!=0? -c/a: -std::numeric_limits<T>::infinity(); };
-    bool isVertical() const { return a==0; };
+    T getA() const { return a; }
+    T getb() const { return a; }
+    T getc() const { return a; }
+    T slope() const { return a!=0? -b/a: std::numeric_limits<T>::infinity(); }; // Returns the slope of the rect
+    T intercept() const { return a!=0? -c/a: -std::numeric_limits<T>::infinity(); }; // Returns the intercept of the rect
+    bool isVertical() const { return a==0; }; // Returns true if the rect is vertical (x>x_r or x<x_r)
     bool isHorizontal() const { return b==0; };
     // for vertical lines returns the abscissa of its equation, if the line is not vertical it returns a NaN
     T x_r() const { return (isVertical()? -c/b: std::numeric_limits<T>::quiet_NaN()); };

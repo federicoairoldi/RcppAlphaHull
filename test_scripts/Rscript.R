@@ -52,17 +52,19 @@ ahR$length
 plot(ahR, col = c("red", "black", "black", "black", "black", "black"), asp = 1)
 plot(ahcpp, col = c("cyan", "black", "black", "black", "black", "black"), asp = 1, add = T)
 plot(ahR, col = c("red", "black", "black", "black", "black", "black"), asp = 1, add = T)
-plot(vorR, number = T, wpoints = F, wlines = "vor", col = "grey", asp = 1)
+plot(vorR, number = F, wpoints = F, wlines = "vor", col = "grey", asp = 1)
 
 # plotting arcs
 wrow = which(ahR$arcs[,3]>0)
 for(i in wrow){
   # invisible(readline(prompt="Press [enter] to continue"))
+  # Sys.sleep(0.5)
   alphahull::arc(ahR$arcs[i,1:2], ahR$arcs[i,3], ahR$arcs[i,4:5], ahR$arcs[i,6], col = "red", lty = 2)
 }
 wrow = which(ahcpp$arcs[,3]>0)
 for(i in wrow){
   # invisible(readline(prompt="Press [enter] to continue"))
+  # Sys.sleep(0.5)
   alphahull::arc(ahcpp$arcs[i,1:2], ahcpp$arcs[i,3], ahcpp$arcs[i,4:5], ahcpp$arcs[i,6], col = "cyan", lty = 2)
 }
 
@@ -102,19 +104,19 @@ alpha = 0.1
 ahR = alphahull::ahull(x, y, alpha = alpha)
 ahcpp = RcppAlphahull::ahull(x, y, alpha = alpha)
 
-system.time(plot(ahR, asp = 1))
-system.time(RcppAlphahull::plot.ahull.not(ahcpp, add = T, col = "red"))
 points(0.7, 0.8, pch = 19, col = "blue")
 alphahull::inahull(ahR, c(0.7, 0.8))
 RcppAlphahull::inahull(ahcpp, 0.7, 0.8)
 
 system.time(alphahull::ahull(vorR, alpha = alpha))
 system.time(RcppAlphahull::ahull(vorcpp, alpha = alpha))
+system.time(alphahull::complement(vorR, alpha = alpha))
+system.time(RcppAlphahull::complement(vorcpp, alpha = alpha))
 system.time(alphahull::inahull(ahR, c(0.7, 0.8)))
 system.time(RcppAlphahull::inahull(ahcpp, 0.7, 0.8))
 
 # annulus sampling
-n <- 300
+n <- 30000
 theta<-runif(n,0,2*pi)
 r<-sqrt(runif(n,0.25^2,0.5^2))
 x<-cbind(0.5+r*cos(theta),0.5+r*sin(theta))

@@ -4,6 +4,7 @@
 #include <cmath>
 #include <ostream>
 #include "geomUtil.h"
+#include "AreaObj.h"
 #include "CircArc.h"
 #include "../MyGAL/Vector2.h"
 using namespace mygal;
@@ -11,13 +12,14 @@ using namespace mygal;
 template<typename T> class Ball;
 template<typename T> class Arc;
 
-// Insert a ball in a stream
+// Inserts a ball in a stream
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const Ball<T>& ball){
   os << "center: " << ball.c << " radius: " << ball.r;
   return os;
 } 
 
+// Returns true if the two balls are equal
 template<typename T>
 bool operator==(const Ball<T>& b1, const Ball<T>& b2){
   if(b1.c!=b2.c || b1.r!=b2.r)
@@ -25,11 +27,12 @@ bool operator==(const Ball<T>& b1, const Ball<T>& b2){
   return true;
 }
 
+// Returns true if the two balls are different
 template<typename T>
 bool operator!=(const Ball<T>& b1, const Ball<T>& b2) { return !(b1==b2); };
 
 template<typename T>
-class Ball{
+class Ball: public AreaObj<T>{
   // FRIENDS
   friend std::ostream& operator<<<T>(std::ostream& os, const Ball<T>& ball);
   friend bool operator==<T>(const Ball<T>& b1, const Ball<T>& b2);
@@ -44,25 +47,30 @@ class Ball{
 
   public:
     // CONSTRUCTORS
-    Ball(): c(0,0), r(0) {}; // default creates a degenerate ball centered in O with 0 radius
+    Ball() = delete;
     Ball(const vector& c, const T& r): c(c), r(r) {};
     Ball(const T& xc, const T& yc, const T& r): c(xc,yc), r(r) {};
 
     // GETTERS
     vector center() const { return c; };
     T radius() const { return r; };
+    T perimeter() const { return 2*M_PI*r; };
+    // Returns the area of the object
+    T area() const override { return M_PI*r*r; };
     
     // OTHER METHODS
-    bool isIn(const vector& p) const { return isIn(p.x,p.y); };
-    bool isIn(const T& xp, const T& yp) const { return ((xp-c.x)*(xp-c.x)+(yp-c.y)*(yp-c.y)) < r*r; }
-    bool isOnBoundary(const vector& p) const { return isOnBoundary(p.x,p.y); };
-    // maybe consider to use tollerance here too
-    bool isOnBoundary(const T& xp, const T& yp) const { return ((xp-c.x)*(xp-c.x)+(yp-c.y)*(yp-c.y)) == r*r; };
-    bool concentric(const Ball<T>& b2) const { return c==b2.c; }; // check if the balls share same center
-    // check if b2 falls entirely in the ball
+    // Returns if the given point belongs to the ball or not
+    bool isIn(const vector& p) const override { return isIn(p.x,p.y); };
+    bool isIn(const T& xp, const T& yp) const override { return ((xp-c.x)*(xp-c.x)+(yp-c.y)*(yp-c.y)) < r*r; }
+    // Returns if the given point is on the boundary of the ball or not
+    bool isOnBoundary(const vector& p) const override { return isOnBoundary(p.x,p.y); };
+    bool isOnBoundary(const T& xp, const T& yp) const override { return ((xp-c.x)*(xp-c.x)+(yp-c.y)*(yp-c.y)) == r*r; };
+    // Checks if the balls share same center
+    bool concentric(const Ball<T>& b2) const { return c==b2.c; }; 
+    // Checks if b2 falls entirely in the ball
     bool containsBall(const Ball<T> b2) const { return c.getDistance(b2.c) <= std::fabs(r-b2.r) && r>=b2.r ; };
     
-    // compute intersection points between two balls with different centers
+    // Computes intersection points between two balls with different centers
     std::vector<vector> intersections(const Ball<T>& other) const{
       std::vector<vector> intersections;
       intersections.reserve(2);
@@ -89,14 +97,13 @@ class Ball{
              p3_2 = p2 + h/d*v_norm ;
 
       intersections.push_back(p3_1);
-      if( h > 0 ){
+      if( h > 0 )
         intersections.push_back(p3_2);
-      }
       
       return intersections;
     }
     
-    // compute intersection arc between two balls with different centers (the arc is on the caller circumference)
+    // Computes the intersection arc (on the caller circumference) between two balls with different centers
     arc intersection_arc(const Ball<T>& other) const{
       std::vector<vector> points = intersections(other);
       
