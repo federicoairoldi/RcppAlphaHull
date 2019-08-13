@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 #include <cmath>
 #include "newClasses/Ball.h"
-#include "newClasses/Rect.h"
+#include "newClasses/Line.h"
 #include "newClasses/Segment.h"
 #include "newClasses/HalfPlane.h"
 #include "newClasses/CircArc.h"

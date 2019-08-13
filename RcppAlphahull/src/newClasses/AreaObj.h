@@ -13,8 +13,8 @@ class AreaObj{
     virtual bool isIn(const vector& p) const  = 0;
     virtual bool isIn(const T& xp, const T& yp) const = 0;
     // Returns if the given point is on the boundary of the ball or not
-    virtual bool isOnBoundary(const vector& p) const = 0;
-    virtual bool isOnBoundary(const T& xp, const T& yp) const  = 0;
+    virtual bool isOnBound(const vector& p) const = 0;
+    virtual bool isOnBound(const T& xp, const T& yp) const  = 0;
     // Returns the area of the object
     virtual T area() const = 0;
 };

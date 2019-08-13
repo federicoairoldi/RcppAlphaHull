@@ -38,10 +38,10 @@
 #'             col = c("black", "blue", "red", "black"))
 #'
 #' @export
-plot.delvor = function (x, add = FALSE, wlines = c("both", "del", "vor"), wpoints = TRUE,
+plot.delvor = function (delvor.obj, add = FALSE, wlines = c("both", "del", "vor"), wpoints = TRUE,
                         number = FALSE, col = NULL, xlim = NULL, ylim = NULL, ...){
     wlines <- match.arg(wlines)
-    if (is.null(class(x)) || class(x) != "delvor") {
+    if (is.null(class(delvor.obj)) || class(delvor.obj) != "delvor") {
       cat("Argument is not of class delvor!!\n")
       return(invisible())
     }
@@ -55,39 +55,39 @@ plot.delvor = function (x, add = FALSE, wlines = c("both", "del", "vor"), wpoint
 
     if (!add) {
       if (is.null(xlim))
-        xlim <- range(x$x[, 1])
+        xlim <- range(delvor.obj$x[, 1])
       if (is.null(ylim))
-        ylim <- range(x$x[, 2])
+        ylim <- range(delvor.obj$x[, 2])
       plot.default(0, 0, type = "n", xlim = xlim, ylim = ylim, axes = FALSE, ...)
       axis(side = 1)
       axis(side = 2)
     }
 
-    if (wpoints)
-      points(x$x, col = col[1], ...)
-
     if (number) {
-      xoff <- 0.02 * diff(range(x$x[, 1]))
-      yoff <- 0.02 * diff(range(x$x[, 2]))
-      text(x$x[, 1] + xoff, x$x[, 2] + yoff, 1:(dim(x$x)[1]),
+      xoff <- 0.02 * diff(range(delvor.obj$x[, 1]))
+      yoff <- 0.02 * diff(range(delvor.obj$x[, 2]))
+      text(delvor.obj$x[, 1] + xoff, delvor.obj$x[, 2] + yoff, 1:(dim(delvor.obj$x)[1]),
            col = col[4], ...)
     }
 
     if (plot.vor) {
-      n.edge <- dim(x$mesh)[1]
+      n.edge <- dim(delvor.obj$mesh)[1]
       for (i in 1:n.edge) {
-        lty.vor = ifelse(x$mesh[i, "bp1"] == 1 | x$mesh[i, "bp2"] == 1, 2, 1)
-        segments(x$mesh[i, "mx1"], x$mesh[i, "my1"], x$mesh[i, "mx2"],
-                 x$mesh[i, "my2"], lty = lty.vor, col = col[3], ...)
+        lty.vor = ifelse(delvor.obj$mesh[i, "bp1"] == 1 | delvor.obj$mesh[i, "bp2"] == 1, 2, 1)
+        segments(delvor.obj$mesh[i, "mx1"], delvor.obj$mesh[i, "my1"], delvor.obj$mesh[i, "mx2"],
+                 delvor.obj$mesh[i, "my2"], lty = lty.vor, col = col[3], ...)
       }
     }
 
     if (plot.del) {
-      neigh = x$tri.obj$neighbours
+      neigh = delvor.obj$tri.obj$neighbours
       for(i in 1:(length(neigh)))
         for(j in neigh[[i]][ which(neigh[[i]]>i) ])
-          lines( c(x$x[i,1], x$x[j,1]),
-                 c(x$x[i,2], x$x[j,2]) , col = col[2], lty = 1 )
+          lines( c(delvor.obj$x[i,1], delvor.obj$x[j,1]),
+                 c(delvor.obj$x[i,2], delvor.obj$x[j,2]) , col = col[2], lty = 1, ... )
     }
+    
+    if (wpoints)
+      points(delvor.obj$x, col = col[1], ...)
 }
 

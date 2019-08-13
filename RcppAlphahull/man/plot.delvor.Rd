@@ -4,13 +4,11 @@
 \alias{plot.delvor}
 \title{Voronoi tesselation/Delanuay triangulation plot}
 \usage{
-\method{plot}{delvor}(x, add = FALSE, wlines = c("both", "del", "vor"),
-  wpoints = TRUE, number = FALSE, col = NULL, xlim = NULL,
-  ylim = NULL, ...)
+\method{plot}{delvor}(delvor.obj, add = FALSE, wlines = c("both",
+  "del", "vor"), wpoints = TRUE, number = FALSE, col = NULL,
+  xlim = NULL, ylim = NULL, ...)
 }
 \arguments{
-\item{x}{object of class del.vor.}
-
 \item{add}{if TRUE the plot is added to the active graphic window.}
 
 \item{wlines}{a string specifying what has to be plotted:
@@ -39,6 +37,8 @@ Alternatively just one color can be provided.}
 \item{ylim}{y axis limits.}
 
 \item{...}{graphical arguments to be passes to methods (see \code{\link[graphics]{par}})}
+
+\item{x}{object of class del.vor.}
 }
 \value{
 

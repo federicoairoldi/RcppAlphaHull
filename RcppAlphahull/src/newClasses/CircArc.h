@@ -18,6 +18,14 @@ std::ostream& operator<<(std::ostream& os, const CircArc<T>& a){
   return os;
 }
 
+// Computes the set difference between two arcs on the same circumference
+template<typename T>
+std::vector<CircArc<T>> diff(const CircArc<T>& a1, const CircArc<T>& a2) { return a1.diff(a2); }
+
+// Returns an arc rotated (counter-clockwise) by the angle theta
+template<typename T>
+CircArc<T> rotate_arc(const CircArc<T>& a, const T& theta){ return a.rotate(theta); }
+
 template<typename T>
 class CircArc{
   typedef Ball<T> ball;
@@ -36,8 +44,12 @@ class CircArc{
     // CONSTRUCTORS
     CircArc() = delete; // deleting default constructor
     CircArc(const ball& b): b(b), v(vector(1,0)), alpha(2*M_PI) {}; // defines an arc that covers the whole circle
-    CircArc(const ball& b, const vector& v, const T& alpha = 2*M_PI): b(b), v(normalize_vect(v)), alpha(alpha) 
-    { if(alpha<0 || alpha>2*M_PI) std::cerr << "Error! Magnitude for angle not in [0;2*pi] " << alpha; };
+    CircArc(const ball& b, const vector& v, const T& alpha = 2*M_PI): b(b), v(normalize_vect(v)), alpha(alpha){ 
+      if(alpha<0 || alpha>2*M_PI) 
+        std::cerr << "Error! Magnitude for angle not in [0;2*pi]" << alpha; 
+      if( v.getNorm() == 0 ) 
+          std::cerr << "Error! vector v has null norm" << alpha; 
+    };
     CircArc(const ball& b, const T& vx, const T& vy, const T& alpha = 2*M_PI): CircArc(b, vector(vx,vy), alpha) {};
     CircArc(const T& cx, const T& cy,const T& r, const T& vx = 1, const T& vy = 0, const T& alpha = 2*M_PI): 
       b(cx, cy, r), v(vx, vy), alpha(alpha) {};
@@ -67,7 +79,7 @@ class CircArc{
       return theta1;
     };
     
-    // returns the angle of end point direction of the arc (value in (0;2*PI])
+    // Returns the angle of end point direction of the arc (value in (0;2*PI])
     T theta2() const { 
       T theta2 = theta1()+alpha;
       theta2-= theta2>2*M_PI? 2*M_PI: 0;
@@ -80,7 +92,7 @@ class CircArc{
     
     // Computes the set difference between two arcs on the same circumference
     std::vector<CircArc> diff(const CircArc& a2) const{// arcs not on the same circumference
-      if( b.center()!=a2.b.center() ){
+      if( b != a2.b ){
         std::cerr << "Error! arc difference with arcs in differet circles" << std::endl;
         return std::vector<CircArc>{*this};
       }
@@ -102,11 +114,11 @@ class CircArc{
       
       // if we arrive here then we have that theta1 of first arc is 0.
       
-      // case 1: 0 < alpha < a2.theta1 < a2.theta2 (0 < alpha is always true by construction)
+      // case 1: 0 < alpha <= a2.theta1 < a2.theta2 (0 < alpha is always true by construction)
       if( alpha <= a2.theta1() && a2.theta1() < a2.theta2() )
         return std::vector<CircArc>{*this};
       
-      // case 2: 0 < a2.theta1 < alpha < a2.theta2
+      // case 2: 0 < a2.theta1 < alpha <= a2.theta2
       if( 0 < a2.theta1() && a2.theta1() < alpha && alpha <= a2.theta2() )
         return std::vector<CircArc>{CircArc(b,v,a2.theta1())};
       
@@ -115,35 +127,34 @@ class CircArc{
         // I have to split the arc in two parts
         if( alpha == 2*M_PI ) // sub-special case: instead of two arcs I just form one
           return std::vector<CircArc>{CircArc(b, a2.getEndVector(), alpha-a2.theta2()+a2.theta1())};
-        
-        CircArc arcNew1(b, v, a2.theta1()), arcNew2(b, a2.getEndVector(), alpha-a2.theta2());
-        return std::vector<CircArc>{arcNew1, arcNew2};
+        // else
+        return std::vector<CircArc>{CircArc(b, v, a2.theta1()), CircArc(b, a2.getEndVector(), alpha-a2.theta2())};
       }
       
-      // case 4: 0 = a2.theta1 < alpha < a2.theta2
-      if(a2.theta1() == 0 && alpha <= a2.theta2())
+      // case 4: 0 = a2.theta1 < alpha <= a2.theta2
+      if( 0 == a2.theta1() && alpha <= a2.theta2() )
         return std::vector<CircArc>();
       
-      // case 5: 0 = a2.theta1 < alpha < a2.theta2
-      if(a2.theta1() == 0 && a2.theta2() < alpha)
+      // case 5: 0 = a2.theta1 < a2.theta2 < alpha 
+      if( 0 == a2.theta1() && a2.theta2() < alpha )
         return std::vector<CircArc>{CircArc(b, a2.getEndVector(), alpha-a2.theta2())};
       
-      // case 6: 0 < a2.theta2 < alpha < a2.theta1
+      // case 6: 0 < a2.theta2 < alpha <= a2.theta1
       if( 0 < a2.theta2() && a2.theta2() < alpha && alpha <= a2.theta1() )
         return std::vector<CircArc>{CircArc(b, a2.getEndVector(), alpha-a2.theta2())};
       
-      // case 8: 0 < alpha < a2.theta2 < a2.theta1
+      // case 7: 0 < alpha <= a2.theta2 < a2.theta1
       if(alpha <= a2.theta2() && a2.theta2() < a2.theta1())
         return std::vector<CircArc>();;
       
-      // case 9: 0 < a2.theta2 < a2.theta1 < alpha
+      // case 8: 0 < a2.theta2 < a2.theta1 <= alpha
       if(a2.theta2() < a2.theta1() && a2.theta1() <= alpha)
         return std::vector<CircArc>{CircArc(b, a2.getEndVector(), a2.theta1()-a2.theta2())};
       
       // NB: to be removed if no error occurs in future
-      // case 7: 0 = a2.theta1 < alpha < a2.theta2 (maybe this shouldn't happen)
+      // case 9: 0 = a2.theta1 < alpha < a2.theta2 (maybe this shouldn't happen)
       if(a2.theta2() == 0 && alpha <= a2.theta1()){
-        // std::cout << "case 7" << std::endl;
+        // std::cout << "case 9" << std::endl;
         return std::vector<CircArc>{CircArc(b, a2.getEndVector(), alpha-a2.theta2())};
       }
       
@@ -164,11 +175,5 @@ class CircArc{
       return  std::vector<CircArc>{*this};
     }
 };
-
-template<typename T>
-std::vector<CircArc<T>> diff(const CircArc<T>& a1, const CircArc<T>& a2) { return a1.diff(a2); }
-
-template<typename T>
-CircArc<T> rotate_arc(const CircArc<T>& a, const T& theta){ return a.rotate(theta); }
 
 #endif

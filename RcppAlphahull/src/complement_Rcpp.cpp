@@ -4,7 +4,7 @@
 #include <Rcpp.h>
 #include <cmath>
 #include <iostream>
-#include "newClasses/Rect.h"
+#include "newClasses/Line.h"
 #include "newClasses/Ball.h"
 #include "newClasses/Segment.h"
 #include "newClasses/HalfPlane.h"
@@ -29,7 +29,7 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     Vector2<real>  q(mesh(i,4), mesh(i,5)); // 2nd site
     Vector2<real> e1(mesh(i,6), mesh(i,7)); // 1st extreme of the voronoi segment
     Vector2<real> e2(mesh(i,8), mesh(i,9)); // 2nd extreme of the voronoi segment
-    Rect<real> r(p,q), bis(e1,e2); // rect through p and q and bisectrix of p and q
+    Line<real> r(p,q), bis(e1,e2); // rect through p and q and bisectrix of p and q
     Segment<real> vor_edge(e1,e2); // NB: infinite edge are clipped!! I will handle this later (*)
     // eventual halfplanes to add or evaluate
     HalfPlane<real> h1(r, r.eval(e1)==1? true: false ), // halfplane for bp1 = 1
@@ -116,8 +116,8 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
   }
   for(size_t i=0; i<halfplanes.size(); i++){
     size_t idx = rows_halfplanes[i];
-    complement(balls.size()+i,0) = halfplanes[i].rectIntercept();
-    complement(balls.size()+i,1) = halfplanes[i].rectSlope();
+    complement(balls.size()+i,0) = halfplanes[i].lineIntercept();
+    complement(balls.size()+i,1) = halfplanes[i].lineSlope();
     complement(balls.size()+i,2) = (!halfplanes[i].isVertical()? -1: -3) - (halfplanes[i].getSide()==-1);
     
     for(int j=0; j<mesh.cols(); j++)

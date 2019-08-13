@@ -4,7 +4,7 @@
 #include <cmath>
 #include <ostream>
 #include "AreaObj.h"
-#include "Rect.h"
+#include "Line.h"
 #include "../MyGAL/Vector2.h"
 
 // class to define open halfplanes in R2
@@ -15,7 +15,7 @@ template<typename T> class HalfPlane;
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const HalfPlane<T>& hp){
   if(!hp.r.isVertical())
-    os << "y " << (hp.getSide()>0? "> ": "< ") << hp.rectSlope() << "*x " << (hp.rectIntercept()>0? "+ ": " ") << hp.rectIntercept();
+    os << "y " << (hp.getSide()>0? "> ": "< ") << hp.lineSlope() << "*x " << (hp.lineIntercept()>0? "+ ": " ") << hp.lineIntercept();
   else
     os << "x " << (hp.getSide()>0? "> ": "< ") << hp.r.x_r();
   return os;
@@ -23,7 +23,7 @@ std::ostream& operator<<(std::ostream& os, const HalfPlane<T>& hp){
 
 template<typename T>
 class HalfPlane: public AreaObj<T>{
-  typedef Rect<T> rect;
+  typedef Line<T> line;
   typedef Vector2<T> vector;
   
   // FRIENDS
@@ -31,21 +31,21 @@ class HalfPlane: public AreaObj<T>{
 
   private:
     // ATTRIBUTES
-    rect r; // contains information about the rect that defines the halfplane
+    line r; // contains information about the line that defines the halfplane
     int side;  // if 1  => halfplane is y>mx+q or x>xr
                // if -1 => halfplane is y<mx+q or x<xr
 
   public:
     // CONSTRUCTORS
     HalfPlane() = delete; // default creates an upper halfplane y>0
-    HalfPlane(const rect& r, bool maj = true): r(r), side((maj? 1: -1)) {};
+    HalfPlane(const line& r, bool maj = true): r(r), side((maj? 1: -1)) {};
     HalfPlane(const T& m, const T& q, bool maj = true): r(m,q), side((maj? 1: -1)) {};
     HalfPlane(const T& xr, bool maj = true): r(xr), side((maj? 1: -1)) {};
     
     // GETTERS
-    T rectSlope() const { return r.slope(); };
-    T rectIntercept() const { return r.intercept(); };
-    rect getRect() const{ return r; };
+    T lineSlope() const { return r.slope(); };
+    T lineIntercept() const { return r.intercept(); };
+    line getLine() const{ return r; };
     int getSide() const { return side; };
     // Returns the area of the object
     T area() const override { return std::numeric_limits<T>::infinity(); };
@@ -55,8 +55,8 @@ class HalfPlane: public AreaObj<T>{
     bool isIn(const vector& p) const override { return sign<T>(r.eval(p)) == side; };
     bool isIn(const T& xp, const T& yp) const override { return isIn(vector(xp,yp)); };
     // Returns if the given point is on the boundary of the halfplane or not
-    bool isOnBoundary(const vector& p) const override { return sign<T>(r.eval(p)) == 0; };
-    bool isOnBoundary(const T& xp, const T& yp) const override { return isOnBoundary(vector(xp,yp)); };
+    bool isOnBound(const vector& p) const override { return sign<T>(r.eval(p)) == 0; };
+    bool isOnBound(const T& xp, const T& yp) const override { return isOnBound(vector(xp,yp)); };
     // Returns if the halfplane is a vertical one
     bool isVertical() const { return r.isVertical(); };
     // Returns if the halfplane is an horizontral one

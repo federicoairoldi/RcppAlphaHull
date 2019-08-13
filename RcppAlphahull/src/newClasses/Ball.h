@@ -21,15 +21,19 @@ std::ostream& operator<<(std::ostream& os, const Ball<T>& ball){
 
 // Returns true if the two balls are equal
 template<typename T>
-bool operator==(const Ball<T>& b1, const Ball<T>& b2){
-  if(b1.c!=b2.c || b1.r!=b2.r)
-    return false;
-  return true;
-}
+bool operator==(const Ball<T>& b1, const Ball<T>& b2){ return ( b1.c == b2.c && b1.r == b2.r ); }
 
 // Returns true if the two balls are different
 template<typename T>
 bool operator!=(const Ball<T>& b1, const Ball<T>& b2) { return !(b1==b2); };
+
+// Computes intersection points between two balls with different centers
+template<typename T>
+std::vector<Vector2<T>> intersections(const Ball<T>& b1, const Ball<T>& b2){ return b1.intersections(b2); }
+
+// Computes the intersection arc (on the caller circumference) between two balls with different centers
+template<typename T>
+CircArc<T> intersection_arc(const Ball<T>& b1, const Ball<T>& b2){ return b1.intersection_arc(b2); };
 
 template<typename T>
 class Ball: public AreaObj<T>{
@@ -63,49 +67,49 @@ class Ball: public AreaObj<T>{
     bool isIn(const vector& p) const override { return isIn(p.x,p.y); };
     bool isIn(const T& xp, const T& yp) const override { return ((xp-c.x)*(xp-c.x)+(yp-c.y)*(yp-c.y)) < r*r; }
     // Returns if the given point is on the boundary of the ball or not
-    bool isOnBoundary(const vector& p) const override { return isOnBoundary(p.x,p.y); };
-    bool isOnBoundary(const T& xp, const T& yp) const override { return ((xp-c.x)*(xp-c.x)+(yp-c.y)*(yp-c.y)) == r*r; };
+    bool isOnBound(const vector& p) const override { return isOnBound(p.x,p.y); };
+    bool isOnBound(const T& xp, const T& yp) const override { return ((xp-c.x)*(xp-c.x)+(yp-c.y)*(yp-c.y)) == r*r; };
     // Checks if the balls share same center
-    bool concentric(const Ball<T>& b2) const { return c==b2.c; }; 
+    bool concentric(const Ball<T>& b) const { return c==b.c; }; 
     // Checks if b2 falls entirely in the ball
-    bool containsBall(const Ball<T> b2) const { return c.getDistance(b2.c) <= std::fabs(r-b2.r) && r>=b2.r ; };
+    bool containsBall(const Ball<T> b) const { return c.getDistance(b.c) <= std::fabs(r-b.r) && r>=b.r ; };
     
     // Computes intersection points between two balls with different centers
-    std::vector<vector> intersections(const Ball<T>& other) const{
+    std::vector<vector> intersections(const Ball<T>& b) const{
       std::vector<vector> intersections;
       intersections.reserve(2);
       
       // maybe throw an error if a ball with the same center ios provided
-      if( c == other.c ){
+      if( c == b.c ){
         std::cerr << "Intersection of concentric balls detected" << std::endl;
         return intersections;
       }
 
-      T d = c.getDistance(other.c);
-      if( d>r+other.r || d < std::fabs(r-other.r))
+      T d = c.getDistance(b.c);
+      if( d>r+b.r || d < std::fabs(r-b.r))
         return intersections;
 
-      T a = (d+(r*r-other.r*other.r)/d)/2, // b = d-a, // b results unused
+      T a = (d+(r*r-b.r*b.r)/d)/2, // b = d-a, // b results unused
         h=std::sqrt(r*r-a*a);
       // retrieving the vector v and its orthogonal (both have norm equal to d)
-      vector v = other.c-c,
+      vector v = b.c-c,
              v_norm = v.getOrthogonal();
       // retrieving the dummy point on the segment between the two balls' centers
-      vector p2 = c + a/d*(other.c-c);
+      vector p1 = c + a/d*(b.c-c); // point distant a from c1 on the segment (c1)
       // computing the two intersections
-      vector p3_1 = p2 - h/d*v_norm,
-             p3_2 = p2 + h/d*v_norm ;
+      vector p2_1 = p1 - h/d*v_norm,
+             p2_2 = p1 + h/d*v_norm ;
 
-      intersections.push_back(p3_1);
+      intersections.push_back(p2_1);
       if( h > 0 )
-        intersections.push_back(p3_2);
+        intersections.push_back(p2_2);
       
       return intersections;
     }
     
     // Computes the intersection arc (on the caller circumference) between two balls with different centers
-    arc intersection_arc(const Ball<T>& other) const{
-      std::vector<vector> points = intersections(other);
+    arc intersection_arc(const Ball<T>& b) const{
+      std::vector<vector> points = intersections(b);
       
       if(points.size()<2) // if the balls are concentric, share just one point or are disconnected then there's no arc
         return arc(*this,1,0,0); // returning a null arc
@@ -114,11 +118,5 @@ class Ball: public AreaObj<T>{
       return arc(*this, points[0]-c, angle_vects<T>(points[0]-c,points[1]-c));
     }
 };
-
-template<typename T>
-std::vector<Vector2<T>> intersections(const Ball<T>& b1, const Ball<T>& b2){ return b1.intersections(b2); }
-
-template<typename T>
-CircArc<T> intersection_arc(const Ball<T>& b1, const Ball<T>& b2){ return b1.intersection_arc(b2); };
 
 #endif
