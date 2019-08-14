@@ -29,7 +29,7 @@ CircArc<T> rotate_arc(const CircArc<T>& a, const T& theta){ return a.rotate(thet
 template<typename T>
 class CircArc{
   typedef Ball<T> ball;
-  typedef Vector2<T> vector;
+  typedef Vector2<T> vector2;
   
   // FRIENDS
   friend std::ostream& operator<<<T>(std::ostream& os, const CircArc<T>& a);
@@ -37,20 +37,20 @@ class CircArc{
   private:
     // ATTRIBUTES
     ball b; // ball
-    vector v; // vector pointing to the start of the arc
+    vector2 v; // vector pointing to the start of the arc
     T alpha; // width of the angle defining the arc
   
   public:
     // CONSTRUCTORS
     CircArc() = delete; // deleting default constructor
-    CircArc(const ball& b): b(b), v(vector(1,0)), alpha(2*M_PI) {}; // defines an arc that covers the whole circle
-    CircArc(const ball& b, const vector& v, const T& alpha = 2*M_PI): b(b), v(normalize_vect(v)), alpha(alpha){ 
+    CircArc(const ball& b): b(b), v(vector2(1,0)), alpha(2*M_PI) {}; // defines an arc that covers the whole circle
+    CircArc(const ball& b, const vector2& v, const T& alpha = 2*M_PI): b(b), v(normalize_vect(v)), alpha(alpha){ 
       if(alpha<0 || alpha>2*M_PI) 
         std::cerr << "Error! Magnitude for angle not in [0;2*pi]" << alpha; 
       if( v.getNorm() == 0 ) 
           std::cerr << "Error! vector v has null norm" << alpha; 
     };
-    CircArc(const ball& b, const T& vx, const T& vy, const T& alpha = 2*M_PI): CircArc(b, vector(vx,vy), alpha) {};
+    CircArc(const ball& b, const T& vx, const T& vy, const T& alpha = 2*M_PI): CircArc(b, vector2(vx,vy), alpha) {};
     CircArc(const T& cx, const T& cy,const T& r, const T& vx = 1, const T& vy = 0, const T& alpha = 2*M_PI): 
       b(cx, cy, r), v(vx, vy), alpha(alpha) {};
     
@@ -58,13 +58,13 @@ class CircArc{
     ball getBall() const { return b; };
     T width() const { return alpha; };
     // Positions wrt the center of the ball
-    vector getVector() const { return v; }; // a vector pointing the starting of the arc from center
-    vector getEndVector() const { return rotate<T>(v,alpha); }; // a vector pointing the ending of the arc from center
-    vector getMidVector() const { return rotate<T>(v,alpha/2); }; // a vector pointing the middle of the arc from center
+    vector2 getVector() const { return v; }; // a vector pointing the starting of the arc from center
+    vector2 getEndVector() const { return rotate<T>(v,alpha); }; // a vector pointing the ending of the arc from center
+    vector2 getMidVector() const { return rotate<T>(v,alpha/2); }; // a vector pointing the middle of the arc from center
     // Positions wrt the reference system (0,0)
-    vector getPoint() const { return b.radius()*getVector()+b.center(); }; // a vector pointing the starting point of the arc
-    vector getEndPoint() const { return b.radius()*getEndVector()+b.center(); }; // a vector pointing the ending point of the arc
-    vector getMidPoint() const { return b.radius()*getMidVector()+b.center(); }; // a vector pointing the middle point of the arc
+    vector2 getPoint() const { return b.radius()*getVector()+b.center(); }; // a vector pointing the starting point of the arc
+    vector2 getEndPoint() const { return b.radius()*getEndVector()+b.center(); }; // a vector pointing the ending point of the arc
+    vector2 getMidPoint() const { return b.radius()*getMidVector()+b.center(); }; // a vector pointing the middle point of the arc
     // Returns whether or not the arc is degenerate (is just one point)
     bool isNULL() const { return alpha==0; }; // maybe do it with tollerance
     

@@ -66,51 +66,23 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
     it++;
   }
 
-  // allocate the vectors with the exact size Rcpp::IntegerVector  Rcpp::NumericVector
-  // std::vector<int> ind1(N), ind2(N), bp1(N), bp2(N);
-  // std::vector<real>  x1(N), y1(N), x2(N), y2(N), mx1(N), my1(N), mx2(N), my2(N);
-  // auto it = halfedges.begin();
-  // for(size_t i = 0; i < N; i++){
-    /*
-      ind1[i] =  it->incidentFace->site->index + 1;
-      ind2[i] =  it->twin->incidentFace->site->index + 1;
-
-      x1[i] =  it->incidentFace->site->point.x;
-      y1[i] =  it->incidentFace->site->point.y;
-      x2[i] =  it->twin->incidentFace->site->point.x;
-      y2[i] =  it->twin->incidentFace->site->point.y;
-
-      mx1[i] =  it->destination->point.x;
-      my1[i] =  it->destination->point.y;
-      mx2[i] =  it->origin->point.x;
-      my2[i] =  it->origin->point.y;
-
-      // check if the current half edge is an infinite one
-      bp1[i] =  isboundary(Vector2<real>(it->destination->point.x, it->destination->point.y), localbox);
-      bp2[i] =  isboundary(Vector2<real>(it->origin->point.x, it->origin->point.y), localbox);
-*/
-      // luckily, twin halfedges are stored one after the other so I just need
-      // to skip the subsequent halfedge to not include the same information twice
-      // it++; it++;
-      // }
-
   Rcpp::CharacterVector names{"ind1", "ind2", "x1", "y1", "x2", "y2", "mx1", "my1", "mx2", "my2", "bp1", "bp2"};
   Rcpp::NumericMatrix mesh(ind1.size(), names.size());
   colnames(mesh) = names;
   rownames(mesh) = Rcpp::CharacterVector(ind1.size(), "");
 
-  mesh(_, 0) = as<Rcpp::IntegerVector>(ind1);
-  mesh(_, 1) = as<Rcpp::IntegerVector>(ind2);
-  mesh(_, 2) = as<Rcpp::NumericVector>(x1);
-  mesh(_, 3) = as<Rcpp::NumericVector>(y1);
-  mesh(_, 4) = as<Rcpp::NumericVector>(x2);
-  mesh(_, 5) = as<Rcpp::NumericVector>(y2);
-  mesh(_, 6) = as<Rcpp::NumericVector>(mx1);
-  mesh(_, 7) = as<Rcpp::NumericVector>(my1);
-  mesh(_, 8) = as<Rcpp::NumericVector>(mx2);
-  mesh(_, 9) = as<Rcpp::NumericVector>(my2);
-  mesh(_,10) = as<Rcpp::IntegerVector>(bp1);
-  mesh(_,11) = as<Rcpp::IntegerVector>(bp2);
+  std::copy(ind1.cbegin(), ind1.cend(), mesh(_,0).begin());
+  std::copy(ind2.cbegin(), ind2.cend(), mesh(_,1).begin());
+  std::copy(x1.cbegin(), x1.cend(), mesh(_,2).begin());
+  std::copy(y1.cbegin(), y1.cend(), mesh(_,3).begin());
+  std::copy(x2.cbegin(), x2.cend(), mesh(_,4).begin());
+  std::copy(y2.cbegin(), y2.cend(), mesh(_,5).begin());
+  std::copy(mx1.cbegin(), mx1.cend(), mesh(_,6).begin());
+  std::copy(my1.cbegin(), my1.cend(), mesh(_,7).begin());
+  std::copy(mx2.cbegin(), mx2.cend(), mesh(_,8).begin());
+  std::copy(my2.cbegin(), my2.cend(), mesh(_,9).begin());
+  std::copy(bp1.cbegin(), bp1.cend(), mesh(_,10).begin());
+  std::copy(bp2.cbegin(), bp2.cend(), mesh(_,11).begin());
 
   // 3. Construct the tri object
   // original tri object stores infromation about triangulation in a strange way
@@ -120,10 +92,13 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
    * each site the indeces of its neighbours in the Delaunay triangulation
    */
   Rcpp::List neighbors(x.size());
-  for(size_t i=0; i<x.size(); i++)
-    neighbors[i] = as<Rcpp::IntegerVector,size_t>(add_one<size_t>(triangulation.getNeighbors(i))); // retrieve information about neighbors
+  for(size_t i=0; i<x.size(); i++){
+    auto tmp = triangulation.getNeighbors(i); // retrieve information about neighbours
+    std::for_each(tmp.begin(), tmp.end(), [](size_t& val){ val=val+1; }); // adding one to each index
+    neighbors[i] = as<Rcpp::IntegerVector>(tmp); // transforming into a Rcpp:IntegerVector
+  }
 
-  Rcpp::List tri = Rcpp::List::create(Rcpp::Named("n") = Rcpp::IntegerVector(1,x.size()),
+  Rcpp::List tri = Rcpp::List::create(Rcpp::Named("n") = Rcpp::IntegerVector(1, x.size()),
                                       Rcpp::Named("x") = Rcpp::NumericVector(x),
                                       Rcpp::Named("y") = Rcpp::NumericVector(y),
                                       Rcpp::Named("neighbours") = neighbors);

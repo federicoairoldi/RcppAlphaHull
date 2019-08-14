@@ -24,7 +24,7 @@ std::ostream& operator<<(std::ostream& os, const HalfPlane<T>& hp){
 template<typename T>
 class HalfPlane: public AreaObj<T>{
   typedef Line<T> line;
-  typedef Vector2<T> vector;
+  typedef Vector2<T> vector2;
   
   // FRIENDS
   friend std::ostream& operator<<<T>(std::ostream& os, const HalfPlane<T>& hp);
@@ -52,11 +52,11 @@ class HalfPlane: public AreaObj<T>{
     
     // OTHER METHODS
     // Returns if the given point belongs to the halfplane or not
-    bool isIn(const vector& p) const override { return sign<T>(r.eval(p)) == side; };
-    bool isIn(const T& xp, const T& yp) const override { return isIn(vector(xp,yp)); };
+    bool isIn(const vector2& p) const override { return sign<T>(r.eval(p)) == side; };
+    bool isIn(const T& xp, const T& yp) const override { return isIn(vector2(xp,yp)); };
     // Returns if the given point is on the boundary of the halfplane or not
-    bool isOnBound(const vector& p) const override { return sign<T>(r.eval(p)) == 0; };
-    bool isOnBound(const T& xp, const T& yp) const override { return isOnBound(vector(xp,yp)); };
+    bool isOnBound(const vector2& p) const override { return sign<T>(r.eval(p)) == 0; };
+    bool isOnBound(const T& xp, const T& yp) const override { return isOnBound(vector2(xp,yp)); };
     // Returns if the halfplane is a vertical one
     bool isVertical() const { return r.isVertical(); };
     // Returns if the halfplane is an horizontral one

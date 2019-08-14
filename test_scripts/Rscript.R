@@ -11,7 +11,7 @@ View(vorcpp$mesh)
 
 system.time(plot(vorR, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T, wlines = 'vor', number = F))
 system.time(RcppAlphahull::plot.delvor(vorcpp, col = c("blue", "red", "black", "blue"), pch = 19, 
-                                       wpoints = T, wlines = 'vor', number = F))
+                                       wpoints = T, wlines = 'both', number = F))
 
 # plots in blue infinite edges
 for(i in 1:dim(vorcpp$mesh)[1])
@@ -117,7 +117,7 @@ system.time(alphahull::inahull(ahR, c(0.7, 0.8)))
 system.time(RcppAlphahull::inahull(ahcpp, 0.7, 0.8))
 
 # annulus sampling
-n <- 30000
+n <- 300
 theta<-runif(n,0,2*pi)
 r<-sqrt(runif(n,0.25^2,0.5^2))
 x<-cbind(0.5+r*cos(theta),0.5+r*sin(theta))

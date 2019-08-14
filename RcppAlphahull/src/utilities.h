@@ -15,11 +15,11 @@ using namespace Rcpp;
  * then indeces of the sites are shifted by a -1 in c++ with respect the
  * correspondent in R
  */
-template<typename T>
-std::vector<T> add_one(const std::vector<T>& v){
-  std::vector<T> newvett = v;
-  for(size_t i=0; i<newvett.size(); i++)
-    newvett[i]+=1;
+template<typename T1, typename T2>
+std::vector<T1> add_one(const std::vector<T2>& v){
+  std::vector<T1> newvett;
+  for(size_t i=0; i<v.size(); i++)
+    newvett.push_back(v [i]+1);
   return newvett;
 };
 

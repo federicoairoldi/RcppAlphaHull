@@ -28,7 +28,7 @@ bool inRange(const Segment<T>& seg, const Vector2<T>& point){ return seg.inRange
 // class to define open segments in R2
 template<typename T>
 class Segment{
-  typedef Vector2<T> vector;
+  typedef Vector2<T> vector2;
   typedef Line<T> line;
   
   // FRIENDS
@@ -36,12 +36,12 @@ class Segment{
 
   private:
     // ATTRIBUTES
-    vector p, q;
+    vector2 p, q;
 
   public:
     // CONSTRUCTORS
     Segment() = delete;
-    Segment(const vector& p, const vector& q): p(p), q(q) {}
+    Segment(const vector2& p, const vector2& q): p(p), q(q) {}
     Segment(const T& xp, const T& yp, const T& xq, const T& yq): p(xp,yp), q(xq,yq) {}
 
     // GETTERS
@@ -82,7 +82,7 @@ class Segment{
     /* Given a point and a segment which both lie on the same line, check whether or not the
      * point falls inside the segment.
      */
-    bool inRange(const Vector2<T>& point) const{
+    bool inRange(const vector2& point) const{
       T inf=std::min(p.x, q.x), sup=std::max(p.x, q.x);
       if( point.x <= inf || sup <= point.x )
         return false;
@@ -99,7 +99,7 @@ class Segment{
      * secondly check that the point coordinates fall in the same range of the segment span
      * if both condition are true then the point is in the segment
      */
-    bool inside(const Vector2<T>& point) const { return getLine().eval(point)==0 && inRange(point); };
+    bool inside(const vector2& point) const { return getLine().eval(point)==0 && inRange(point); };
 };
 
 #endif

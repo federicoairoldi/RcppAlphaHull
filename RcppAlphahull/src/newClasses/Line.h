@@ -20,7 +20,7 @@ std::ostream& operator<<(std::ostream& os, const Line<T>& r){
 
 template<typename T>
 class Line{
-  typedef Vector2<T> vector;
+  typedef Vector2<T> vector2;
   
   // FRIENDS
   friend std::ostream& operator<<<T>(std::ostream& os, const Line<T>& r);
@@ -49,7 +49,7 @@ class Line{
         std::cerr << "Error! both a nd b are null" << std::endl;
       normalize(); // normalizes the line
     }; // raises an error if both a and b are 0
-    Line(const vector& p1, const vector& p2): Line(p2.x-p1.x, p1.y-p2.y, p1.x*p2.y-p2.x*p1.y)
+    Line(const vector2& p1, const vector2& p2): Line(p2.x-p1.x, p1.y-p2.y, p1.x*p2.y-p2.x*p1.y)
     { if( p1 == p2 ) std::cerr << "Error! p1 and p2 are the same point" << std::endl; };
 
     // GETTERS
@@ -69,7 +69,7 @@ class Line{
      * -  0 => a*y_p + b*x_p + c = 0 ( y_p - (m*x_p + q) = or x_p = x for vertical lines)
      * - -1 => a*y_p + b*x_p + c < 0 ( y_p - (m*x_p + q) < or x_p < x for vertical lines)
      */
-    int eval(const vector& p) const{ return sign<T>(a*p.y + b*p.x + c); }
+    int eval(const vector2& p) const{ return sign<T>(a*p.y + b*p.x + c); }
 
     // Provided a x abscissa returns the y coordinate, if the line is vertical and x!=xr then a quite_NaN
     // is returned, otherwise it returns the same value x.
@@ -80,11 +80,11 @@ class Line{
     }
 
     // Compute line/point distance
-    T getDistance(const vector& p) const{ return std::fabs(a*p.y + b*p.x + c)/std::sqrt(a*a+b*b); }
+    T getDistance(const vector2& p) const{ return std::fabs(a*p.y + b*p.x + c)/std::sqrt(a*a+b*b); }
 
     // Returns the points of the line with distance d from the provided point, if such points don't exist
     // the returned vector is empty
-    std::vector<vector> getDistNeigh(const vector& p, const T& d){
+    std::vector<vector2> getDistNeigh(const vector2& p, const T& d){
       T delta = d*d - std::pow(getDistance(p),2), m = slope(), q = intercept();
       if(!isVertical())
         delta*=1+m*m;
@@ -92,13 +92,13 @@ class Line{
       // if the provided distance d is less than the distance between the line and the point p, we can't
       // find such pair of points, this translates in the fact that delta < 0
       if(delta < 0)
-        return std::vector<vector>();
+        return std::vector<vector2>();
 
       // int his case there's only one point
       if(delta == 0){
         T x = !isVertical()? (p.x-m*(q-p.y))/(1+m*m): x_r();
         T y = !isVertical()? m*x+q: p.y;
-        return std::vector<vector>{vector(x,y)};
+        return std::vector<vector2>{vector2(x,y)};
       }
 
       T x1 = !isVertical()? (p.x-m*(q-p.y)-std::sqrt(delta))/(1+m*m): x_r(),
@@ -106,7 +106,7 @@ class Line{
       T y1 = !isVertical()? m*x1+q: p.y-std::sqrt(delta),
         y2 = !isVertical()? m*x2+q: p.y+std::sqrt(delta);
 
-      return std::vector<vector>{vector(x1,y1), vector(x2,y2)};
+      return std::vector<vector2>{vector2(x1,y1), vector2(x2,y2)};
     };
 };
 

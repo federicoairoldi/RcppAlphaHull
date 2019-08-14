@@ -113,7 +113,7 @@ Rcpp::List computeAshapeRcpp(const Rcpp::List& delvor_obj, const long double& al
    std::vector<size_t> alpha_extremes;
    for(size_t i=0; i<(size_t) as<Rcpp::List>(delvor_obj["tri.obj"])["n"]; i++)
         if(alpha <= alpha_L[i])
-           alpha_extremes.push_back(i+1); // may be quite slow (remember to check it)
+           alpha_extremes.push_back(i+1);
         
    // Select the alpha-neighbours rows of the matrix mesh
    std::vector<size_t> which_rows = getAlphaNeighbours<real>(delvor_obj["mesh"], alpha_extremes, alpha);

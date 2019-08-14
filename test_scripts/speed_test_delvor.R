@@ -15,43 +15,37 @@ if( getwd()!=dirname(rstudioapi::getActiveDocumentContext()$path) )
 
 print("TESTING SPEED OF DELVOR")
 
-set.seed(1234)
-n.nodes = c( seq(100,900,by=100),
-             seq(1000,9000,by=1000),
-             seq(10000,60000,by=10000))
-relative = c()
+set.seed(3)
+n.nodes = seq(100, 1000, by = 100)
 RTime = c()
 CppTime = c()
+
 for(n in n.nodes){
-  if(n%%50==0) print(paste("Simulation:",n))
+  print(paste("Simulation:",n))
   x = runif(n)
   y = runif(n)
   res = benchmark("Cpp" = RcppAlphahull::delvor(x, y), "R" = alphahull::delvor(x, y), replications = 1)
   CppTime = rbind(CppTime, res[which(res[,"test"] == "Cpp"), c("elapsed", "user.self", "sys.self")])
   RTime = rbind(RTime, res[which(res[,"test"] == "R"), c("elapsed", "user.self", "sys.self")])
-  relative = c(relative, res[which(res[,"test"] == "R"), c("relative")])
 }
-tmp = cbind(CppTime, RTime)
 
-Cpp.User = tmp[,2]
-R.User = tmp[,5]
-transfCpp = n.nodes*log(n.nodes, 2)
-transfR = (n.nodes*log(n.nodes, 2))^2
-fit.cpp = lm(Cpp.User ~ transfCpp)
+Cpp.User = CppTime[,2]
+R.User = RTime[,2]
+transf = n.nodes*log(n.nodes, 2)
+fit.cpp = lm(Cpp.User ~ transf)
 summary(fit.cpp)
-fit.R = lm(R.User ~ transfCpp)
+fit.R = lm(R.User ~ transf)
 summary(fit.R)
 
-if(!dir.exists("img")) dir.create("img")
-
-N = 24
 x11()
-tiff("img/speed_delvor.tiff")
-matplot(n.nodes[1:N], cbind(Cpp.User[1:N], R.User[1:N]), type = "l", col = c("blue", "red"), lty = 1,
-        xlab = "Number of nodes", ylab = "CPU time")
-lines(n.nodes[1:N], fit.cpp$fitted.values[1:N], col = "green", lty = 2)
-lines(n.nodes[1:N], fit.R$fitted.values[1:N], col = "orange", lty = 2)
-legend("topleft", legend = c("C++", "R", "lm fit C++", "lm fit R"), fill = c("blue", "red", "green", "orange"))
+png("/home/federico/Dropbox/Alpha-hulls/Report/img/speed_delvor.png")
+par(mar = c(5,6,1,1))
+plot(c(n.nodes, n.nodes), c(Cpp.User, R.User), xlab = "number of sites", ylab = "CPU time", cex.lab = 1.8)
+points(n.nodes, Cpp.User, col = "blue", pch = 19)
+points(n.nodes, R.User, col = "red", pch = 19)
+lines(n.nodes, fit.cpp$fitted.values, col = "green", lty = 2)
+lines(n.nodes, fit.R$fitted.values, col = "orange", lty = 2)
+legend("topleft", legend = c("C++", "R", "lm fit C++", "lm fit R"), fill = c("blue", "red", "green", "orange"), cex = 1.8)
 graphics.off()
 
 R.User/Cpp.User
