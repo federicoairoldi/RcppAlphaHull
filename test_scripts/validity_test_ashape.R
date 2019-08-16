@@ -74,4 +74,5 @@ rm(list = c("k", "i", "ascpp", "asR", "x", "y"))
 not.matching.size
 not.matching.length
 not.matching
+max(perc.length.diff)
 

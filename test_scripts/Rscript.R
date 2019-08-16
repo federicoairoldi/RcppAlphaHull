@@ -19,7 +19,7 @@ for(i in 1:dim(vorcpp$mesh)[1])
         c(vorcpp$mesh[i, "my1"], vorcpp$mesh[i, "my2"]),
         col = ifelse(vorcpp$mesh[i, "bp2"] == 1 | vorcpp$mesh[i, "bp1"] == 1, "blue", "red"))
 
-n = 10 # 35
+n = 35 # 35
 set.seed(353) # 353
 x = runif(n)
 y = runif(n)
@@ -41,7 +41,7 @@ ascpp$alpha.extremes
 plot(asR, wpoints = T)
 plot(ascpp, wpoints = T, col = c("red","black"))
 
-alpha = 0.2
+alpha = 0.02
 ahR = alphahull::ahull(vorR, alpha = alpha)
 ahcpp = RcppAlphahull::ahull(vorcpp, alpha = alpha)
 View(ahR$complement)

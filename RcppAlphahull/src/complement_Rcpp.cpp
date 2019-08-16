@@ -41,31 +41,25 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
 
     // searching extremes with distance alpha on the rect "bis"
     std::vector<Vector2<real>> points = bis.getDistNeigh(p,alpha);
-    
-    //std::cout << "Edge: " << mesh(i,0) << " " << mesh(i,1) << std::endl;
 
     // add ball or halfplane for side of e1
     if(bp1){ // if bp1 = 1 then I need to add an an halfplane
       halfplanes.push_back(HalfPlane<real>(r, r.eval(e1)==1? true: false ));
       rows_halfplanes.push_back(i);
-      //std::cout << "Adding upper halfplane" << std::endl;
     }
     else if(d1>=alpha){ // add a ball but only if e1 is at least distant alpha from p
       balls.push_back(Ball<real>(e1,d1));
       rows_balls.push_back(i);
-      //std::cout << "Adding ball: " << e1 << " " << d1 << std::endl;
     }
 
     // add ball or halfplane for side of e2
     if(!bp1 && bp2){ // if bp2 = 1 then I need to add an halfplane
       halfplanes.push_back(HalfPlane<real>(r, r.eval(e2)==1? true: false ));
       rows_halfplanes.push_back(i);
-      //std::cout << "Adding lower halfplane" << std::endl;
     }
     else if(d2>=alpha){ // add a ball but only if e2 is at least distant alpha from p
       balls.push_back(Ball<real>(e2,d2));
       rows_balls.push_back(i);
-      //std::cout << "Adding ball: " << e2 << " " << d2 << std::endl;
     }
 
     bool same_side1 = (h1.isIn(e1) == h1.isIn(e2)), // e1 and e2 are both in the upper (right) halfplane
@@ -73,23 +67,21 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
     // add eventual ball for intersection points
     for(size_t k=0; k<points.size(); k++){
       bool add = false;
-      add = inside(vor_edge,points[k]); // if point[k] falls inside the Voronoi edge then for sure I need to add a ball
-      // std::cout << "points[" << k << "] inside?" << inside(vor_edge,points[k]) << std::endl;
-      if( bis.eval(points[k])!=0 ){
-        // std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH! " << "points[" << k << "] in rect?" << bis.eval(points[k]) << std::endl;
-      }
+      // if point[k] falls inside the Voronoi edge then for sure I need to add a ball (I don't use inside since, by
+      // construction the points and on the line bis, so by calling only inRange I avoid possibile numerical errors)
+      add = vor_edge.inRange(points[k]);
+      
       // (*) here I handle that problem
       // if point[k] is not in the finite version of the Voronoi edge then I need to check whether orù
       // not it belongs to an infinite edge
       add = add || (bp1 && h1.isIn(points[k]) && (same_side1? alpha>=d2: true)); // checking if belongs to h1 (if bp1 = 1) AND distant at least alpha if the other edge estreme is in the same side
       add = add || (bp2 && h2.isIn(points[k]) && (same_side2? alpha>=d1: true)); // checking if belongs to h2 (if bp2 = 1) AND distant at least alpha if the other edge estreme is in the same side
+      
       if(add){
         balls.push_back(Ball<real>(points[k], p.getDistance(points[k])));
         rows_balls.push_back(i);
-        // std::cout << "Adding ball: " << points[k] << " " << p.getDistance(points[k]) << std::endl;
       }
     }
-    // std::cout << std::endl;
   }
 
   // constructing the output matrix

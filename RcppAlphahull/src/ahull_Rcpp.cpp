@@ -29,18 +29,6 @@ Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement){
   for(typename std::vector<HalfPlane<T>>::const_iterator hp_it=halfplanes.cbegin(); hp_it!=halfplanes.cend(); hp_it++)
     arcs_list.remove_if([&](const CircArc<T>& a){ return hp_it->isIn(a.getMidPoint()); });
   
-  /*
-  for(size_t i=0; i<halfplanes.size(); i++){
-    std::cout << std::endl << "currente hp: " << halfplanes[i] << std::endl;
-    for(auto it = arcs_list.begin(); it!=arcs_list.end(); it++){
-      std::cout << "mid point: " << it->getMidPoint() << " is in?" << halfplanes[i].isIn(it->getMidPoint()) << std::endl;
-      if(halfplanes[i].isIn(it->getMidPoint())){
-        it = arcs_list.erase(it);
-        it--;
-      }
-    }
-  }*/
-  
   arcs = std::vector<CircArc<T>>(arcs_list.begin(), arcs_list.end());
   
   // building arcs matrix

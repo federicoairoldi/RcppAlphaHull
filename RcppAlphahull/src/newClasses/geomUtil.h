@@ -13,14 +13,13 @@ template<typename T> class CircArc;
 
 /* Returns the sign of the given value:
   * - 1 if positive
-* - -1 if negative
-* - 0 if null
-* NB: control with tollerance since I'm working with floating point
- */
+  * - -1 if negative
+  * - 0 if null
+  * NB: control with tollerance since I'm working with floating point
+   */
 template<typename T>
 int sign(const T& value){
-  T eps = 10e-10; // NB: maybe you have to check this!!!!!!!!!!!!!!!!!!!!!!!!!
-  if( std::fabs(value)<=eps ) // std::numeric_limits<T>::epsilon()
+  if( std::fabs(value) <= std::numeric_limits<T>::epsilon() )
     return 0;
   if(value > T(0))
     return 1;
