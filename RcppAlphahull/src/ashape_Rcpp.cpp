@@ -3,7 +3,6 @@
 #include <algorithm>
 #include "newClasses/Segment.h"
 #include "utilities.h"
-
 using namespace mygal;
 using namespace Rcpp;
 

@@ -3,9 +3,7 @@
 #include <cmath>
 #include "MyGAL/FortuneAlgorithm.h"
 #include "utilities.h"
-
 using namespace mygal;
-using namespace Rcpp;
 
 /*
  * Function to retrieve a delvor object (almost) like the one returned by the alphahull function delvor,

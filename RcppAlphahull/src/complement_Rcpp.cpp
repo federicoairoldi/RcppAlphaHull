@@ -1,6 +1,3 @@
-#ifndef _UTILITIES_ALPHAHULL_
-#define _UTILITIES_ALPHAHULL_
-
 #include <Rcpp.h>
 #include <cmath>
 #include <iostream>
@@ -121,5 +118,3 @@ Rcpp::NumericMatrix computeComplement(const Rcpp::NumericMatrix& mesh, const lon
   
   return complement;
 };
-
-#endif

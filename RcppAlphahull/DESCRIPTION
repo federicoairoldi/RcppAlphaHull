@@ -10,5 +10,6 @@ License: GPL (>= 2)
 Depends: R (>= 3.4.4)
 Imports: Rcpp (>= 1.0.1)
 LinkingTo: Rcpp
+SystemRequirements: C++14
 RoxygenNote: 6.1.1
 Encoding: UTF-8

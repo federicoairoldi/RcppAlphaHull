@@ -11,7 +11,7 @@ View(vorcpp$mesh)
 
 system.time(plot(vorR, col = c("blue", "red", "black", "blue"), pch = 19, wpoints = T, wlines = 'vor', number = F))
 system.time(RcppAlphahull::plot.delvor(vorcpp, col = c("blue", "red", "black", "blue"), pch = 19, 
-                                       wpoints = T, wlines = 'both', number = F))
+                                       wpoints = T, wlines = 'vor', number = F))
 
 # plots in blue infinite edges
 for(i in 1:dim(vorcpp$mesh)[1])
