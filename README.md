@@ -65,14 +65,14 @@ system.time(RcppAlphahull::ahull(x,y,alpha))
 ```
 
     ##    user  system elapsed 
-    ##   0.085   0.000   0.118
+    ##   0.080   0.000   0.105
 
 ``` r
 system.time(alphahull::ahull(x,y,alpha))
 ```
 
     ##    user  system elapsed 
-    ##   2.099   0.052   3.029
+    ##   2.070   0.051   2.821
 
 By runnning this code one should see that the `RcppAlpahull` function
 performs more faster than the `alpahull` one. The result of the
