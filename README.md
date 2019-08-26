@@ -29,8 +29,8 @@ If no error occurs the installation has worked fine.
 ## A first example test
 
 After the installation we can run the following code to perform a small
-simple test. The plot shows the \(\alpha\)-convex hull in red, the
-\(\alpha\)-shape in blue and the Voronoi diagram in black.
+simple test. The plot shows the α-convex hull in red, the α-shape in
+blue and the Voronoi diagram in black.
 
 ``` r
 library(RcppAlphahull) # loading the package
@@ -65,17 +65,17 @@ system.time(RcppAlphahull::ahull(x,y,alpha))
 ```
 
     ##    user  system elapsed 
-    ##   0.080   0.000   0.105
+    ##   0.080   0.001   0.084
 
 ``` r
 system.time(alphahull::ahull(x,y,alpha))
 ```
 
     ##    user  system elapsed 
-    ##   2.070   0.051   2.821
+    ##   2.121   0.037   3.577
 
 By runnning this code one should see that the `RcppAlpahull` function
-performs more faster than the `alpahull` one. The result of the
-\(\alpha\)-convex hull computation is shown in the following plot.
+performs more faster than the `alpahull` one. The result of the α-convex
+hull computation is shown in the following plot.
 
 ![](README_files/figure-gfm/plot-1.png)<!-- -->
