@@ -22,7 +22,7 @@
 #' @examples
 #' x = runif(10)
 #' y = runif(10)
-#' a.hull = ahull(x, y)
+#' a.hull = ahull(x, y, alpha = 0.8)
 #' plot(a.hull)
 #'
 #' @export
