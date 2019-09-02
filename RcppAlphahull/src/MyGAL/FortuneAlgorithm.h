@@ -129,9 +129,9 @@ public:
     /*____________INTRUSION IN ORIGNAL CODE________________*/
     /*_____________________________________________________*/
     /* Federico Airoldi intrusion in the author code */
-    /* I apologize for this intrusion, I need the bounding box slightly 
-     * bigger so that infinite all infinite edges are at least long "dist", but then
-     * I also need to know which edges are the infinite ones
+    /* I need the bounding box to be slightly bigger so that 
+     * all infinite edges are at least long "dist", so that
+     * is possibile to distinguish them from the finite ones.
      */
      /**
      * \brief Bound the Voronoi diagram
@@ -158,10 +158,10 @@ public:
             box->top = std::max(vertex.point.y, box->top);
         }
         // further enlarge the box
-        box->left   = (int)(floor(box->left) - dist);   
-        box->bottom = (int)(floor(box->bottom) - dist); 
-        box->right  = (int)(ceil(box->right) + dist);
-        box->top    = (int)(ceil(box->top) + dist);
+        box->left   = box->left - dist;   
+        box->bottom = box->bottom - dist; 
+        box->right  = box->right + dist;
+        box->top    = box->top + dist;
         
         // 2. Retrieve all non bounded half edges from the beach line
         auto linkedVertices = std::list<LinkedVertex>();
