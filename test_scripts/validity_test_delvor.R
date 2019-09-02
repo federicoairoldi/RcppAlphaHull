@@ -55,8 +55,8 @@ for(i in 1:n.test){
   k = 0
   tmp = vorR$mesh[which(vorR$mesh[,"bp2"] == 1 | vorR$mesh[, "bp1"] == 1), 1:2]
   tmp2 = vorcpp$mesh[which(vorcpp$mesh[,"bp2"] == 1 | vorcpp$mesh[, "bp1"] == 1), 1:2]
-  for(i in 1:dim(tmp)[1])
-    k = k + !(search(tmp[i,"ind1"], tmp[i,"ind2"], tmp2))
+  for(j in 1:dim(tmp)[1])
+    k = k + !(search(tmp[j,"ind1"], tmp[j,"ind2"], tmp2))
 
   if(k > 0)
     infedges = c(infedges, i)
@@ -71,8 +71,8 @@ for(i in 1:n.test){
   k = 0
   tmp = vorR$mesh[which(vorR$mesh[,"bp2"] == 0 & vorR$mesh[, "bp1"] == 0), 1:2]
   tmp2 = vorcpp$mesh[which(vorcpp$mesh[,"bp2"] == 0 & vorcpp$mesh[, "bp1"] == 0), 1:2]
-  for(i in 1:dim(tmp)[1])
-    k = k + !(search(tmp[i,"ind1"], tmp[i,"ind2"], tmp2))
+  for(j in 1:dim(tmp)[1])
+    k = k + !(search(tmp[j,"ind1"], tmp[j,"ind2"], tmp2))
 
   if(k > 0)
     finedges = c(finedges, i)

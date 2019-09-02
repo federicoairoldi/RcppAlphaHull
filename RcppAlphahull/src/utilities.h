@@ -19,14 +19,14 @@ template<typename T1, typename T2>
 std::vector<T1> add_one(const std::vector<T2>& v){
   std::vector<T1> newvett;
   for(size_t i=0; i<v.size(); i++)
-    newvett.push_back(v [i]+1);
+    newvett.push_back(v[i]+1);
   return newvett;
 };
 
 // Returns if the point "point" is at the boundary of the box "box"
 template <typename T>
 bool isboundary(const Vector2<T>& point, const Box<T>& box){
-  T eps(10e-5);
+  T eps = EPSILON<T>; // std::numeric_limits<T>::epsilon();
   if( ( std::fabs((point.x-box.left)/box.left) < eps | std::fabs((point.x-box.right)/box.right) < eps  )
         && point.y <= box.top && point.y >= box.bottom )
     return true;

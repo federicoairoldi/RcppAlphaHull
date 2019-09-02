@@ -130,10 +130,9 @@ public:
     /*_____________________________________________________*/
     /* Federico Airoldi intrusion in the author code */
     /* I apologize for this intrusion, I need the bounding box slightly 
-     * bigger so that infinite all infinite edges are at least long 0.5, but then
+     * bigger so that infinite all infinite edges are at least long "dist", but then
      * I also need to know which edges are the infinite ones
      */
-    /* I'm so sorry :( */
      /**
      * \brief Bound the Voronoi diagram
      *
@@ -147,7 +146,7 @@ public:
      * 
      * \return True if no error occurs during intersection, false otherwise
      */
-    bool bound(Box<T>* box)
+    bool bound(Box<T>* box, const T& dist)
     {
         auto success = true;
         // 1. Make sure the bounding box contains all the vertices
@@ -159,15 +158,10 @@ public:
             box->top = std::max(vertex.point.y, box->top);
         }
         // further enlarge the box
-        /*box->left   = box->left + 0.5;   
-        box->right  = box->right + 0.5;
-        box->bottom = box->bottom - 0.5; 
-        box->top    = box->top + 0.5;*/
-        // this may be more safe...
-        box->left   = (int)(floor(box->left) - 1.0);   
-        box->bottom = (int)(floor(box->bottom) - 1.0); 
-        box->right  = (int)(ceil(box->right) + 1.0);
-        box->top    = (int)(ceil(box->top) + 1.0);
+        box->left   = (int)(floor(box->left) - dist);   
+        box->bottom = (int)(floor(box->bottom) - dist); 
+        box->right  = (int)(ceil(box->right) + dist);
+        box->top    = (int)(ceil(box->top) + dist);
         
         // 2. Retrieve all non bounded half edges from the beach line
         auto linkedVertices = std::list<LinkedVertex>();

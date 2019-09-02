@@ -18,7 +18,7 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source("search.R")
 
 print("executing test")
-# contains those test cases in which the ashape matrix don't coincide
+# contains those test cases in which the ashape matrices don't coincide
 not.matching = c()
 not.matching.size = c()
 not.matching.length = c()
@@ -58,8 +58,8 @@ for(i in 1:n.test){
   # same edges for the alpha? if not adding the test to the queue of wrong tests
   k = 0
   if(dim(asR$edges)[1]!=0)
-    for(i in 1:dim(asR$edges)[1])
-      k = k + !(search(asR$edges[i,"ind1"], asR$edges[i,"ind2"], ascpp$edges))
+    for(j in 1:dim(asR$edges)[1])
+      k = k + !(search(asR$edges[j,"ind1"], asR$edges[j,"ind2"], ascpp$edges))
 
   if(k > 0)
     not.matching = c(not.matching, i)

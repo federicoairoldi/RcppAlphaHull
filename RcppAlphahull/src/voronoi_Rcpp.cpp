@@ -24,8 +24,9 @@ Rcpp::List computeVoronoiRcpp(const Rcpp::NumericVector x, const Rcpp::NumericVe
   auto algorithm = FortuneAlgorithm<real>(points); // initialize an instance of Fortune's algorithm
   algorithm.construct();                            // construct the diagram
 
-  Box<real> localbox{0, 0, 1, 1};
-  algorithm.bound(&localbox);            // Bound the diagram
+  Box<real> localbox{0, 0, 1, 1}; 
+  real dist = 20*std::max( Rcpp::max(x)-Rcpp::min(x), Rcpp::max(y)-Rcpp::min(y) ); // tuning the enlargement of the bounding box
+  algorithm.bound(&localbox, dist);            // Bound the diagram
   auto diagram = algorithm.getDiagram(); // Get the constructed diagram
   //diagram.intersect(Box<ftype>{0, 0, 2, 2}); // Compute the intersection between the diagram and a box
   auto triangulation = diagram.computeTriangulation();
