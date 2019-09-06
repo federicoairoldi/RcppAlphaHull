@@ -22,8 +22,7 @@
 namespace mygal
 {
 
-template<typename T>
-constexpr T EPSILON = std::numeric_limits<T>::epsilon();
+template<typename T> constexpr T EPSILON = std::numeric_limits<T>::epsilon();
 
 // Almost predicates are easier to satisfy than the normal ones
 
