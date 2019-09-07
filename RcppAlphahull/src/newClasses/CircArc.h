@@ -151,14 +151,7 @@ class CircArc{
       if(a2.theta2() < a2.theta1() && a2.theta1() <= alpha)
         return std::vector<CircArc>{CircArc(b, a2.getEndVector(), a2.theta1()-a2.theta2())};
       
-      // NB: to be removed if no error occurs in future
-      // case 9: 0 = a2.theta1 < alpha < a2.theta2 (maybe this shouldn't happen)
-      if(a2.theta2() == 0 && alpha <= a2.theta1()){
-        // std::cout << "case 9" << std::endl;
-        return std::vector<CircArc>{CircArc(b, a2.getEndVector(), alpha-a2.theta2())};
-      }
-      
-      // just in case i have done something wrong...
+      // just in case something went wrong...
       std::cerr << "No case match!!" << std::endl;
       return std::vector<CircArc>();
     };
