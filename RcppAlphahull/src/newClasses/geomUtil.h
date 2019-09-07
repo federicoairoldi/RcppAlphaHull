@@ -19,7 +19,7 @@ template<typename T> class CircArc;
    */
 template<typename T>
 int sign(const T& value){
-  if( std::fabs(value) <= EPSILON<T> ) // std::numeric_limits<T>::epsilon()
+  if( std::fabs(value) <= std::numeric_limits<T>::epsilon() )  //  EPSILON<T>
     return 0;
   if(value > T(0))
     return 1;

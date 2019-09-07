@@ -26,7 +26,7 @@ std::vector<T1> add_one(const std::vector<T2>& v){
 // Returns if the point "point" is at the boundary of the box "box"
 template <typename T>
 bool isboundary(const Vector2<T>& point, const Box<T>& box){
-  T eps = EPSILON<T>; // std::numeric_limits<T>::epsilon();
+  T eps = std::numeric_limits<T>::epsilon();  //  EPSILON<T>
   if( ( std::fabs((point.x-box.left)/box.left) < eps | std::fabs((point.x-box.right)/box.right) < eps  )
         && point.y <= box.top && point.y >= box.bottom )
     return true;
