@@ -50,9 +50,13 @@ View(ahR$arcs)
 View(ahcpp$arcs)
 ahcpp$length
 ahR$length
+ahcpp$xahull
+ahR$xahull
 plot(ahR, col = c("red", "black", "black", "black", "black", "black"), asp = 1)
 plot(ahcpp, col = c("cyan", "black", "black", "black", "black", "black"), asp = 1, add = T)
 plot(ahR, col = c("red", "black", "black", "black", "black", "black"), asp = 1, add = T)
+points(ahR$xahull[,1],ahR$xahull[,2], col = 'red')
+points(ahcpp$xahull[,1],ahcpp$xahull[,2], col = 'cyan')
 plot(vorR, number = F, wpoints = F, wlines = "vor", col = "grey", asp = 1)
 
 # plotting arcs
