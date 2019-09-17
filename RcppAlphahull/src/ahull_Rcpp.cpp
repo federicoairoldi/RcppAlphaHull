@@ -19,29 +19,34 @@ Rcpp::NumericMatrix getArcs(const Rcpp::NumericMatrix& complement){
   std::vector<HalfPlane<T>> halfplanes;
   
   complement_matrix_to_vectors(complement, balls, halfplanes);
-  
-  std::vector<CircArc<T>> arcs = union_boundary(balls); // construct the boundary of the union of balls
-  std::list<CircArc<T>> arcs_list(arcs.begin(), arcs.end()); // inserting in a list since it's easier to remove elements in the middle
+ 
+  std::list<CircArc<T>> arcs = union_boundary(balls); // construct the boundary of the union of balls
   
   // clamping arcs that are outside the convex hull (namely are in the halfplanes). By construction such
   // arcs have their starting and ending point at most on the boundary of one halfplane so I check if
   // the middle point is in any of them.
   for(typename std::vector<HalfPlane<T>>::const_iterator hp_it=halfplanes.cbegin(); hp_it!=halfplanes.cend(); hp_it++)
-    arcs_list.remove_if([&](const CircArc<T>& a){ return hp_it->isIn(a.getMidPoint()); });
-  
-  arcs = std::vector<CircArc<T>>(arcs_list.begin(), arcs_list.end());
+    arcs.remove_if([&](const CircArc<T>& a){ return hp_it->isIn(a.getMidPoint()); });
   
   // building arcs matrix
   Rcpp::NumericMatrix arcs_mat(arcs.size(), 8);
-  for(size_t i=0; i<arcs.size(); i++){
-    Vector2<T> v = arcs[i].getMidVector(); // retrieving this vector in order to match alphahull description of arcs
-    arcs_mat(i,0) = arcs[i].getBall().center().x;
-    arcs_mat(i,1) = arcs[i].getBall().center().y;
-    arcs_mat(i,2) = arcs[i].getBall().radius();
-    arcs_mat(i,3) = v.x;
-    arcs_mat(i,4) = v.y;
-    arcs_mat(i,5) = arcs[i].width()/2;
+  std::vector<T> c1, c2, r, vx, vy, alpha_mid;
+  for(typename std::list<CircArc<T>>::const_iterator arc=arcs.cbegin(); arc!=arcs.cend(); arc++){ // size_t i=0; i<arcs.size(); i++
+    Vector2<T> v = arc->getMidVector(); // retrieving this vector in order to match alphahull description of arcs
+    c1.push_back(arc->getBall().center().x);
+    c2.push_back(arc->getBall().center().y);
+    r.push_back(arc->getBall().radius());
+    vx.push_back(v.x);
+    vy.push_back(v.y);
+    alpha_mid.push_back(arc->width()/2);
   }
+  
+  std::copy(c1.cbegin(), c1.cend(), arcs_mat(_,0).begin());
+  std::copy(c2.cbegin(), c2.cend(), arcs_mat(_,1).begin());
+  std::copy(r.cbegin(), r.cend(), arcs_mat(_,2).begin());
+  std::copy(vx.cbegin(), vx.cend(), arcs_mat(_,3).begin());
+  std::copy(vy.cbegin(), vy.cend(), arcs_mat(_,4).begin());
+  std::copy(alpha_mid.cbegin(), alpha_mid.cend(), arcs_mat(_,5).begin());
   colnames(arcs_mat) = Rcpp::CharacterVector::create("c1", "c2", "r", "vx", "vy", "theta", "end1", "end2");
   
   return arcs_mat;

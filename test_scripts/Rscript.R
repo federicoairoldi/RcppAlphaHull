@@ -41,7 +41,7 @@ ascpp$alpha.extremes
 plot(asR, wpoints = T, wlines = 'both')
 plot(ascpp, wpoints = T, col = c("red","black"))
 
-alpha = 0.02
+alpha = 0.2
 ahR = alphahull::ahull(vorR, alpha = alpha)
 ahcpp = RcppAlphahull::ahull(vorcpp, alpha = alpha)
 View(ahR$complement)

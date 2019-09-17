@@ -81,15 +81,15 @@ std::vector<CircArc<T>> collective_removeBall(const std::vector<CircArc<T>>& arc
 // Given some balls returns the arcs that form the boundary of the union by removing those arc parts 
 // that are in the interior
 template<typename T>
-std::vector<CircArc<T>> union_boundary(const std::vector<Ball<T>>& balls){
-  std::vector<CircArc<T>> res;
+std::list<CircArc<T>> union_boundary(const std::vector<Ball<T>>& balls){
+  std::list<CircArc<T>> res;
   
   // for each ball I create the respective arc and then remove the portions inside the other balls
   for(typename std::vector<Ball<T>>::const_iterator it1=balls.cbegin(); it1!=balls.cend(); it1++){
     CircArc<T> arc(*it1); // in principle the whole ball boundary has to be included
     std::vector<CircArc<T>> tmp{arc}; // in this variable I progressively save the results I get by
                                       // removing the different balls
-                                      
+    
     typename std::vector<Ball<T>>::const_iterator it2=balls.cbegin();
     while(it2!=balls.cend() && !tmp.empty()){
       if( it1!=it2 )
