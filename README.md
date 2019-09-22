@@ -6,7 +6,7 @@ RcppAlphahull installation and first test
 Up to now is possible to install this package easily on Linux and in
 order to do that I suggest to follow the following procedure:
 
-  - install R development package with the command `sudo apt-get install
+  - install R development version with the command `sudo apt-get install
     r-base-dev` in the command line;
   - open R with the command `R` in command line or, if you have
     installed [Rstudio desktop
@@ -16,15 +16,15 @@ order to do that I suggest to follow the following procedure:
     `install.packages('devtools')`, this may take a while depending on
     the tools that have been already installed on your R version if you
     already had it;
-  - unlickily the devtools command `install_github` apparently does not
-    install packages dependencies, so I suggest to install the package
-    `alphahull` directly with the command
-    `install.packages('alphahull')`;
   - install `RcppAlphahull` using the command
     `devtools::install_github("https://github.com/federicoairoldi/ProgettoPACS",
     subdir = "RcppAlphahull")`.
 
-If no error occurs the installation has worked fine.
+It can happen that the devtools command `install_github` does not
+install packages dependencies, in this case install the package
+`alphahull` separately with the command `install.packages('alphahull')`
+and repeat the last point. Ohterwise, if no error occurred, the
+installation has worked fine.
 
 ## A first example test
 
@@ -66,17 +66,17 @@ system.time(RcppAlphahull::ahull(x,y,alpha))
 ```
 
     ##    user  system elapsed 
-    ##   0.083   0.000   0.192
+    ##   0.083   0.000   0.098
 
 ``` r
 system.time(alphahull::ahull(x,y,alpha))
 ```
 
     ##    user  system elapsed 
-    ##   2.129   0.057   3.730
+    ##   2.039   0.076   3.087
 
 By runnning this code one should see that the `RcppAlpahull` function
-performs more faster than the `alpahull` one. The result of the α-convex
-hull computation is shown in the following plot.
+performs faster than the `alpahull` one. The result of the α-convex hull
+computation is shown in the following plot.
 
 ![](README_files/figure-gfm/plot-1.png)<!-- -->
