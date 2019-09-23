@@ -92,6 +92,7 @@ for(package in funcs){
 colnames(df) = c("", "RcppAlphahull", "alphahull")
 df 
 
-xtable(df, label = "tab:egg_speed", digits = c(0, 0, rep(5,2)), 
-       caption = "eggshell analysis speed comparison between \texttt{alphahull} and \texttt{RcppAlphahull}.")
+print(xtable(df, label = "tab:egg_speed", digits = c(0, 0, rep(3,2)), include.rownames = F,
+             caption = "eggshell analysis speed comparison between \texttt{alphahull} and \texttt{RcppAlphahull}."),
+      include.rownames = F)
 

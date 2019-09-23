@@ -38,4 +38,6 @@ for(n in n.nodes){
 }
 colnames(times) = c("n", "delvor", "ashape", "complement", "ahull", "delvor", "ashape", "complement", "ahull")
 times
-xtable(times, label = "tab:speed", digits = c(0, 0, rep(3,8)))
+print(xtable(times, label = "tab:speed", digits = c(0, 0, rep(3,8))), include.rownames = F)
+
+      

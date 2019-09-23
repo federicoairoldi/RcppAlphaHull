@@ -46,7 +46,7 @@ fit.R = lm(R.User ~ transf)
 summary(fit.R)
 
 x11()
-png("/home/federico/Dropbox/Alpha-hulls/Report/img/speed_ashape.png")
+png("/home/federico/Dropbox/Alpha-hulls/Documenti/img/speed_ashape.png")
 par(mar = c(5,6,1,1))
 plot(c(n.nodes, n.nodes), c(Cpp.User, R.User), xlab = "number of sites", ylab = "CPU time", cex.lab = 1.8)
 points(n.nodes, Cpp.User, col = "blue", pch = 19)
