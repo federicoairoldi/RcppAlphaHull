@@ -2,25 +2,24 @@
 % Please edit documentation in R/inahull.R
 \name{inahull}
 \alias{inahull}
-\title{Determines if the provided point fall inside the \eqn{\alpha}-hull or not.}
+\title{Determines if the provided points fall inside the \eqn{\alpha}-hull or not.}
 \usage{
 inahull(ahull.obj, x, y = NULL, alpha)
 }
 \arguments{
-\item{x}{x coordinates of the sites. Alternatively, a matrix with two columns containing both sites 
+\item{x}{x coordinates of the points to be checked. Alternatively, a matrix with two columns containing both 
 coordinates.}
 
-\item{y}{y coordinates of the sites.}
+\item{y}{y coordinates of the points to be checked.}
 
 \item{ahull.onj}{an object class "ahull" like the one returned by the function \code{\link{ahull}}}
 }
 \value{
-A list with the following components:
 A logical vector of the same length of the number of points and such that the i-th element denotes 
 if the i-th point is in the \eqn{\alpha}-hull or not.
 }
 \description{
-Determines if the provided point fall inside the \eqn{\alpha}-hull or not calling an external C++
+Determines if the provided points fall inside the \eqn{\alpha}-hull or not by calling an external C++
 function.
 }
 \examples{
