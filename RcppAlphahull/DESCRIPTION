@@ -1,8 +1,8 @@
 Package: RcppAlphahull
 Type: Package
-Title: alpha-convex hull and alpha-shape computation.
+Title: Alpha-Convex Hull and Alpha-Shape computation.
 Version: 1.0
-Date: 2019-07-31
+Date: 2023-05-13
 Author: Federico Airoldi
 Maintainer: Federico Airoldi <federicoairoldi1995@gmail.com>
 Description: This package performs alpha-convex hull and alpha-shape computation using C++ code and a library, MyGAL, to compute the Voronoi tesselation/Delaunay triangulation of a finite set of points in the plane.
