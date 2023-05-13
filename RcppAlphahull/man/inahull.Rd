@@ -23,8 +23,14 @@ Determines if the provided points fall inside the \eqn{\alpha}-hull or not by ca
 function.
 }
 \examples{
+X = runif(50)
+Y = runif(50)
+
+ahull.obj = ahull(X, Y, alpha = 0.8)
+
 x = runif(10)
 y = runif(10)
+
 inahull(ahull.obj, x, y)
 
 }
