@@ -51,7 +51,7 @@ x = runif(10)
 y = runif(10)
 del.vor = delvor(x, y)
 
-plot.delvor(vor.del, wlines = "both", wpoints = FALSE, number = TRUE, 
+plot.delvor(del.vor, wlines = "both", wpoints = FALSE, number = TRUE, 
             col = c("black", "blue", "red", "black"))
 
 }
